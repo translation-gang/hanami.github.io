@@ -1,3 +1,5 @@
+Русский перевод документации Hanami
+
 # Hanami website
 
 ## Setup
