@@ -2,15 +2,13 @@
 title: Guides - Code Reloading
 ---
 
-# Code Reloading
+# Перезагрузка кода
 
-_Code reloading_ allows us to edit code and see the changes with a browser refresh, without needing to stop and restart the [server](/guides/command-line/applications).
+_Перезагрузка кода_ позволяет видеть результат изменения кода обновив страницу в браузере, но не перезапуская [сервер](/guides/command-line/applications).
 
-## Development Environment
+## Окружение в режиме разработки
 
-This is a development-only feature.
-Hanami uses `shotgun` Ruby gem to reload the code as-needed.
-New generated projects have this entry in their `Gemfile`:
+Эта возможность доступна только в режиме разработки. Для этого Hanami использует гем `shotgun`. Только что сгенерированный проект будет содержать в своем `Gemfile` следующие строки:
 
 ```ruby
 group :development do
@@ -20,17 +18,17 @@ group :development do
 end
 ```
 
-Unfortunately, `shotgun` requires that the current environment supports `fork(2)`.
-JRuby and Windows don't support it.
-If this is your case, `shotgun` is not compatible with your development environment, then you can remove that entry from the `Gemfile` or start the server with the `--no-code-reloading` argument.
+К сожалению, `shotgun` использует системный вызов `fork(2)`, который не поддерживается в Windows и JRuby.
+Если вы пользуетесь одной из этих платформ, то вы можете просто удалить `shotgun` из вашего `Gemfile` или запускать сервер с опцией `--no-code-reloading`.
 
-## Other Environments
+## Другие типы окружений
 
-Hanami doesn't implement _code reloading_ in its core.
+Непосредственно ядро Hanami не обеспечивает _перезагрузку кода_.
 
-The framework doesn't know about this feature, it just uses Ruby to load the code and execute it. It's `shotgun` that makes _code reloading_ possible, by wrapping Hanami projects' code.
+Фреймворк ничего не знает об этой возможности. Он просто загружает код на Ruby и исполняет его. В свою очередь `shotgun` становится оберткой вокруг кода проекта ради возможности _перезагрузки кода_.
 
-Because `shotgun` is only enabled in development, all the other environments don't have this _code reloading_ feature.
-By excluding this feature from the core of the framework, we make sure that Hanami projects don't mess with Ruby's code loading mechanisms in production.
+По причине включения `shotgun` только в окружении разработки все остальные типы окружений не смогут использовать эту возможность.
 
-In other words, once the code is loaded in production, it isn't changed anymore.
+Исключив _перезагрузку кода_ из ядра фреймворка мы добились упрощения кода загружаемого в режиме эксплуатации на конечном сервере.
+
+В режиме эксплуатации изменения кода вступят в силу после перезапуска сервера.
