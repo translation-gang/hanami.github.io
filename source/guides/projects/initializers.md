@@ -2,19 +2,19 @@
 title: Guides - Project Initializers
 ---
 
-# Initializers
+# Инициализаторы
 
-A project can **optionally** have one or more custom initializers.
+Проект **при необходимости** может содержать инициализаторы
 
 <p class="notice">
-  Initializers are optional
+  Инициализаторы не обязательны
 </p>
 
-An initializer is a Ruby file used to setup third-party libraries or some other aspect of the code.
+Инициализатор — это файл с кодом Ruby, который используется для подключения сторонних библиотек или подобных задач, выполняемых перед запуском приложения.
 
-They are run as the **last** thing after the dependencies, the framework and the project code are loaded, but **before** the server or the console are started.
+Они запускаются **в самом конце**,  после определения зависимостей, когда код проекта и фреймворка уже загружен, но все еще **перед** запуском сервера или консоли.
 
-For instance, if we want to setup [Bugsnag](https://bugsnag.com) for our project we can do:
+Например, для установки [Bugsnag](https://bugsnag.com) в наш проект, необходимо внести следующие изменения:
 
 ```ruby
 # config/initializers/bugsnag.rb
@@ -26,9 +26,9 @@ end
 ```
 
 <p class="convention">
-  Project initializers must be added under <code>config/initializers</code>.
+  Инициализаторы проекта должны быть расположены в каталоге <code>config/initializers</code>.
 </p>
 
 <p class="warning">
-  Initializers are executed in alphabetical order.
+  Инициализаторы запускаются в алфавитном порядке.
 </p>

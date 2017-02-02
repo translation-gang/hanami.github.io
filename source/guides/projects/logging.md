@@ -2,16 +2,17 @@
 title: Guides - Logging
 ---
 
-# Logging
+# Ведение журнала
 
-Within a project, each application has its own logger
+Каждый проект имеет свой логгер.
 
 <p class="convention">
-  For a given application named <code>Web</code>, logger is accessible at <code>Web.logger</code>.
+  Для приложения с названием <code>Web</code> логгер будет доступен как <code>Web.logger</code>.
 </p>
 
-Using the per-environment application settings we can define the behavior of the logger: the destination `stream`, `format`, and `level`.
-For instance, the default destination stream is standard output, but we can use a file instead.
+Настройки логгера определяются с настройками окружения: их назначение вывода, формат и уровень детализации.
+
+Например, по умолчанию логи направлены на стандартный поток вывода, но мы можем настроить вывод и в файл.
 
 ```ruby
 # apps/web/application.rb
@@ -25,13 +26,13 @@ module Web
       # Logger
       # See: http://hanamirb.org/guides/projects/logging
       #
-      # Logger stream. It defaults to STDOUT.
+      # Направление вывода, по умолчанию STDOUT
       # logger.stream "log/development.log"
       #
-      # Logger level. It defaults to DEBUG
+      # Уровень детализации, по умолчанию DEBUG
       # logger.level :debug
       #
-      # Logger format. It defaults to DEFAULT
+      # Формат, по умолчанию DEFAULT
       # logger.format :default
     end
 
@@ -44,7 +45,7 @@ module Web
       # Logger
       # See: http://hanamirb.org/guides/projects/logging
       #
-      # Logger level. It defaults to ERROR
+      # Уровень детализации, по умолчанию ERROR
       logger.level :error
     end
 
@@ -57,24 +58,25 @@ module Web
       # Logger
       # See: http://hanamirb.org/guides/projects/logging
       #
-      # Logger stream. It defaults to STDOUT.
+      # Направление вывода, пo умолчанию STDOUT
       # logger.stream "log/production.log"
       #
-      # Logger level. It defaults to INFO
+      # Уровень детализации, по умолчанию INFO
       logger.level :info
 
-      # Logger format.
+      # Форма вывода
       logger.format :json
     end
   end
 end
 ```
 
-Using standard output is a [best practice](http://12factor.net/logs) that most hosting SaaS companies [suggest using](https://devcenter.heroku.com/articles/rails4#logging-and-assets).
+Использование стандартного потока вывода это [общепринятая практика](http://12factor.net/logs). Большинство компаний по предоставлению SaaS хостингов [предпочитают ей следовать](https://devcenter.heroku.com/articles/rails4#logging-and-assets).
 
-Because of its parseability, JSON is the default format for production environment, where you may want aggregate information about the project usage.
+Благодаря простоте обработки JSON является форматом по умолчанию для окружения, используемого в эксплуатации. С ним будет легко оценить результаты работы приложения.  
 
-The logger is very similar to Ruby's `Logger`; you can use it like this:
+
+Логгер Hanami очень похож на обычный `Logger` Ruby. Простой пример использования:
 
 ```ruby
 Web.logger.debug "Hello"
