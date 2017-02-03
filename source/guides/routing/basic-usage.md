@@ -2,75 +2,74 @@
 title: Guides - Basic Usage
 ---
 
-# Basic Usage
+# Использование
 
-## Path matching
+## Определение пути
 
-In [our initial example](/guides/routing/overview) we have introduced a really basic relative URI: `/hello`.
-This is what we call _fixed path matching_.
-It is called this because the segment is responsible for responding only to an **exact match**.
-If we visit `/hello`, we get a response.
-If we hit `/foo`, a `404` (Not Found) is returned.
+В [нашем стартовом примере](/guides/routing/overview) был использован простой относительный URI: `/hello`.
+Такие маршруты мы называем _статическими_.
+Это означает, что к ним приводит запрос только по одному **неизменному пути**.
+Запрос к `/hello` приведет к ответу, а запрос к `/foo` вернет ошибку `404` (Ресурс не найден).
 
-### Fixed Matching
+### Статические пути
 
 ```ruby
 # apps/web/config/routes.rb
 get '/dashboard', to: "dashboard#index"
 ```
 
-### Variables
+### Динамические пути
 
-When we have dynamic content to serve, we want our URI to be dynamic as well.
-This can be easily achieved via path variables.
-They are defined with a colon, followed by a name (eg. `:id`).
+Иногда необходимо организовать доступ к динамическим ресурсам. Тогда от URI ждут соответствущей гибкости.
+Она достигается посредством переменных пути.
+Их объявление состоит из двоеточия, за которым следует имя. Например: `:id`.
 
-Once an incoming request is forwarded to our endpoint, we can access the current value in our param's action (`params[:id]`).
+Когда запрос получен и направлен в пункт назначения мы можем получить доступ к соответствующей переменной через `params[:id]`.
 
 ```ruby
 get '/books/:id', to: 'books#show'
 ```
 
-Multiple variables can be used in a path.
+В одном пути может быть несколько переменных.
 
 ```ruby
 get '/books/:book_id/reviews/:id', to: 'reviews#show'
 ```
 
-### Variables Constraints
+### Ограничения переменных
 
-It's possible to specify constraints for each variable.
-The rule MUST be expressed as a regular expression.
-If a request can satisfy all of them, we're good, otherwise a `404` is returned.
+Для каждой переменной можно задать ограничения.
+Они должны быть записаны в виде регулярных выражений.
+Если при запросе все ограничения удовлетворены, то продолжится его обработка, а иначе будет возвращена ошибка `404`.
 
 ```ruby
 get '/authors/:id', id: /\d+/, to: 'authors#show'
 ```
 
-### Optional Tokens
+### Необязательные переменные
 
-Sometimes we want to specify an optional token as part of our URI.
-It should be expressed between round parentheses.
-If present, it will be available as param in the Rack env, otherwise it will be missing, but the endpoint will be still hit.
+Бывает полезно определить необязательные части URI.
+Они должны быть определены внутри круглых скобок.
+Если они обнаружены, то станут доступны как один из параметров переменной Rack env. Иначе параметры будут пусты, но пункт назначения все еще будет достигнут.
 
 ```ruby
 get '/books(.:format)', to: 'books#show'
 ```
 
-### Wildcard Matching
+### Свободные составляющие
 
-Imagine we want to serve static files from a user repository.
-It would be impossible to know in advance which files are stored and to prepare routes accordingly.
+Представим, что мы хотим обеспечить доступ к статическим файлам из пользовательского хранилища.
+Заранее невозможно узнать, какие файлы будут храниться там, а значит нельзя и задать к ним маршруты.
 
-To solve this problem, Hanami supports _wildcard matching_.
+Для решения этой проблемы Hanami использует _свободные составляющие_.
 
 ```ruby
 get '/files/*', to: 'files#show'
 ```
 
-## Named Routes
+## Именованные маршруты
 
-We can specify a unique name for each route, in order to generate paths from the router or to test them.
+Мы можем определить уникальные имена для каждого маршрута, чтобы затем использовать их в других частях приложения.
 
 ```ruby
 root              to  'home#index'
@@ -78,8 +77,7 @@ get '/hello',     to: 'greet#index', as: :greeting
 get '/books/:id', to: 'books#show',  as: :book
 ```
 
-When a Hanami application starts, it generates a Ruby module at the runtime under our application namespace: eg. `Web.routes`.
-We can use it to generate a relative or absolute URI for our route.
+Когда приложение Hanami запускается оно генерирует специальный модуль Ruby в своем пространстве имен. Для приложения `Web` он будет доступен как `Web.routes` и будет использован для получения маршрута по относительному или абсолютному пути во время работы приложения.
 
 ```ruby
 Web.routes.path(:root)     # => "/"
@@ -88,38 +86,36 @@ Web.routes.url(:root)      # => "http://localhost:2300/"
 Web.routes.path(:greeting) # => "/hello"
 Web.routes.url(:greeting)  # => "http://localhost:2300/hello"
 ```
-
-When we have one or more variables, they can be specified as a Hash.
+Когда такие переменные есть или их несколько, они могут быть определены как хэш.
 
 ```ruby
 Web.routes.path(:book, id: 1) # => "/books/1"
 Web.routes.url(:book, id: 1)  # => "http://localhost:2300/books/1"
 ```
+Абсолютный URL генерируется исходя из настроек `scheme`, `host` и `port` в файле `apps/web/application.rb`.
 
-Absolute URL generation is dependent on `scheme`, `host` and `port` settings in `apps/web/application.rb`.
+### Хэлперы маршрутизатора
 
-### Routing Helpers
+Полученные при помощи `Web.routes` маршруты полезны благодаря своей доступности из любой части приложения.
+Тем не менее, такой синтаксис не совсем удобен.
 
-Generating routes from `Web.routes` is helpful, because that module can be accessed from anywhere.
-However, this syntax is noisy.
-
-Hanami has _routing helpers_ available as `routes` in: **actions**, **views** and **templates**.
+Hanami позволяет использовать _хэлперы маршрутизатора_, доступные из `routes` в: **действиях(action)**, **представлениях(views)** и **шаблонах(templates)**.
 
 ```ruby
 <%= routes.path(:greeting) %>
 <%= routes.url(:greeting) %>
 ```
 
-Or
+Или
 
 ```ruby
 <%= routes.greeting_path %>
 <%= routes.greeting_url %>
 ```
 
-## Namespaces
+## Пространства имен
 
-If we want to group a set of resources under a common prefix we can use `namespace`.
+Если мы хотим сгруппировать набор ресурсов под одним префиксом, то можем использовать `пространства имен(namespace)`.
 
 ```ruby
 namespace 'docs' do
@@ -127,15 +123,15 @@ namespace 'docs' do
   get '/usage',        to: 'docs#usage'
 end
 
-# This will generate:
+# Будет сгенерировано:
 #
 #   /docs/installation
 #   /docs/usage
 ```
 
-## Redirects
+## Переадресация
 
-In case of legacy routes, we can handle HTTP redirects at the routing level.
+В случае когда обстоятельства не позволяют переопределить маршрут мы можем настроить HTTP переадресацию на уровне маршрутизатора.
 
 ```ruby
 redirect '/old', to: '/new'
