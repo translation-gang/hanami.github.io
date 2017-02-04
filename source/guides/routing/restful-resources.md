@@ -4,31 +4,30 @@ title: Guides - RESTful Resource(s)
 
 # REST
 
-Hanami has native [REST](http://en.wikipedia.org/wiki/Representational_state_transfer) support.
+В Hanami встроена поддержка [REST-архитектуры](http://en.wikipedia.org/wiki/Representational_state_transfer).
 
-At the routing level, there are two methods that can be used to declare them: `resources` and `resource`.
-The former is for plural resources, the latter for singular ones.
+Для ее определения на уровне маршрутов существует два метода: `resources` и `resource`.
 
-Declaring a resource means to generate **several default routes** with just one line of code.
+Определение ресурсов позволяет сгенерировать **несколько стандартных маршрутов** при помощи всего одной строки кода.
 
-## RESTful Resources
+## Ресурсы в стиле REST
 
-### Default Routes
+### Стандартные маршруты
 
 ```ruby
 # apps/web/config/routes.rb
 resources :books
 ```
 
-It generates
+Создаст
 
 <table class="table table-bordered table-striped">
   <tr>
-    <th>Verb</th>
-    <th>Path</th>
-    <th>Action</th>
-    <th>Name</th>
-    <th>Named Route</th>
+    <th>HTTP глагол</th>
+    <th>Маршрут</th>
+    <th>Действие</th>
+    <th>Имя действия</th>
+    <th>Имя маршрута</th>
   </tr>
   <tr>
     <td>GET</td>
@@ -81,63 +80,64 @@ It generates
   </tr>
 </table>
 
-### Remove Routes
+### Удаление маршрутов
 
-In case we don't need all the default routes we can use `:only` and pass one or more action names.
-We can also black list routes with `:except`.
+В случае когда нам нужны не все стандартные маршруты мы можем использовать параметр `:only` и задать одно или несколько имен действия.
+Другой параметр, `:except`, позволяет аналогичным образом исключить маршруты из стандартного набора.
 
 ```ruby
 resources :books, only: [:new, :create, :show]
 
-# equivalent to
+# эквивалентно
 
 resources :books, except: [:index, :edit, :update, :destroy]
 ```
 
-### Add Routes
+### Добавление маршрутов
 
-Alongside with default routes we can specify extra routes for single (`member`) or multiple (`collection`) resources.
+Вместе со стандартными маршрутами мы можем указать дополнительные как для одного экземпляра ресурса (`member`) так и для коллекции (`collection`).
 
 ```ruby
 resources :books do
   member do
-    # Generates /books/1/toggle, maps to Books::Toggle, named :toggle_book
+    # Создаст маршрут /books/1/toggle, направленный к Books::Toggle, именованный как :toggle_book
     get 'toggle'
   end
 
   collection do
-    # Generates /books/search, maps to Books::Search, named :search_books
+    # Создаст маршрут /books/search, направленный к Books::Search, именованный как :search_books
     get 'search'
   end
 end
 ```
 
-### Configure Controller
+### Явное указание контроллера
 
-Imagine we have a controller named `manuscripts`, where we have actions like `Manuscripts::Index`, but we still want to expose those resources as `/books`.
-Using the `:controller` option will save our day.
+Допустим, у нас есть контроллер с именем `manuscripts`, в котором определено действие `Manuscripts::Index`, но мы хотим сделать его доступным через `/books`.
+
+Используя параметр `:controller` мы сэкономим много времени.
 
 ```ruby
 resources :books, controller: 'manuscripts'
 
-# GET /books/1 will route to Manuscripts::Show, etc.
+# GET /books/1 будет перенаправлен к Manuscripts::Show
 ```
 
-## RESTful Resource
+## Ресурс в стиле REST
 
 ```ruby
 resource :account
 ```
 
-It generates
+Создаст
 
 <table class="table table-bordered table-striped">
   <tr>
-    <th>Verb</th>
-    <th>Path</th>
-    <th>Action</th>
-    <th>Name</th>
-    <th>Named Route</th>
+    <th>HTTP глагол</th>
+    <th>Маршрут</th>
+    <th>Действие</th>
+    <th>Имя действия</th>
+    <th>Имя маршрута</th>
   </tr>
   <tr>
     <td>GET</td>
@@ -183,43 +183,43 @@ It generates
   </tr>
 </table>
 
-### Remove Routes
+### Удаление маршрутов
 
 ```ruby
 resource :account, only: [:show, :edit, :update, :destroy]
 
-# equivalent to
+# эквивалентно
 
 resource :account, except: [:new, :create]
 ```
 
-### Add Routes
+### Добавление маршрутов
 
 ```ruby
 resource :account do
   member do
-    # Generates /account/avatar, maps to Account::Avatar, named :avatar_account
+    # Создаст маршрут /account/avatar, направленный к Account::Avatar, именованный как :avatar_account
     get 'avatar'
   end
 
   collection do
-    # Generates /account/authorizations, maps to Account::Authorizations, named :authorizations_account
+    # Создаст маршрут /account/authorizations, направленный к Account::Authorizations, именованный как :authorizations_account
     get 'authorizations'
   end
 end
 ```
 
-### Configure Controller
+### Явное указание контроллера
 
 ```ruby
 resource :account, controller: 'customer'
 ```
 
-## Nested Resource(s)
+## Вложенные ресурсы
 
-RESTful resource(s) can be nested in order to make available inner resources inside the scope of their parents.
+Ресурсы в стиле REST могут быть вложены. Так они станут доступны как часть родительских ресурсов.
 
-### Plural to plural
+### Множественные ресурсы внутри множественных
 
 ```ruby
 resources :books do
@@ -227,15 +227,15 @@ resources :books do
 end
 ```
 
-**It generates default routes for books and the following ones.**
+**Будут сгенерированы все стандартные пути для :books и вложений**
 
 <table class="table table-bordered table-striped">
   <tr>
-    <th>Verb</th>
-    <th>Path</th>
-    <th>Action</th>
-    <th>Name</th>
-    <th>Named Route</th>
+    <th>HTTP глагол</th>
+    <th>Маршрут</th>
+    <th>Действие</th>
+    <th>Имя действия</th>
+    <th>Имя маршрута</th>
   </tr>
   <tr>
     <td>GET</td>
@@ -288,7 +288,7 @@ end
   </tr>
 </table>
 
-### Plural to singular
+### Единственный внутри множественного
 
 ```ruby
 resources :books do
@@ -296,15 +296,15 @@ resources :books do
 end
 ```
 
-**It generates default routes for books and the following ones.**
+**Будут сгенерированы все стандартные пути для :books и вложений**
 
 <table class="table table-bordered table-striped">
   <tr>
-    <th>Verb</th>
-    <th>Path</th>
-    <th>Action</th>
-    <th>Name</th>
-    <th>Named Route</th>
+    <th>HTTP глагол</th>
+    <th>Маршрут</th>
+    <th>Действие</th>
+    <th>Имя действия</th>
+    <th>Имя маршрута</th>
   </tr>
   <tr>
     <td>GET</td>
@@ -350,7 +350,7 @@ end
   </tr>
 </table>
 
-### Singular To Plural
+### Множественные внутри единственного
 
 ```ruby
 resource :account do
@@ -358,16 +358,16 @@ resource :account do
 end
 ```
 
-**It generates default routes for account and the following ones.**
+**Будут сгенерированы все стандартные пути для :account и вложений**
 
 <table class="table table-bordered table-striped">
   <tr>
-    <th>Verb</th>
-    <th>Path</th>
-    <th>Action</th>
-    <th>Name</th>
-    <th>Named Route</th>
-  </tr>
+    <th>HTTP глагол</th>
+    <th>Маршрут</th>
+    <th>Действие</th>
+    <th>Имя действия</th>
+    <th>Имя маршрута</th>
+  </tr>  
   <tr>
     <td>GET</td>
     <td>/account/api_keys</td>
@@ -419,7 +419,7 @@ end
   </tr>
 </table>
 
-### Singular To Singular
+### Единственный внутри единственного
 
 ```ruby
 resource :account do
@@ -427,15 +427,15 @@ resource :account do
 end
 ```
 
-**It generates default routes for account and the following ones.**
+**Будут сгенерированы все стандартные пути для :account и вложений**
 
 <table class="table table-bordered table-striped">
   <tr>
-    <th>Verb</th>
-    <th>Path</th>
-    <th>Action</th>
-    <th>Name</th>
-    <th>Named Route</th>
+    <th>HTTP глагол</th>
+    <th>Маршрут</th>
+    <th>Действие</th>
+    <th>Имя действия</th>
+    <th>Имя маршрута</th>
   </tr>
   <tr>
     <td>GET</td>
