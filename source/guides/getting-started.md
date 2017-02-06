@@ -6,62 +6,62 @@ title: Guides - Getting Started
 
 <div id="getting-started-lead">
   <p>
-    Hello. If you're reading this page, it's very likely that you want to learn more about Hanami.
-    That's great, congrats! If you're looking for new ways to build maintainable, secure, faster and testable web applications, you're in good hands.
+  Привет. Если ты читаешь эту страницу, вероятно, ты хочешь узнать о Hanami больше.
+  Это отлично, поздравляю! Если ты ищешь новые способы строить поддерживаемые, безопасные, быстрые и тестируемые приложения, ты в хороших руках.
   </p>
 
   <p>
-    <strong>Hanami is built for people like you.</strong>
+    <strong>Hanami создан для таких же как ты.</strong>
   </p>
 
   <p>
-    I warn you that whether you're a total beginner or an experienced developer <strong>this learning process can be hard</strong>.
-    After 10 years you develop a way of working, and it can be painful for you to change. However, <strong>without change, there is no challenge</strong>.
+    Стоит предупредить тебя, независимо от того, совсем ты новичок, или опытный разработчик <strong>процесс обучения будет сложным</stron/strong>.
+    После 10 лет, в течение которых у тебя сложился определенный взгляд на разработку, возможно, будет сложно сломать некоторые свои привычки. Изменения это всегда вызов самому себе.
   </p>
 
   <p>
-    Sometimes a feature doesn't look right, that doesn't mean it's you.
-    It can be a matter of formed habits, a design fallacy or even a bug.
+    Иногда будет казаться, что какие-то фичи выглядят не особенно здраво, но не всегда дело в твоих взглядах.
+    Это может быть делом привычки, ошибкой в проектировании или даже багом.
   </p>
 
   <p>
-    Myself and the rest of the Community are putting best efforts to make Hanami better every day.
+    Я и остальное сообщество из лучших побуждений стараемся улучшать Hanami каждый день.
   </p>
 
   <p>
-    In this guide we will set up our first Hanami project and build a simple bookshelf web application.
-    We'll touch on all the major components of Hanami framework, all guided by tests.
+    В этом руководстве мы создадим свой первый проект в Hanami, сделаем простое веб приложение 'книжная полка'.
+    Мы коснемся всех основных компонентов фреймворка и покроем все написанное тестами.
   </p>
 
   <p>
-    <strong>If you feel alone, or frustrated, don't give up, jump in our <a href="http://chat.hanamirb.org">chat</a> and ask for help.</strong>
-    There will be someone more than happy to talk with you.
+    <strong> Если столкнешься с какими-то сложностями или просто запутаешься, не сдавайся, заходи в наш <a href="http://chat.hanamirb.org">чат</a> и задавай вопросы.</strong>
+    Там всегда найдется кто-то, кто будет рад помочь.
   </p>
 
   <p>
-    Enjoy,<br>
+    Развлекайся,<br>
     Luca Guidi<br>
-    <em>Hanami creator</em>
+    <em>Создатель Hanami</em>
   </p>
 </div>
 
 <br>
 <hr>
 
-## Prerequisites
+## Предисловие
 
-Before we get started, let's get some prerequisites out of the way.
-First, we're going to assume a basic knowledge of developing web applications.
+Перед тем, как мы начнем, уточним некоторые вещи.
+Для начала, предположим, что необходимы некоторые базовые знания о разработке веб приложений.
 
-You should also be familiar with [Bundler](http://bundler.io), [Rake](http://rake.rubyforge.org), working with a terminal and building apps using the [Model, View, Controller](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) paradigm.
+Ты должен быть знаком с некоторыми вещами вроде [Bundler](http://bundler.io), [Rake](http://rake.rubyforge.org), уметь рвботать в терминале и строить приложения с использованием паттерна [Model, View, Controller](https://ru.wikipedia.org/wiki/Model-View-Controller).
 
-Lastly, in this guide we'll be using a [SQLite](https://sqlite.org/) database.
-If you want to follow along, make sure you have a working installation of Ruby 2.3+ and SQLite 3+ on your system.
+Позднее в руководстве мы будем использовать базу данных [SQLite](https://sqlite.org/) [Postgresql](https://postgrespro.ru/docs/postgresql/9.6/index.html).
+Чтобы идти дальше, тебе потребуеся работающая версия Ruby 2.3 или выше и SQLite 3+.
 
-## Create a New Hanami Project
+## Создадим навый Hanami проект
 
-To create a new Hanami project, we need to install the Hanami gem from Rubygems.
-Then we can use the new `hanami` executable to generate a new project:
+Чтобы создать проект в Hanami, нас сначала нужно установить gem Hanami через Rubygems.
+Затем мы сможем использовать консольную команду `hanami new`, чтобы сгенерировать новый проект:
 
 ```
 % gem install hanami
@@ -69,14 +69,14 @@ Then we can use the new `hanami` executable to generate a new project:
 ```
 
 <p class="notice">
-  By default, the project will be setup to use a SQLite database. For real-world projects, you can specify your engine:
+  По умолчанию, проект будет настроен для использования SQLite. Для настоящих проектов вы можете указать другой движок базы данных, например, Postgres:
   <code> 
   % hanami new bookshelf --database=postgres
   </code>
 </p>
 
-This will create a new directory `bookshelf` in our current location.
-Let's see what it contains:
+Это создаст новую папку `bookshelf` в той, из которой запускали команду.
+Посмотрите, что она будет содержать:
 
 ```
 % cd bookshelf
@@ -95,51 +95,51 @@ Let's see what it contains:
 6 directories, 3 files
 ```
 
-Here's what we need to know:
+Вот что, как минимум, стоит об этом знать:
 
-* `Gemfile` defines our Rubygems dependencies (using Bundler).
-* `Rakefile` describes our Rake tasks.
-* `apps` contains one or more web applications compatible with Rack.
-  Here we can find the first generated Hanami application called `Web`.
-  It's the place where we find our controllers, views, routes and templates.
-* `config` contains configuration files.
-* `config.ru` is for Rack servers.
-* `db` contains our database schema and migrations.
-* `lib` contains our business logic and domain model, including entities and repositories.
-* `public` will contain compiled static assets.
-* `spec` contains our tests.
+* `Gemfile` определяет наши Rubygems зависимости (используя Bundler).
+* `Rakefile` описывает наши Rake задачи.
+* `apps` содержит  одно или несколько Rack совместимых приложений.
+  Здесь мы можем найти первое сгенерированное Hanami приложение, называющееся `Web`.
+  Там мы найдем наши контроллеры, вьюхи, маршруты и шаблоны.
+* `config` содержит (внезапно!) конфигурационные файлы.
+* `config.ru` (rack up) для Rack серверов.
+* `db` содержит нашу схему базы данных и миграции.
+* `lib` содержит нашу бизнес логику и модель предметной области, включая сущности и репозитории.
+* `public` будет содержать скомпилированные ассеты и статические файлы.
+* `spec` содержит наши тесты.
 
-Go ahead and install our gem dependency with Bundler; then we can launch a development server:
+Двинемся дальше и установим указанные в Gemfile зависимости с помощью Bundler; затем запустим сервер в режиме разработки:
 
 ```
 % bundle install
 % bundle exec hanami server
 ```
 
-And... bask in the glory of your first Hanami project at
-[http://localhost:2300](http://localhost:2300)! We should see a screen similar to this:
+И... встречаем твое первый Hanami проект по адресу
+[http://localhost:2300](http://localhost:2300)! Мы должны увидеть в браузере примерно такую картину:
 
 <p><img src="/images/welcome-page.png" alt="Hanami welcome page" class="img-responsive"></p>
 
-## Hanami Architecture
+## Архитектура Hanami
 
-Hanami architecture **can host several Hanami (and Rack) applications in the same Ruby process**.
+Архитектура Hanami **позволяет содержать несколько Hanami (и Rack) приложений в одном процессе Ruby**.
 
-These applications live under `apps/`.
-Each of them can be a component of our product, such as the user facing web interface, the admin pane, metrics, HTTP API etc..
+Эти приложения находятся в каталоге `apps/`.
+Каждое из них может быть компонентом твоего продукта, таким как пользовательский интерфейс, панель управления, дашборд или, например, HTTP API..
 
-All these parts are a _delivery mechanism_ to the business logic that lives under `lib/`.
-This is the place where our models are defined, and interact with each other to compose the **features** that our product provides.
+Все это части _механизма доставки_ бизнес логики, живущей в папке `lib/`.
+Это место, где описаны наши модели предметной области, их взаимодействие друг с другом, составляющие **функциональные возможности** предоставляемые нашии продуктом. 
 
-Hanami architecture is heavily inspired by [Clean Architecture](https://blog.8thlight.com/uncle-bob/2012/08/13/the-clean-architecture.html).
+На архитектуру Hanami сильно повлияли идеи [Чистой архитектуры](https://blog.8thlight.com/uncle-bob/2012/08/13/the-clean-architecture.html) дяди Боба.
 
-## Writing Our First Test
+## Пишем наш первый тест
 
-The opening screen we see when we point our browser at our app, is a
-default page which is displayed when there are no routes defined.
+Стартовый экран приложения, который мы видели в браузере, это страница, 
+которая показывается по умолчанию, пока мы не определили ни одного маршрута.
 
-Hanami encourages [Behavior Driven Development](https://en.wikipedia.org/wiki/Behavior-driven_development) (BDD) as a way to write web applications.
-In order to get our first custom page to display, we'll write a high-level feature test:
+Hanami поощряет [Behavior Driven Development](https://en.wikipedia.org/wiki/Behavior-driven_development) (BDD) как способ разработки веб приложений.
+Перед созданием нашей первой страницы, мы сначала напишем высокоуровневый тест, описывающий ее работу:
 
 ```ruby
 # spec/web/features/visit_home_spec.rb
@@ -154,14 +154,14 @@ describe 'Visit home' do
 end
 ```
 
-Note that, although Hanami is ready for a Behavior Driven Development workflow out of the box, **it is in no way bound to any particular testing framework** -- nor does it come with special integrations or libraries.
+Обратите внимание, что несмотря на то, что Hanami из коробки поддерживает Разработку Через Поведение (BDD), **вас не принуждают пользоваться каким-то особенным фреймворком для тестирования** -- также не требуется какой-то особенной интеграции или библиотек.
 
-We'll go with [Minitest](https://github.com/seattlerb/minitest) here (which is the default), but we can use [RSpec](http://rspec.info) by creating the project with `--test=rspec` option.
-Hanami will then generate helpers and stub files for it.
+Мы начнем с [Minitest](https://github.com/seattlerb/minitest) (который по умолчанию), но также мы можем использовать [RSpec](http://rspec.info) если создадим проект с опцией `--test=rspec.`
+Hanami будет в этом случае генерировать хелперы и шаблоны файлов для него.
 
-### Following a Request
+### Выполняем требования
 
-Now we have a test, we can see it fail:
+У нас уже есть тест и мы можем видеть, как он падает:
 
 ```
 % rake test
@@ -180,18 +180,18 @@ Expected "<!DOCTYPE html>\n<html>\n  <head>\n    <title>Not Found</title>\n  </h
 1 runs, 1 assertions, 1 failures, 0 errors, 0 skips
 ```
 
-Now let's make it pass.
-Lets add the code required to make this test pass, step-by-step.
+Пора сделать, чтобы он проходил.
+Напишем несколько строк кода, требуемого для успешного прохождения теста, шаг за шагом.
 
-The first thing we need to add is a route:
+Первое, что нам нужно добавить это маршрут:
 
 ```ruby
 # apps/web/config/routes.rb
 root to: 'home#index'
 ```
 
-We pointed our application's root URL to the `index` action of the `home` controller (see the [routing guide](/guides/routing/overview) for more information).
-Now we can create the index action.
+Мы перенаправляем корневой (root) URL нашего приложения в экшн `index` контроллера `home` (смотри [routing guide](/guides/routing/overview) для более подробного объяснения).
+Теперь мы можем создать сам экшн `index`.
 
 ```ruby
 # apps/web/controllers/home/index.rb
@@ -205,8 +205,8 @@ module Web::Controllers::Home
 end
 ```
 
-This is an empty action that doesn't implement any business logic.
-Each action has a corresponding view, which is a Ruby object and needs to be added in order to complete the request.
+Это пустой экшн и в нем не содержится никакой логики.
+Каждый экшн имеет соответствующий вид, который представляет объект Ruby, который нужно отдать в ответ на запрос, прилетевший в экшн.
 
 ```ruby
 # apps/web/views/home/index.rb
@@ -217,15 +217,15 @@ module Web::Views::Home
 end
 ```
 
-...which, in turn, is empty and does nothing more than render its template.
-This is the file we need to edit in order to make our test pass. All we need to do is add the bookshelf heading.
+...который, в свою очередь, тоже пуст и не делает ничего кроме рендеринга шаблона. По умолчанию это файл `erb`, но никто не запретит вам использовать `slim` или `haml`.
+Его нам придется поправить, чтобы тест прошел. От нас требуется лишь добавить заголовок Bookshelf.
 
 ```erb
 # apps/web/templates/home/index.html.erb
 <h1>Bookshelf</h1>
 ```
 
-Save your changes, run your test again and it now passes. Great!
+Сохраним изменения, запустим тесты еще раз и на этот раз должны пройти. Великолепно!
 
 ```shell
 Run options: --seed 19286
@@ -239,15 +239,15 @@ Finished in 0.011854s, 84.3600 runs/s, 168.7200 assertions/s.
 1 runs, 2 assertions, 0 failures, 0 errors, 0 skips
 ```
 
-## Generating New Actions
+## Генерируем новые экшены
 
-Let's use our new knowledge about the major Hanami components to add a new action.
-The purpose of our Bookshelf project is to manage books.
+Давайте же воспользуемся тем, что узнали о главных компонентах Hanami чтобы добавить новый экшн.
+Проект Bookshelf предназначен для учета книг.
 
-We'll store books in our database and let the user manage them with our project.
-A first step would be to show a listing of all the books in our system.
+Мы будем хранить информацию о книгах в базе данных и дадим пользователю возможность управлять ей.
+Первым шагом будет показ списка всех книг, хранящихся в системе.
 
-Let's write a new feature test describing what we want to achieve:
+Опишем функциональность, к которой мы стремимся, с помощью фич-теста:
 
 ```ruby
 # spec/web/features/list_books_spec.rb
@@ -264,30 +264,30 @@ describe 'List books' do
 end
 ```
 
-The test is simple enough, and fails because the URL `/books` is not currently recognised in our application. We'll create a new controller action to fix that.
+Тест достасточно прост и падает, так как адрес `/books`пока что не распознается приложением. Создадим экшн контроллера, чтобы исправить это.
 
-### Hanami Generators
+### Генераторы Hanami
 
-Hanami ships with various **generators** to save on typing some of the code involved in adding new functionality.
-In our terminal, enter:
+Hanami поставляется с некоторыми **генераторами** чтобы писать меньше шаблонного кода, обрамляющего новую фунциональность.
+Наберите в терминале:
 
 ```
 % bundle exec hanami generate action web books#index
 ```
 
-This will generate a new action _index_ in the _books_ controller of the _web_ application.
-It gives us an empty action, view and template; it also adds a default route to `apps/web/config/routes.rb`:
+Эта команда должна сгенерировать новый экшн _index_  в контроллере_books_ приложения _web_.
+Что даст нам пустой экшн, вид и шаблон, а также добавит маршрут в `apps/web/config/routes.rb`:
 
 ```ruby
 get '/books', to: 'books#index'
 ```
 
-If you're using ZSH, you may get `zsh: no matches found: books#index`. In that case, you can use:
+В ZSH ты можешь получить ошибку `zsh: no matches found: books#index`. В этом случае, попробуй другой синтаксис:
 ```
 % hanami generate action web books/index
 ```
 
-To make our test pass, we need to edit our newly generated template file in `apps/web/templates/books/index.html.erb`:
+Теперь, чтобы тест прошел, нам нужно лишь сделать шаблон в файле `apps/web/templates/books/index.html.erb` похожим на:
 
 ```html
 <h1>Bookshelf</h1>
@@ -306,19 +306,19 @@ To make our test pass, we need to edit our newly generated template file in `app
 </div>
 ```
 
-Save your changes and see your tests pass!
+Сохрани изменения и увидишь, что тесты проходят!
 
-The terminology of controllers and actions might be confusing, so let's clear this up: actions form the basis of our Hanami applications; controllers are mere modules that group several actions together.
-So while the "controller" is _conceptually_ present in our project, in practice we only deal with actions.
+Терминология контроллеров и экшнов может сбивать с толку, так что стоит прояснить: экшены составляют основу приложения Hanami; контроллеры же просто являются модулями, объединяющими несколько экшнов.
+В общем, несмотря на _концептуальное_ присутствие "контроллеров" в приложении, на практике мы будем работать только с экшнами.
 
-We've used a generator to create a new endpoint in our application.
-But one thing you may have noticed is that our new template contains the same `<h1>` as our `home/index.html.erb` template.
-Let's fix that.
+Мы использовали генератор чтобы создать новую точку входа в приложение.
+Но стоит обратить внимание на то, что наш новый шаблон содержит тот же `<h1>` что и в `home/index.html.erb`. 
+Давайте это исправим.
 
-### Layouts
+### Макеты
 
-To avoid repeating ourselves in every single template, we can use a layout.
-Open up the file `apps/web/templates/application.html.erb` and edit it to look like this:
+Для избежания повторения одних и тех же строк от шаблона к шаблону, мы можем использовать макет.
+Откроем файл `apps/web/templates/application.html.erb` и сделаем похожим на это:
 
 ```rhtml
 <!DOCTYPE HTML>
@@ -333,26 +333,26 @@ Open up the file `apps/web/templates/application.html.erb` and edit it to look l
 </html>
 ```
 
-Now you can remove the duplicate lines from the other templates.
+Теперь ты можешь убрать дублирующиеся строки из остальных шаблонов.
 
-A **layout** is like any other template, but it is used to wrap your regular templates.
-The `yield` line is replaced with the contents of our regular template.
-It's the perfect place to put our repeating headers and footers.
+**Макет** похож на любой другой шаблон, но он используется для оборачивания стандартных шаблонов.
+Ключевое слово `yield` заменяется содержимым обычного шаблона.
+Это отличное место для повторяющихся элементов вроде шапки, футера или меню.
 
-### Migrations To Change Our Database Schema
+### Миграции для изменения схемы Базы Данных 
 
-Hard-coding books in our templates is, admittedly, kind of cheating.
-Let's add some dynamic data to our application.
+Жестко зашитые в шаблон книги это надувательство, если быть честными. 
+Пора добавить живых данных в приложение.
 
-As first thing, we need a table in our database to hold our book data.
-We can use a **migration** to make the required changes.
-Use the migration generator to create an empty migration:
+Во-первых, нам нужна таблица в базе данных, для хранения данных о книгах.
+Мы можем использовать **миграцию**, чтобы ее создать.
+Воспользуемся генератором для создания  пустой миграции:
 
 ```
 % bundle exec hanami generate migration create_books
 ```
 
-This gives us a file name like `db/migrations/20161115110038_create_books.rb` that we can edit:
+Это даст нам файл c именем вроде `db/migrations/20161115110038_create_books.rb`, отредактируем его:
 
 ```ruby
 Hanami::Model.migration do
@@ -370,32 +370,32 @@ Hanami::Model.migration do
 end
 ```
 
-Hanami provides a DSL to describe changes to our database schema. You can read more
-about how migrations work in the [migrations' guide](/guides/migrations/overview).
+Hanami предоставляет специальный язык для описания изменений в схеме базы данных. 
+Ты можешь узнать о том, как им пользоваться из [руководства по миграциям](/guides/migrations/overview).
 
-In this case, we define a new table with columns for each of our entities' attributes.
-Let's prepare our database:
+В этом случае, мы определяем новую таблицу с колонками для каждого атрибута нашей сущности.
+Давайте подготовим базу данных:
 
 ```
 % bundle exec hanami db prepare
 ```
 
-## Modeling Our Data With Entities
+## Выражаем наши данные в виде Сущностей
 
-We'll store books in our database and display them on our page.
-To do so, we need a way to read and write to our database.
-Enter entities and repositories:
+Мы храним книги в нашей базе данных и показываем их на странице.
+Для этого, нам нужен способ читать и писать в БД.
+Представляем сущности и репозитории:
 
-* an **entity** is a domain object (eg. `Book`) uniquely identified by its identity.
-* a **repository** mediates between entities and the persistence layer.
+*  **сущность** это объект из предметной области (типа `Book`) уникально определяемый по его идентификатору.
+* **репозиторий** находится между сущностями и слоем, обеспечивающим непрерывность их существования.
 
-Entities are totally unaware of database.
-This makes them **lightweight** and **easy to test**.
+Сущности абсолютно независимы от базы данных.
+Это делает их **легкими** и **просто тестируемыми**.
 
-For this reason we need a repository to persist the data that a `Book` depends on.
-Read more about entities and repositories in the [models guide](/guides/models/overview).
+По этой причине нам нужен репозиторий для сохранения данных от которых `Book` зависит.
+Прочти больше о сущностях и репозиториях в [руководству по моделям](/guides/models/overview).
 
-Hanami ships with a generator for models, so let's use it to create a `Book` entity and the corresponding repository:
+Hanami предоставляет генератор для моделей, так что давайте создадим сущность `Book` и соответствующий репозиторий:
 
 ```
 % bundle exec hanami generate model book
@@ -405,14 +405,14 @@ create  spec/bookshelf/entities/book_spec.rb
 create  spec/bookshelf/repositories/book_repository_spec.rb
 ```
 
-The generator gives us an entity, repository and accompanying test files.
+Генератор дает нам сущность, репозиторий и сопутствующие файлы для тестов.
 
-### Working With Entities
+### Работаем с Сущностями
 
-An entity is something really close to a plain Ruby object.
-We should focus on the behaviors that we want from it and only then, how to save it.
+Сущности это что-то близкое по сути к простым объектам Ruby.
+Мы должны сфокусироваться на поведении, которого мы от них хотим и уже потом на том, как их сохранять.
 
-For now, we need to create simple entity class:
+Прямо сейчас нам нужен простой класс сущности:
 
 ```ruby
 # lib/bookshelf/entities/book.rb
@@ -420,8 +420,8 @@ class Book < Hanami::Entity
 end
 ```
 
-This class will generate getters and setters for each attribute which we pass to initialize params.
-We can verify it all works as expected with a unit test:
+Этот класс сгенерирует геттеры и сеттеры для каждого атрибута, передаваемого как параметр при инициализации.
+Мы можем в этом убедиться написав модульный тест:
 
 ```ruby
 # spec/bookshelf/entities/book_spec.rb
@@ -435,10 +435,10 @@ describe Book do
 end
 ```
 
-### Using Repositories
+### Использование Репозиториев
 
-Now we are ready to play around with our repository.
-We can use Hanami's `console` command to launch IRb with our application pre-loaded, so we can use our objects:
+Теперь мы готовы поиграть с репозиторием.
+С помощью команды Hanami `console`, мы запустим IRb в контексте нашего приложения, что позволит нам использовать существующие объекты:
 
 ```
 % bundle exec hanami console
@@ -452,17 +452,17 @@ We can use Hanami's `console` command to launch IRb with our application pre-loa
 => #<Book:0x007f9ab6181610 @attributes={:id=>1, :title=>"TDD", :author=>"Kent Beck", :created_at=>2016-11-15 11:11:38 UTC, :updated_at=>2016-11-15 11:11:38 UTC}>
 ```
 
-Hanami repositories have methods to load one or more entities from our database; and to create and update existing records.
-The repository is also the place where you would define new methods to implement custom queries.
+Репозитории Hanami имеют методы для загрузки как одной, так и нескольких сущностей из БД; а также для создания и обновления существующих.
+Также можно определить в репозитории новые методы для собственных запросов.
 
-To recap, we've seen how Hanami uses entities and repositories to model our data.
-Entities represent our behavior, while repositories use mappings to translate our entities to our data store.
-We can use migrations to apply changes to our database schema.
+В итоге, мы видели как Hanami использует сущности и репозитории для моделирования наших данных.
+Сущности отражают поведение, а репозитории используются для связи сущностей и хранилища данных.
+Мы можем использовать миграции, чтобы применить изменения к схеме базы данных.
 
-### Displaying Dynamic Data
+### Показываем динамические данные
 
-With our new experience modelling data, we can get to work displaying dynamic data on our book listing page.
-Let's adjust the feature test we created earlier:
+С нашим новым опытом моделирования данных, мы можем заставить страницу со списком книг показывать изменяющиеся данные.
+Приспособим для этого написанный ранее тест:
 
 ```ruby
 # spec/web/features/list_books_spec.rb
@@ -487,16 +487,16 @@ describe 'List books' do
 end
 ```
 
-We create the required records in our test and then assert the correct number of book classes on the page.
-When we run this test, we will most likely see an error from our database connection -- remember we only migrated our _development_ database, and not yet our _test_ database.
+Мы создали требуемые записи в тесте и затем заявили, что число классов книг на странице им соответствует.
+Когда мы запустим тесты заново, скорее всего увидим ошибку, связанную с базой данных -- помните, что мы уже мигрировали _development_ базу, но еще не провели миграцию базы _test_.
 
 ```
 % HANAMI_ENV=test bundle exec hanami db prepare
 ```
 
-Now we can go change our template and remove the static HTML.
-Our view needs to loop over all available records and render them.
-Let's write a test to force this change in our view:
+Сейчас мы можем изменить шаблон и убрать статический HTML.
+Наши вьюхи должны пройтись по всем доступным записям и отрендерить их.
+Напишем тест, требующий такого изменения для вида:
 
 ```ruby
 # spec/web/views/books/index_spec.rb
@@ -537,11 +537,11 @@ describe Web::Views::Books::Index do
 end
 ```
 
-We specify that our index page will show a simple placeholder message when there are no books to display; when there are, it lists every one of them.
-Note how rendering a view with some data is relatively straight-forward.
-Hanami is designed around simple objects with minimal interfaces that are easy to test in isolation, yet still work great together.
+Мы указали, что страница индекса будет показывать сообщение когда нет книг и нечего показывать; когда же книги есть, то будет показывать их список.
+Обратите внимание, что рендеринг вьюхи с данными относительно прямолинеен.
+Hanami спроектирован из простых объектов с минимальными интерфейсами, что позволяет их легко протестировать по отдельности, к тому же они отлично работают вместе.
 
-Let's rewrite our template to implement these requirements:
+Давайте перепишем наш шаблон, чтобы воплотить задуманное:
 
 ```erb
 # apps/web/templates/books/index.html.erb
@@ -561,9 +561,9 @@ Let's rewrite our template to implement these requirements:
 <% end %>
 ```
 
-If we run our feature test now, we'll see it fails — because our controller
-action does not actually [_expose_](/guides/actions/exposures) the books to our view. We can write a test for
-that change:
+Если же мы прогоним наш функциональный тест снова, он упадет, так как наш экшн контроллера
+все еще  не [_выставляет напоказ (expose)_](/guides/actions/exposures) книги для нашей вьюхи. Мы можем
+написать тест для этого дела:
 
 ```ruby
 # spec/web/controllers/books/index_spec.rb
@@ -593,8 +593,8 @@ describe Web::Controllers::Books::Index do
 end
 ```
 
-Writing tests for controller actions is basically two-fold: you either assert on the response object, which is a Rack-compatible array of status, headers and content; or on the action itself, which will contain exposures after we've called it.
-Now we've specified that the action exposes `:books`, we can implement our action:
+Написание тестов для экшенов обычно имеет две стороны: ты делаешь утверждение относительно объекта ответа, который представляет собой Rack-совместимый массив из статуса, заголовков и контента; или про то, что из экшна видны данные после того, как мы его вызвали.
+Сейчас мы указали, что экшн показывает переменную переменную `:books`, что мы и сделаем:
 
 ```ruby
 # apps/web/controllers/books/index.rb
@@ -611,8 +611,8 @@ module Web::Controllers::Books
 end
 ```
 
-By using the `expose` method in our action class, we can expose the contents of our `@books` instance variable to the outside world, so that Hanami can pass it to the view.
-That's enough to make all our tests pass again!
+Используя метод класса экшна `expose`, мы можем выставить напоказ содержимое переменной экземпляра `@books`, что делает ее доступной во вьюхе.
+Этого достаточно, чтобы тесты опять проходили!
 
 ```shell
 % bundle exec rake
@@ -627,13 +627,13 @@ Finished in 0.042065s, 213.9543 runs/s, 380.3633 assertions/s.
 6 runs, 7 assertions, 0 failures, 0 errors, 0 skips
 ```
 
-## Building Forms To Create Records
+## Строение форм для создания записей
 
-One of the last remaining steps is to make it possible to add new books to the system.
-The plan is simple: we build a page with a form to enter details.
+Остается только создать возможность добавлять новые книги в систему.
+План прост: мы сделаем страницу с формой, куда можно ввести подробности.
 
-When the user submits the form, we build a new entity, save it, and redirect the user back to the book listing.
-Here's that story expressed in a test:
+Когда пользователь отправит форму, мы построим новую сущность, сохраним ее и перенаправим пользователя на страницу со списком книг.
+Выразми историю в тесте:
 
 ```ruby
 # spec/web/features/add_book_spec.rb
@@ -660,29 +660,29 @@ describe 'Add a book' do
 end
 ```
 
-### Laying The Foundations For A Form
+### Закладываем основы Форм
 
-By now, we should be familiar with the working of actions, views and templates.
+На этот момент, нам должно быть известно, как работают экшены, виды и шаблоны.
 
-We'll speed things up a little, so we can quickly get to the good parts.
-First, create a new action for our "New Book" page:
+Мы немного ускорим процесс, и сразу передем к интересной части.
+Сначала создадим новый экшн для страницы `New Book`:
 
 ```
 % bundle exec hanami generate action web books#new
 ```
 
-This adds a new route to our app:
+Это добавит новый маршрут в приложение:
 
 ```ruby
 # apps/web/config/routes.rb
 get '/books/new', to: 'books#new'
 ```
 
-The interesting bit will be our new template, because we'll be using Hanami's form builder to construct a HTML form around our `Book` entity.
+Следующий интересный момент связан с шаблоном, так как мы будем использовать встроенный в Hanami конструктор форм, для генерации HTML  формы для сущности `Book`:
 
-### Using Form Helpers
+### Использование хелперов форм
 
-Let's use [form helpers](/guides/helpers/forms) to build this form in `apps/web/templates/books/new.html.erb`:
+Вослользуемся [хелперами форм](/guides/helpers/forms) и создадим одну `apps/web/templates/books/new.html.erb`:
 
 ```erb
 # apps/web/templates/books/new.html.erb
@@ -707,29 +707,29 @@ Let's use [form helpers](/guides/helpers/forms) to build this form in `apps/web/
 %>
 ```
 
-We've added `<label>` tags for our form fields, and wrapped each field in a
-container `<div>` using Hanami's [HTML builder helper](/guides/helpers/html5).
+Мы добавляем тэги `<label>` для каждого поля формы, и оборачиваем каждое поле в
+контейнер `<div>` иcпользуя Hanami [хелпер HTML](/guides/helpers/html5).
 
-### Submitting Our Form
+### Отправка наших Форм
 
-To submit our form, we need yet another action.
-Let's create a `Books::Create` action:
+Чтобы отправить форму, нам нужен еще один экшн.
+Давайте создадим экшн `Books::Create`:
 
 ```
 % bundle exec hanami generate action web books#create --method=post
 ```
 
-This adds a new route to our app:
+Это добавит новый маршрут в приложение:
 
 ```ruby
 # apps/web/config/routes.rb
 post '/books', to: 'books#create'
 ```
 
-### Implementing Create Action
+### Воплощаем экшн Create
 
-Our `books#create` action needs to do two things.
-Let's express them as unit tests:
+Наш экшн `books#create` нуждается в двух вещах.
+Выразим их в юнит-тестах:
 
 ```ruby
 # spec/web/controllers/books/create_spec.rb
@@ -760,8 +760,8 @@ describe Web::Controllers::Books::Create do
 end
 ```
 
-Making these tests pass is easy enough.
-We've already seen how we can write entities to our database, and we can use `redirect_to` to implement our redirection:
+Сделать, чтобы они прошли достаточно просто.
+Мы уже видели, как мы можем писать сущности в базу данных, и мы можем использовать `redirect_to` для реализации перенаправления:
 
 ```ruby
 # apps/web/controllers/books/create.rb
@@ -780,7 +780,7 @@ module Web::Controllers::Books
 end
 ```
 
-This minimal implementation should suffice to make our tests pass.
+Этой минималистичной реализации уже должно быть достаточно, чтобы наши тесты снова проходили успешно. 
 
 ```shell
 % bundle exec rake
@@ -795,19 +795,19 @@ Finished in 0.081961s, 183.0142 runs/s, 305.0236 assertions/s.
 12 runs, 14 assertions, 0 failures, 0 errors, 2 skips
 ```
 
-Congratulations!
+С чем и поздравляем!
 
-### Securing Our Form With Validations
+### Защитим формы валидациями
 
-Hold your horses! We need some extra measures to build a truly robust form.
-Imagine what would happen if the user were to submit the form without entering any values?
+Придержи коней! Нужно немного терпения, чтобы сделать еще и защиту от дурака.
+Представьте, что случится, когда кто-то отправит форму не заполнив поля?
 
-We could fill our database with bad data or see an exception for data integrity violations.
-We clearly need a way of keeping invalid data out of our system!
+Мы можем заполнить базу данных неверными данными или увидеть ошибку про нарушение целостности данных.
+Нам точно нужен способ держать невалидные данные подальше от нашей системы!
 
-To express our validations in a test, we need to wonder: what _would_ happen if our validations failed?
-One option would be to re-render the `books#new` form, so we can give our users another shot at completing it correctly.
-Let's specify this behaviour as unit tests:
+Чтобы выразить проверки в тесте, нам надо задуматься: что должно _случиться_ если проверка провалится?
+Разумно будет перерендерить форму `bookshelf#new`, так мы дадим пользователю еще один шанс заполнить ее правильно.
+Опишем это поведение в юнит-тестах:
 
 ```ruby
 # spec/web/controllers/books/create_spec.rb
@@ -856,15 +856,15 @@ describe Web::Controllers::Books::Create do
 end
 ```
 
-Now our tests specify two alternative scenarios: our original happy path, and a new scenario in which validations fail.
-To make our tests pass, we need to implement validations.
+Теперь наши тесты описывают два альтернативных сценария: наш оригинальный успешный путь и новый сценарий, в котором проверка проваливается.
+Чтобы починить тесты, сделаем валидации.
 
-Although you can add validation rules to the entity, Hanami also allows you to define validation rules as close to the source of the input as possible, i.e. the action.
-Hanami controller actions can use the `params` class method to define acceptable incoming parameters.
+Мы, конечно, могли бы поместить все правила валидации в сущность, Hanami также позволяет определять правила валидации несколько ближе к источнику пользовательского ввода, то есть прямо в экшенах.
+Экшены Hanami могут использовать метод класса `params` для определения допустимых значений параметров.
 
-This approach both whitelists what params are used (others are discarded to prevent mass-assignment vulnerabilities from untrusted user input) _and_ adds rules to define what values are acceptable — in this case we've specified that the nested attributes for a book's title and author should be present.
+Этот подход позволяет одновременно: задать белый список параметров (остальные игнорируются, ради предотвращения уязвимости перед недоверенным пользовательским вводом) _и_ позволяет указать, какие значения принимаются - в этом случае, мы указали, что атрибуты книги, а именно автор и название должны быть заполнены.
 
-With our validations in place, we can limit our entity creation and redirection to cases where the incoming params are valid:
+С подходящими валидациями, мы можем отделить случай, в котором создание сущности и перенаправление, когда входящие параметры верные
 
 ```ruby
 # apps/web/controllers/books/create.rb
@@ -894,13 +894,13 @@ module Web::Controllers::Books
 end
 ```
 
-When the params are valid, the Book is created and the action redirects to a different URL.
-But when the params are not valid, what happens?
+Когда параметры валидные, Книга создается и экшн перенаправляет нас на другой URL.
+Но что должно произойти, когда параметры неверны?
 
-First, the HTTP status code is set to
-[422 (Unprocessable Entity)](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#422).
-Then the control will pass to the corresponding view, which needs to know which template to render.
-In this case `apps/web/templates/books/new.html.erb` will be used to render the form again.
+Сначала код статуса HTTP устанавливается как 
+[422 (Необрабатываемая сущность)](https://ru.wikipedia.org/wiki/List_of_HTTP_status_codes#422).
+Затем контроль передается соответствующему виду, который должен знать, какой шаблон показывать.
+В нашем случае `apps/web/templates/books/new.html.erb` будет использован чтобы снова показать форму.
 
 ```ruby
 # apps/web/views/books/create.rb
@@ -912,16 +912,16 @@ module Web::Views::Books
 end
 ```
 
-This approach will work nicely because Hanami's form builder is smart enough to inspect the `params` in this action and populate the form fields with values found in the params.
-If the user fills in only one field before submitting, they are presented with their original input, saving them the frustration of typing it again.
+Этот подход работает, потому что конструктор форм Hanami достаточно крутой, чтобы проверить `params` в этом экшене и заполнить поля формы значениями, найденными в параметрах. 
+Если пользователь заполнит только одно поле перед отправкой, поля предстанут в том виде, как их ввели, не заставляя пользователя снова их вводить.
 
-Run your tests again and see they are all passing again!
+Запусти тесты снова и они все должны быть успешны.
 
-### Displaying Validation Errors
+### Показываем ошибки валидации
 
-Rather than just shoving the user a form under their nose when something has gone wrong, we should give them a hint of what's expected of them. Let's adapt our form to show a notice about invalid fields.
+Мало повторно ткнуть пользователя носом в форму и сказать, что что-то пошло не так, мы должны подсказать ему, чего мы от него ждем. Давайте же адаптируем форму чтобы показывать уведомление о неверный полях.
 
-First, we expect a list of errors to be included in the page when `params` contains errors:
+Для начала, мы ожидаем что список ошибок будет вставлен в страницу, когда `params` содержит ошибки:
 
 ```ruby
 # spec/web/views/books/new_spec.rb
@@ -954,7 +954,7 @@ describe Web::Views::Books::New do
 end
 ```
 
-We should also update our feature spec to reflect this new behavior:
+Мы должны также обновить наш тест возможностей чтобы отразить это новое поведение:
 
 ```ruby
 # spec/web/features/add_book_spec.rb
@@ -979,8 +979,8 @@ describe 'Add a book' do
 end
 ```
 
-In our template we can loop over `params.errors` (if there are any) and display a friendly message.
-Open up `apps/web/templates/books/new.html.erb`:
+В шаблоне мы можем перебрать все `params.errors` (если они есть) и показать дружелюбное сообщение.
+Откроем `apps/web/templates/books/new.html.erb`:
 
 ```erb
 <% unless params.valid? %>
@@ -995,8 +995,8 @@ Open up `apps/web/templates/books/new.html.erb`:
 <% end %>
 ```
 
-As you can see, in this case we simply hard-code the error message "is required", but you could inspect the error and customise your message for the specific validation that failed.
-This will be improved in the near future.
+Как видишь, мы просто захардкодили сообщение об ошибке "is required", но ты можешь проверить содержание ошибок и разнообразить сообщения для указания, какие именно валидации провалились.
+Это будет усовершенствовано в ближайшем будущем.
 
 ```shell
 % bundle exec rake
@@ -1011,10 +1011,10 @@ Finished in 0.078112s, 230.4372 runs/s, 473.6765 assertions/s.
 15 runs, 27 assertions, 0 failures, 0 errors, 1 skips
 ```
 
-### Improving Our Use Of The Router
+### Используем Роутер более осмысленно
 
-The last improvement we are going to make, is in the use of our router.
-Open up the routes file for the "web" application:
+Последнее что мы собираемся улучшить, это наш способ использования роутера.
+Откроем файл маршрутов приложения "web":
 
 ```ruby
 # apps/web/config/routes.rb
@@ -1024,15 +1024,15 @@ get '/books',     to: 'books#index'
 root              to: 'home#index'
 ```
 
-Hanami provides a convenient helper method to build these REST-style routes, that we can use to simplify our router a bit:
+Hanami прелагает более удобный способ через хелпер построить эти REST-подобные маршруты, так что мы можем немного упростить роутер:
 
 ```ruby
 resources :books, only: [:index, :new, :create]
 root to: 'home#index'
 ```
 
-To get a sense of what routes are defined, now we've made this change, you can
-use the special command-line task `routes` to inspect the end result:
+Чтобы убедиться, что маршруты определены, после того, как мы внесли изменения, можно
+использовать задачу командной строки `routes` и проверить результат:
 
 ```
 % bundle exec hanami routes
@@ -1044,10 +1044,10 @@ use the special command-line task `routes` to inspect the end result:
                 root GET, HEAD  /                              Web::Controllers::Home::Index
 ```
 
-The output for `hanami routes` shows you the name of the defined helper method (you can suffix this name with `_path` or `_url` and call it on the `routes` helper), the allowed HTTP method, the path and finally the controller action that will be used to handle the request.
+Вывод команды `hanami routes` показывает список определенных имен вспомогательных методов (которые мы можем дополнить окончанием `_path` иои `_url` и вызывать на хелпере `routes`), разрешенный HTTP метод и экшн контроллера, который должен обработать запрос.
 
-Now we've applied the `resources` helper method, we can take advantage of the named route methods.
-Remember how we built our form using `form_for`?
+Теперь, когда мы применили хелпер `resources`, мы можем воспользоваться методами именованых маршрутов.
+Помнишь, как мы делали форму с `form_for`?
 
 ```erb
 <%=
@@ -1057,8 +1057,8 @@ Remember how we built our form using `form_for`?
 %>
 ```
 
-It's silly to include a hard-coded path in our template, when our router is already perfectly aware of which route to point the form to.
-We can use the `routes` helper method that is available in our views and actions to access route-specific helper methods:
+Хардкодить пути в шаблонах не лучшая идея, особенно, когда роутер уже прекрасно знает, какой маршрут нужно указать в форме.
+Мы можем использовать метод хелпера `routes`, который уже доступен в наших видах и экшенах, чтобы добыть более специфичные методы хелпера:
 
 ```erb
 <%=
@@ -1068,27 +1068,27 @@ We can use the `routes` helper method that is available in our views and actions
 %>
 ```
 
-We can make a similar change in `apps/web/controllers/books/create.rb`:
+МЫ можем сделать то же самое в `apps/web/controllers/books/create.rb`:
 
 ```ruby
 redirect_to routes.books_path
 ```
 
-## Wrapping Up
+## Резюмируем
 
-**Congratulations for completing your first Hanami project!**
+**Поздравляем с завершением твоего первого Hanami проекта!**
 
-Let's review what we've done: we've traced requests through Hanami's major frameworks to understand how they relate to each other; we've seen how we can model our domain using entities and repositories; we've seen solutions for building forms, maintaining our database schema, and validating user input.
+Посмотрим, что мы успели натворить: мы отследили путь запроса через основные механизмы Hanami, чтобы понять, как они друг с другом связаны; мы моделировали нашу предметную область используя сущности и репозитории; мы видели решения для создания форм, управления схемой базы данных и проверки введенных пользователем данных.
 
-We've come a long way, but there's still plenty more to explore.
-Explore the [other guides](/guides), the [Hanami API documentation](http://www.rubydoc.info/gems/hanami), read the [source code](https://github.com/hanami) and follow the [blog](/blog).
+Мы прошли долгий путь, но остается узнать еще много всего.
+Просмотри [другие руководства](/guides), the [документацию Hanami API](http://www.rubydoc.info/gems/hanami), прочти [исходный код](https://github.com/hanami) и следи за [блогом](/blog).
 
-**Above all, enjoy building amazing things!**
+**И главное, наслаждайся творчеством!**
 
 <div class="block block-bordered-lg text-center">
   <div class="container-fluid">
     <p class="lead m-b-md">
-    Join a community of over 2,000+ developers.
+    Присоединиться к более чем 2,000+ разработчиков.
     </p>
     <form action="http://hanamirb.us3.list-manage.com/subscribe/post" method="POST" class="form-inline">
       <input name="u" value="dcbeefa4ba1ea9ae043857005" type="hidden">
@@ -1098,7 +1098,7 @@ Explore the [other guides](/guides), the [Hanami API documentation](http://www.r
       <button class="btn btn-primary m-b">Subscribe</button>
     </form>
     <small class="text-muted">
-      By clicking "Subscribe" I want to subscribe to Hanami mailing list.
+      Нажимая "Подписаться" я выражаю желание подписаться на рассылку Hanami.
     </small>
   </div>
 </div>
