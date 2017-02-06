@@ -2,23 +2,22 @@
 title: Guides - Actions Overview
 ---
 
-# Overview
+# Обзор
 
-An action is an endpoint that handles incoming HTTP requests for a specific [route](/guides/routing/overview).
-In a Hanami application, an **action is an object**, while a **controller is a Ruby module** that groups them.
+Пунктом назначения для HTTP запроса является действие(action), заданное в [маршруте(route)](/guides/routing/overview).
+В приложении Hanami **действие является объектом**, а контроллер **модулем Ruby**, который группирует действия.
 
-This design provides self contained actions that don't share their context accidentally with other actions.  It also prevents gigantic controllers.
-It has several advantages in terms of testability and control of an action.
+Такая структура обеспечивает автономность действий жестко разграничивая их контексты. Кроме того, она предотвращает разрастание контроллеров и упрощает тестирование.
 
-## A Simple Action
+## Простое действие
 
-Hanami ships with a generator for actions. Let's create a new one:
+Hanami поставляется с генератором действия. Воспользуемся им:
 
 ```shell
 hanami generate action web dashboard#index
 ```
 
-Let's examine the action:
+Посмотрим, что получилось:
 
 ```ruby
 # apps/web/controllers/dashboard/index.rb
@@ -32,56 +31,56 @@ module Web::Controllers::Dashboard
 end
 ```
 
-### Naming
+### Именование
 
-That file begins with a module declaration.
+В начале файла располагается объявление модуля.
 
-The first token is the name of our application: `Web`.
-Hanami can run multiple applications within the same Ruby process.
-They are located under `apps/`.
-Their name is used as a **top-level module to contain inner components** like actions and views, in order to **avoid naming collisions**.
-If we have another action `Home::Index` under an application `Admin`, the two of them can coexist inside the same codebase.
+Первая его составляющая — это название приложения: `Web`.
+Hanami может загружать несколько приложений внутри одного процесса Ruby.
+Они расположены в папке `apps/`.
+Их имена используются в качестве **модуля высшего уровня, включающего внутренние компоненты**, такие как действия и представления, что позволяет избежать **коллизий имен**.
+Если у нас есть еще одно действие `Home::Index` в приложении `Admin`, то они смогут спокойно сосуществовать.
 
-The second token is a conventional name: `Controllers`.
-**All the controllers are nested under it.**
-This module is generated at runtime for us, when the application starts.
-
-<p class="convention">
-  For a given application named <code>Web</code>, controllers are available under <code>Web::Controllers</code>.
-</p>
-
-The last bit is `Dashboard`, which is our controller.
-
-The whole action name is `Web::Controllers::Dashboard::Index`.
-
-<p class="warning">
-  You should avoid giving your action modules the same name as your application, e.g. avoid naming a controller <code>Web</code> in an app named <code>Web</code>. If you have a controller name like <code>Web::Controllers::Web</code> then some code across your app will break with errors about constants not being found, for example in views which <code>include Web::Layout</code>. This is because Ruby starts constant lookup with the current module, so a constant like <code>Web::Layout</code> referenced by code in the <code>Web::Controllers::Web</code> or <code>Web::Controllers::Web::MyAction</code> module will be converted to <code>Web::Controllers::Web::Layout</code>, which can't be found and causes a constant lookup error.
-</p>
-<p class="warning">
-  If you absolutely must name a controller with the same name as your application, you'll need to explicitly set the namespace lookup for things which should be included from immediately under the app, not the controller by prefixing those names with <code>::</code>, e.g. change your views to include <code>::Web::Layout</code> instead of <code>include Web::Layout</code>, and using <code>include ::Web::Action</code> in your controllers.
-</p>
-
-### Action Module
-
-Hanami philosophy emphasizes _composition over inheritance_ and avoids the [framework superclass antipattern](http://michaelfeathers.typepad.com/michael_feathers_blog/2013/01/the-framework-superclass-anti-pattern.html).
-For this reason, all the components are provided as **modules to include** instead of base classes to inherit from.
-
-Like we said before, Hanami can run multiple apps within the same Ruby process.
-Each of them has its own configuration.
-To keep separated actions from an application named `Web` and an application named `Admin`, we include `Web::Action` and `Admin::Action` respectively.
-
-In our example, we have a directive `include Web::Action`.
-That means our action will behave according to the configuration of the `Web` application.
+Вторая составляющая — имя определенное соглашением: `Controllers`.
+**Все контроллеры содержатся внутри этого модуля.**
 
 <p class="convention">
-  For a given application named <code>Web</code>, the action mixin to include is <code>Web::Action</code>.
+  Для приложения с именем <code>Web</code> контроллеры будут доступны в модуле <code>Web::Controllers</code>.
 </p>
 
-### Interface
+Последняя часть — это имя контроллера, `Dashboard`.
 
-When we include `Web::Action`, we made our object compliant with [Hanami::Controller](https://github.com/hanami/controller)'s actions.
-We need to implement `#call`, which is a method that accepts only one argument: `params`.
-That is the object that carries the payload that comes from incoming HTTP requests from the [router](/guides/routing/basic-usage).
+Таким образом, полное имя действия `Web::Controllers::Dashboard::Index`.
 
-This interface reminds us of Rack.
-Indeed, our action is compatible with the Rack protocol.
+<p class="warning">
+  Следует избегать совпадения имени действия и приложения, то же самое верно и в отношении контроллера. Например, контроллера <code>Web</code> для приложения <code>Web</code>. Если будет создан контроллер с именем <code>Web::Controllers::Web</code>, то выполнение программы может аварийно завершиться, ссылаясь на невозможность найти некоторые константы, например, в представлениях <code>include Web::Layout</code>. Это обусловлено тем, что интерпретатор начинает поиск констант с текущего модуля, поэтому константа вида <code>Web::Layout</code>, на которую ссылается код внутри <code>Web::Controllers::Web</code> или <code>Web::Controllers::Web::MyAction</code> будет интерпретирована как <code>Web::Controllers::Web::Layout</code>, которую будет невозможно найти, что и приведет к ошибке.
+</p>
+<p class="warning">
+  Если вы считаете абсолютно необходимым назвать контроллер так же, как и приложение, то вам необходимо явно указать пространство имен в тех местах, которые подключаются непосредственно приложением, а не контроллером. Для этого достаточно добавить к ним префикс <code>::</code>. Так в коде представлений придется заменить <code>include Web::Layout</code> на <code>include ::Web::Layout</code>, а в контроллере <code>include Web::Action</code> на <code>include ::Web::Action</code>.
+</p>
+
+### Модули действий
+
+Hanami придает особое значение принципу _композиции над наследованием(composition over inheritance)_ и избегает  [антипаттерна суперклассов фреймворка(framework superclass antipattern)](http://michaelfeathers.typepad.com/michael_feathers_blog/2013/01/the-framework-superclass-anti-pattern.html).
+
+Поэтому все компоненты представлены в виде **модулей**, а не основаны на классах.
+
+Как уже было сказано, Hanami позволяет запустить несколько приложений внутри одного Ruby процесса.
+Каждое из них имеет собственную конфигурацию.
+Чтобы не нарушить разделения действия  из приложений `Web` и `Admin`, мы создали для них `Web::Action` и `Admin::Action` соответственно.
+
+В нашем примере была следующая строка кода: `include Web::Action`.
+Это означает, что действие будет выполняться так, как предписано конфигурацией приложения `Web`.
+
+<p class="convention">
+  Для приложения <code>Web</code>, действия должно включать примесь(mixin) <code>Web::Action</code>.
+</p>
+
+### Интерфейс
+
+Включая модуль `Web::Action` мы делаем наши объекты совместимыми с действиями из  [Hanami::Controller](https://github.com/hanami/controller).
+Главное, реализовать метод `#call`, который принимает только один аргумент: `params`.
+Это объект, который осуществляет обработку HTTP запроса поступившего от [маршрутизатора](/guides/routing/basic-usage).
+
+Интерфейс напоминает Rack.
+И на самом деле, наши действия полностью совместимы с протоколом Rack.

@@ -2,50 +2,49 @@
 title: Guides - Actions Basic Usage
 ---
 
-# Basic Usage
+# Использование
 
-## Requests Handling
+## Обработка запросов
 
-In the [previous section](/guides/actions/overview), we generated an action.  Now let's use it.
+В [предыдущем разделе](/guides/actions/overview) мы создали действие. Попробуем использовать его.
 
-First, we check our routes:
+Для начала разберемся с маршрутизацией:
 
 ```ruby
 # apps/web/config/routes.rb
 get '/dashboard', to: 'dashboard#index'
 ```
 
-### View Rendering
+### Обработка представления
 
-Then we edit the corresponding template:
+Изменим соответствующий шаблон::
 
 ```erb
 # apps/web/templates/dashboard/index.html.erb
 <h1>Dashboard</h1>
 ```
+Обработка входящего запроса в Hanami происходит так:
 
-Here is how Hanami handles an incoming request:
-
-  1. The router creates a new instance of `Web::Controllers::Dashboard::Index` and invokes `#call`.
-  2. The application creates a new instance of `Web::Views::Dashboard::Index` and invokes `#render`.
-  3. The application returns the response to the browser.
+  1. Маршрутизатор создает экземпляр объекта `Web::Controllers::Dashboard::Index` и вызывает `#call`.
+  2. Приложение создает экземпляр `Web::Views::Dashboard::Index` и вызывает `#render`.
+  3. Приложение возвращает ответ браузеру.
 
 <p class="convention">
-  For a given action named <code>Web::Controllers::Dashboard::Index</code>, a corresponding view MUST be present: <code>Web::Views::Dashboard::Index</code>.
+  По соглашению для действия с названием <code>Web::Controllers::Dashboard::Index</code>, должно быть соответствующее представление: <code>Web::Views::Dashboard::Index</code>.
 </p>
 
-If we visit `/dashboard` we should see `<h1>Dashboard</h1>` in our browser.
+Если мы запустим приложение и зайдем через браузер на `/dashboard`, то увидим `<h1>Dashboard</h1>`.
 
-### Bypass Rendering
+### Обход обработки представления
 
-By default an action takes care of the HTTP status code and response header, but not of the body of the response.
-As seen above, it delegates the corresponding view to render and set this value.
+По умолчанию действие берет на себя заботу о статусе HTTP запроса и заголовке ответа, но не о теле ответа.
+Как мы видели выше, обязанность составить его поручается _представлению_.
 
-Sometimes we want to bypass this process.
-For instance we want to return a simple body like `OK`.
-To involve a view in this case is a waste of CPU cycles.
+Иногда мы хотим пропустить этот шаг.
+Например, мы хотим, чтобы в теле ответа содержалось что-то простое наподобие `OK`.
+Задействовать слой представления в таком случае будет пустой тратой ресурсов процессора.
 
-If we set the body of the response from an action, **our application will ignore the view**.
+Тогда если мы укажем явно ответ внутри действия, то **приложение проигнорирует слой представления**.
 
 ```ruby
 # apps/web/controllers/dashboard/index.rb
@@ -60,25 +59,26 @@ module Web::Controllers::Dashboard
 end
 ```
 
-Here how Hanami handles an incoming request in this case:
+В таком случае Hanami обработает запрос так:
 
-  1. The router creates a new instance of `Web::Controllers::Dashboard::Index` and invokes `#call`.
-  2. The application detects that a body is already set and doesn't instantiate the view.
-  3. The application returns the response to the browser.
+  1. Маршрутизатор создает экземпляр объекта `Web::Controllers::Dashboard::Index` и вызывает `#call`.
+  2. Приложение обнаруживает, что тело ответа уже создано и не задействует представление.
+  3. Приложение возвращает ответ браузеру.
 
-If we visit `/dashboard` again, now we should see `OK`.
+Если мы запустим приложение и зайдем через браузер на `/dashboard`, то теперь увидим `OK`.
 
 <p class="convention">
-  If the response body was already set by an action, the rendering process is bypassed.
+  Если тело ответа указано внутри действия, то обработка представления будет пропущена.
 </p>
 
-With direct body assignment, **we can safely delete the corresponding view and template**.
+Явно задав тело ответа внутри действия **мы можем без последствий удалить соответствующие представление и шаблон**.
 
-## Initialization
+## Инициализация
 
-Actions are instantiated for us by Hanami at the runtime: for each incoming request, we'll automatically get a new instance.
-Because actions are objects, **we can take control on their initialization** and eventually [_inject_ our dependencies](http://en.wikipedia.org/wiki/Dependency_injection).
-This is a really useful technique for unit testing our actions.
+Экземпляры объектов действий создаются во время выполнения программы: для каждого нового запроса автоматически создается новый экземпляр.
+Благодаря объектной природе действий **мы можем проконтролировать процесс их инициализации** и, в частности,
+[предоставить им внешние зависимости](http://en.wikipedia.org/wiki/Dependency_injection).
+Эта техника особенно полезна для применения в модульных тестах.
 
 ```ruby
 # apps/web/controllers/dashboard/index.rb
@@ -97,36 +97,36 @@ module Web::Controllers::Dashboard
 end
 ```
 
-There is a limitation that we should always be kept in mind:
+При этом всегда необходимо помнить об одном ограничении:
 
 <p class="warning">
-  Action initializer MUST have an arity of 0.
+  Инициализатор действия ОБЯЗАН иметь 0 аргументов.
 </p>
 
-The following initializers are valid:
+Такие инициализаторы считаются корректными:
 
 ```ruby
-# no arguments
+# аргументов нет совсем
 def initialize
   # ...
 end
 
-# default arguments
+# аргумент по умолчанию
 def initialize(greeting = Greeting.new)
   # ...
 end
 
-# keyword arguments
+# аргумент-символ
 def initialize(greeting: Greeting.new)
   # ...
 end
 
-# options
+# опции
 def initialize(options = {})
   # ...
 end
 
-# splat arguments
+# множественный аргумент
 def initialize(*args)
   # ...
 end
