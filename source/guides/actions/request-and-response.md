@@ -2,10 +2,9 @@
 title: Guides - Request & Response
 ---
 
-# Request
+# Запрос
 
-In order to access the metadata coming from a HTTP request, an action has a private object `request` that derives from `Rack::Request`.
-Here an example of some information that we can introspect.
+Чтобы получить доступ к метаданным HTTP запроса, у действий есть доступ к закрытому(private) объекту `request`, который получается из `Rack::Request`. Рассмотрим небольшой пример.
 
 ```ruby
 # apps/web/controllers/dashboard/index.rb
@@ -28,13 +27,13 @@ end
 ```
 
 <p class="warning">
-  Instantiating a <code>request</code> for each incoming HTTP request can lead to minor performance degradation.
-  As an alternative, please consider getting the same information from private action methods like <code>accepts?</code> or from the raw Rack environment <code>params.env</code>.
+  Создание экземпляра класса <code>request</code> для каждого HTTP запроса может привести к потерям производительности.
+  В качестве альтернативы можно рассмотреть получение той же информации из закрытых методов, таких как <code>accepts?</code> или напрямую из  Rack <code>params.env</code>
 </p>
 
-# Response
+# Ответ
 
-The implicit return value of `#call` is a serialized `Rack::Response` (see [#finish](http://rubydoc.info/github/rack/rack/master/Rack/Response#finish-instance_method)):
+В качестве неявно возвращаемого значения вызова `#call` выступает сериализованный `Rack::Response`(см. [#finish](http://rubydoc.info/github/rack/rack/master/Rack/Response#finish-instance_method)):
 
 ```ruby
 # apps/web/controllers/dashboard/index.rb
@@ -47,10 +46,10 @@ module Web::Controllers::Dashboard
   end
 end
 
-# It will return [200, {}, [""]]
+# Будет возвращено [200, {}, [""]]
 ```
 
-It has private accessors to explicitly set status, headers and body:
+В нем есть закрытые методы доступа, позволяющие в явной форме установить статус, заголовки и тело ответа.
 
 ```ruby
 # apps/web/controllers/dashboard/index.rb
@@ -60,16 +59,16 @@ module Web::Controllers::Dashboard
 
     def call(params)
       self.status = 201
-      self.body   = 'Your resource has been created'
+      self.body   = 'Ваш ресурс был создан'
       self.headers.merge!({ 'X-Custom' => 'OK' })
     end
   end
 end
 
-# It will return [201, { "X-Custom" => "OK" }, ["Your resource has been created"]]
+# Будет возвращено [201, { "X-Custom" => "OK" }, ["Ваш ресурс был создан"]]
 ```
 
-As shortcut we can use `#status`.
+В качестве сокращения можно использовать `#status`.
 
 ```ruby
 # apps/web/controllers/dashboard/index.rb
@@ -78,9 +77,10 @@ module Web::Controllers::Dashboard
     include Web::Action
 
     def call(params)
-      status 201, "Your resource has been created"
+      status 201, "Ваш ресурс был создан"
     end
   end
 end
 
-# It will return [201, {}, ["Your resource has been created"]]
+# Будет возвращено [201, {}, ["Ваш ресурс был создан"]]
+```

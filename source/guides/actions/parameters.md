@@ -2,22 +2,22 @@
 title: Guides - Action Parameters
 ---
 
-# Parameters
+# Параметры запроса
 
-Parameters are taken from the Rack env and passed as an argument to `#call`.
-They are similar to a Ruby Hash, but they offer an expanded set of features.
+Параметры(params) берутся из Rack переменной env и передаются в качестве аргумента `#call.`
+Они похожи на обычный Ruby хэш, но с некоторыми дополнительными возможноостями.
 
-## Sources
+## Источники
 
-Params can come from:
+Источником параметров могут стать:
 
-  * [Router variables](/guides/routing/basic-usage) (eg. `/books/:id`)
-  * Query string (eg. `/books?title=Hanami`)
-  * Request body (eg. a `POST` request to `/books`)
+  * [Переменные пути](/guides/routing/basic-usage)(такие как `/books/:id`);
+  * Строки запросов(такие как `/books?title=Hanami`);
+  * Тело запроса(`POST` запрос к `/books`).
 
-## Access
+## Доступ
 
-To access the value of a param, we can use the _subscriber operator_ `#[]`.
+Чтобы получить доступ к значениям параметров мы можем использвать _оператор подписки_ `#[]`.
 
 ```ruby
 # apps/web/controllers/dashboard/index.rb
@@ -26,53 +26,52 @@ module Web::Controllers::Dashboard
     include Web::Action
 
     def call(params)
-      self.body = "Query string: #{ params[:q] }"
+      self.body = "Строка запроса: #{ params[:q] }"
     end
   end
 end
 ```
 
-If we visit `/dashboard?q=foo`, we should see `Query string: foo`.
+Если теперь мы откроем в браузере `/dashboard?q=foo`, то увидим `Строка запроса: foo`.
 
-### Symbol Access
+### Символы
 
-Params and nested params can be referenced **only** via symbols.
+Параметры и вложенные параметры могут быть запрошены **только** при помощи символов.
 
 ```ruby
 params[:q]
 params[:book][:title]
 ```
+Что произойдет теперь, если `:book` не будет отправлен в запросе?
+Значение `params[:book]` будет равно `nil`, а значит мы не сможем получить доступ к `title`.
+В таком случае Ruby выдаст ошибку `NoMethodError`.
 
-Now, what happens if the parameter `:book` is missing from the request?
-Because `params[:book]` is `nil`, we can't access `:title`.
-In this case Ruby will raise a `NoMethodError`.
-
-We have a safe solution for our problem: `#get`.
-It accepts a list of symbols, where each symbol represents a level in our nested structure.
+У нас есть безопасное решение этой проблемы: метод `#get`.
+Он принимает список символов, которые представляют собой вложенную структуру согласно порядку перечисления.
 
 ```ruby
 params.get(:book, :title)             # => "Hanami"
-params.get(:unknown, :nested, :param) # => nil instead of NoMethodError
+params.get(:unknown, :nested, :param) # => nil вместо NoMethodError
 ```
 
-## Whitelisting
+## Белый список
 
-In order to show how whitelisting works, let's create a new action:
+Чтобы продемонстрировать принцип работы белого списка, создадим новое действие:
 
 ```shell
 bundle exec hanami generate action web signup#create
 ```
 
-We want to provide self-registration for our users.
-We build a HTML form which posts to an action that accepts the payload and stores it in the `users` table.
-That table has a boolean column `admin` to indicate whether a person has administration permissions.
+Мы хотим дать пользователям возможность регистрации.
+Для этого мы создали HTML форму, которая отправляет post-запрос этому действию. Действие же обрабатывает и сохраняет данные в таблице `users`.
+Эта таблица содержит столбец булевого типа `admin` для определения возможностей пользователя.
 
-A malicious user can exploit this scenario by sending this extra parameter to our application, thereby making themselves an administrator.
+Злоумышленник сможет воспользоваться этим для получения прав администратора.
 
-We can easily fix this problem by filtering the allowed parameters that are permitted inside our application.
-Please always remember that **params represent untrusted input**.
+С нашей стороны будет легко предотвратить такой сценарий отбросив уязвимые параметры во время обработки запроса.
+Всегда помните: **params является потенциальным источником уязвимости**.
 
-We use `.params` to map the structure of the (nested) parameters.
+Мы используем `.params` для составления структуры вложенных параметров.
 
 ```ruby
 # apps/web/controllers/signup/create.rb
@@ -100,23 +99,23 @@ module Web::Controllers::Signup
 end
 ```
 
-Even if `admin` is sent inside the body of the request, it isn't accessible from `params`.
+Тогда даже если `admin` и будет отправлен вместе с запросом, то он не будет доступен из `params`.
 
-## Validations & Coercion
+## Валидации
 
-### Use Cases
+### Возможные прецеденты использования
 
-In our example (called _"Signup"_), we want to make `password` a required param.
+В нашем примере (с названием _"Signup"_) мы хотим сделать `password` обязательным параметром.
 
-Imagine we introduce a second feature: _"Invitations"_.
-An existing user can ask someone to join.
-Because the invitee will decide a password later on, we want to persist that `User` record without that value.
+Представим, что необходимо реализовать еще и дополнительную функцию: _"приглашения"_.
+Существующий пользователь должен иметь возможность предложить кому-то присоединиться.
+Приглашенные будут выбирать пароль после появления их записи в базе, а значит нужно будет создать запись `User` без пароля.
 
-If we put `password` validation in `User`, we need to handle these two use cases with a conditional.
-But in the long term this approach is painful from a maintenance perspective.
+Таким образом, необходимо по-разному обработать эти два случая.
+В долгосрочной перспективе поддержка такого решения может создать много лишних проблем.
 
 ```ruby
-# Example of poor style for validations
+# Пример прямолинейного решения
 class User
   attribute :password, presence: { if: :password_required? }
 
@@ -127,20 +126,19 @@ class User
 end
 ```
 
-We can see validations as the set of rules for data correctness that we want for **a specific use case**.
-For us, a `User` can be persisted with or without a password, **depending on the workflow** and the route through
-which the `User` is persisted.
+Мы можем использовать валидации в виде набора правил, определяющих корректность данных для **каждого отдельного случая**.
+Запись `User` может храниться и с паролем, и без него, **в зависимости от порядка действий** и маршрута, по которому запись к нам попала.
 
-### Boundaries
+### Ограничения
 
-The second important aspect is that we use validations to prevent invalid inputs to propagate in our system.
-In an MVC architecture, the model layer is the **farthest** from the input.
-It's expensive to check the data right before we create a record in the database.
+Второй важной функцией валидаций является предотвращение попадания недействительных данных в нашу систему.
+В архитектуре MVC слой модели находится **дальше всего** от пользовательского ввода.
+Будет слишком расточительно проверять данные непосредственно перед записью данных в базу.
 
-If we **consider correct data as a precondition** before starting our workflow, we should stop unacceptable inputs as soon as possible.
+Если мы **проверим правильность данных на этапе формирования**, до начала потока операций, то нежелательные данные будут отсеяны так рано, как это возможно.
 
-Think of the following method.
-We don't want to continue if the data is invalid.
+Рассмотрим следующий метод.
+Мы не хотим продолжать, если данные некорректны.
 
 ```ruby
 def expensive_computation(argument)
@@ -149,9 +147,9 @@ def expensive_computation(argument)
 end
 ```
 
-### Usage
+### Использование
 
-We can coerce the Ruby type, validate if a param is required, determine if it is within a range of values, etc..
+Мы можем фильтровать данные в зависимости от их типа, наличия, допустимого диапозона значений и других ограничений.
 
 ```ruby
 # apps/web/controllers/signup/create.rb
@@ -180,13 +178,14 @@ module Web::Controllers::Signup
 end
 ```
 
-Parameter validations are delegated, under the hood, to [Hanami::Validations](https://github.com/hanami/validations).
-Please check the related documentation for a complete list of options and how to share code between validations.
+Валидация параметров делегируется [Hanami::Validations](https://github.com/hanami/validations).
+Для получения полного списка возможностей этого модуля следует обратиться к его документации.
 
-## Concrete Classes
+## Конкретный класс
 
-The params DSL is really quick and intuitive but it has the drawback that it can be visually noisy and makes it hard to unit test.
-An alternative is to extract a class and pass it as an argument to `.params`.
+Предметно-ориентированный язык(DSL), используемый для описания параметров, интуитивно понятен и прост в освоении, но у него есть и недостатки, делающие его визуально неприятным и менее доступным для модульных тестов.
+
+В качестве альтернативы можно "развернуть" класс и передать его в качестве аргумента в `.param`.
 
 ```ruby
 # apps/web/controllers/signup/my_params.rb
@@ -226,10 +225,10 @@ module Web::Controllers::Signup
 end
 ```
 
-## Body Parsers
+## Обработка тела запроса
 
-Rack ignores request bodies unless they come from a form submission.
-If we have a JSON endpoint, the payload isn't available in `params`.
+Rack игнорирует тело запроса, кроме тех случаев, когда запрос приходит из формы.
+Если мы имеем дело с данными в формате JSON, то тело запроса тоже не будет доступно в `params`.
 
 ```ruby
 module Web::Controllers::Books
@@ -252,7 +251,7 @@ curl http://localhost:2300/books      \
   -X POST
 ```
 
-In order to make book payload available in `params`, we should enable this feature:
+Если же мы хотим сделать его доступным через `params`, то нам необходимо воспользоваться этим методом:
 
 ```ruby
 # apps/web/application.rb
@@ -266,4 +265,4 @@ module Web
 end
 ```
 
-Now `params.get(:book, :title)` returns `"Hanami"`.
+Теперь `params.get(:book, :title)` вернет `"Hanami"`.
