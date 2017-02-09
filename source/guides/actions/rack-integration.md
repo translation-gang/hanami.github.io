@@ -2,21 +2,21 @@
 title: Guides - Request & Response
 ---
 
-# Rack Integration
+# Интеграция с Rack
 
-## Rack Environment
+## Rack окружение
 
-Actions offer a high level API built on top of Rack.
-If we need to access raw data from Rack environment we can use `params.env`.
+Действия(actions) просто предоставляют высокоуровневый API для Rack.
+Если мы захотим получить доступ к исходным данным Rack окружения, то можем использовать `params.env`.
 
-## Rack Middleware
+## Промежуточное ПО(middleware) Rack
 
-Hanami mounts a very thin default middleware stack.
-Additional components can be mounted globally, at the application level, or locally.
+Hanami по умолчанию использует очень тонкий промежуточный слой для своих приложений.
+Дополнительные компоненты могу быть подключены глобально, на прикладном уровне или локально.
 
-### Global Middleware
+### Промежуточное ПО глобального уровня
 
-If we need a component that wraps all the applications (under `apps/`), we can edit `config.ru` at the root of the project.
+Когда необходим компонент, который будет использоваться всеми приложениями (всеми в каталоге `apps/`), мы можем изменить `config.ru` в корневом каталоге проекта.
 
 ```ruby
 # config.ru
@@ -27,9 +27,9 @@ use Rack::Auth::Basic
 run Hanami.app
 ```
 
-### Application Middleware
+### Промежуточное ПО уровня приложения
 
-If we need a component that's only used by a specific application (under `apps/`), we can add it to the application's configuration.
+Когда необходим компонент, который будет использоваться отдельным приложением (одним из `apps/`), мы можем изменить  конфигурацию самого приложения.
 
 ```ruby
 # apps/web/application.rb
@@ -45,11 +45,11 @@ module Web
 end
 ```
 
-### Action Middleware
+### Промежуточное ПО уровня действия
 
-Sometimes we need a middleware only to be used for a set of well known resources.
-If we mount it at the global or application level the performance will start to degrade.
-Actions allow us to mount a fine grained middleware stack.
+Иногда необходимо промежуточное ПО, которое будет использовано для отдельных ресурсов.
+Если подключить его глобально, то производительность приложения безосновательно упадет.
+Действия же позволят нам тонко настроить набор промежуточного ПО.
 
 ```ruby
 # apps/web/controllers/sessions/create.rb
@@ -70,7 +70,7 @@ module Web::Controllers::Sessions
 end
 ```
 
-We can use the following syntax to mount different middleware that require arguments.
+Такой синтаксис применяется для подключения промежуточного ПО, которое принимает аргументы.
 
 ```ruby
 # apps/web/controllers/dashboard/index.rb
