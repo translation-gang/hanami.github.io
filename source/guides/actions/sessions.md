@@ -2,12 +2,12 @@
 title: Guides - Action Sessions
 ---
 
-# Sessions
+# Сессии
 
-## Enable Sessions
+## Включение сессий
 
-Sessions are available in Hanami applications, but not enabled by default.
-If we want to turn on this feature, we just need to uncomment a line of code.
+Hanami поддерживает сессии, но не включает их по умолчанию.
+Если мы хотим использовать их, то можем просто раскомментировать следующую строку.
 
 ```ruby
 # apps/web/application.rb
@@ -21,28 +21,28 @@ module Web
 end
 ```
 
-The first argument is the name of the adapter for the session storage.
-The default value is `:cookie`, that uses `Rack::Session::Cookie`.
+Первым аргументом передается имя адаптера для хранения сессий.
+По умолчанию установлено значение `:cookie`, использующее `Rack::Session::Cookie`.
 
 <p class="convention">
-The name of the session adapter is the underscored version of the class name under <code>Rack::Session</code> namespace.
-Example: <code>:cookie</code> for <code>Rack::Session::Cookie</code>.
+В качестве имени адаптера сессий используется имя класса из пространства имен <code>Rack::Session</code> записанное строчными буквами с подчеркиваниями.
+Например: <code>:cookie</code> для <code>Rack::Session::Cookie</code>.
 </p>
 
-We can use a different storage compatible with Rack sessions.
-Let's say we want to use Redis. We should bundle `redis-rack` and specify the name of the adapter: `:redis`.
-Hanami is able to autoload the adapter and use it when the application is started.
+Мы можем использовать другие хранилища, совместимые с сессиями Rack.
+Предположим, мы хотим использовать Redis. Мы должны подключить к проекту `redis-rack` и указать имя адаптера `:redis`.
+Hanami автоматически подключит адаптер во время загрузки приложения.
 
 <p class="convention">
-Custom storage technologies are autoloaded via <code>require "rack/session/#{ adapter_name }"</code>.
+Нестандартные хранилища будут автоматически загружаться через <code>require "rack/session/#{ имя адаптера }"</code>.
 </p>
 
-The second argument passed to `sessions` is a Hash of options that are **passed to the adapter**.
-We find only a default `:secret`, but we can specify all the values that are supported by the current adapter.
+Второй аргумент принимаемый `sessions` это хэш параметров, которые будут **переданы адаптеру**.
+По умолчанию передается `:secret`, но мы можем использовать любые параметры, которые принимает адаптер.
 
-## Usage
+## Использование
 
-Sessions behave like a Hash: we can read, assign and remove values.
+Сессии ведут себя как хэш: из можно читать, записывать или удалять их значения.
 
 ```ruby
 # apps/web/controllers/dashboard/index.rb
@@ -51,9 +51,9 @@ module Web::Controllers::Dashboard
     include Web::Action
 
     def call(params)
-      session[:b]         # read
-      session[:a] = 'foo' # assign
-      session[:c] = nil   # remove
+      session[:b]         # чтение
+      session[:a] = 'foo' # запись
+      session[:c] = nil   # удаление
     end
   end
 end

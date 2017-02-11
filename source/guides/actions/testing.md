@@ -2,15 +2,16 @@
 title: Guides - Action Testing
 ---
 
-# Testing
+# Тестирование
 
-Hanami pays a lot of attention to code testability and it offers advanced features to make our lives easier.
-The framework supports Minitest (default) and RSpec.
+Hanami уделяет особое внимание возможности тестирования кода и предлагает
+продвинутые возможности для этого.
+Фреймворк поддерживает Minitest(по умолчанию) и Rspec.
 
-## Unit Tests
+## Модульные тесты
 
-First of all, actions can be unit tested.
-That means we can instantiate, exercise and verify expectations **directly on actions instances**.
+Прежде всего, действия могут быть подвергнуты модульному тестированию.
+Это значит, что их можно отделить от остального кода, поместить в разные условия и проверить соотвествует ли их поведение ожидаемому. Все это непосредственно с **экземплярами объектов действий**.
 
 ```ruby
 # spec/web/controllers/dashboard/index_spec.rb
@@ -28,43 +29,44 @@ describe Web::Controllers::Dashboard::Index do
 end
 ```
 
-In the example above, `action` is an instance of `Web::Controllers::Dashboard::Index`, we can invoke `#call` on it, passing a Hash of parameters.
-The [implicit returning value](/guides/actions/rack-integration) is a serialized Rack response.
-We're asserting that the status code (`response[0]`) is successful (equals to `200`).
+В примере выше `action` это экземпляр `Web::Controllers::Dashboard::Index`, для которого мы можем вызвать `#call` с передачей ему параметров.
 
-### Running Tests
+[Неявно возвращаемое значение](/guides/actions/rack-integration) является сериализованным Rack ответом.
+Мы проверяем, что код состояния ответа(`response[0]`) будет равен `200`.
 
-We can run the entire test suite or a single file.
+### Запуск тестов
 
-The default Rake task for the application serves for our first case: `bundle exec rake`.
-All the dependencies and the application code (actions, views, entities, etc..) are eagerly loaded.
-**Boot time is slow in this case.**
+Мы можем запустить как весь набор тестов так и отдельный файл.
 
-<p class="notice">
-The entire test suite can be run via default Rake task. It loads all the dependencies, and the application code.
-</p>
-
-The second scenario can be done via: `ruby -Ispec spec/web/controllers/dashboard/index_spec.rb` (or `rspec spec/web/controllers/dashboard/index_spec.rb` if we use RSpec).
-When we run a single file example **only the framework and the application settings are loaded**.
-
-Please note the `require_relative` line in the example.
-It's **auto generated for us** and it's needed to load the current action under test.
-This mechanism allows us to run unit tests in **isolation**.
-**Boot time is magnitudes faster**.
+В первом случае нам необходима стандартная Rake задача `bundle exec rake`.
+Все зависимости и код приложения(действия, представления, сущности и др.) будут полностью загружены.
+**В этом случае время загрузки будет больше.**
 
 <p class="notice">
-A single unit test can be run directly. It only loads the dependencies, but not the application code.
-The class under test is loaded via <code>require_relative</code>, a line automatically generated for us.
-In this way we can have a faster startup time and a shorter feedback cycle.
+Весь комплект тестов может быть запущен через стандартную задачу Rake. Тогда будут загружены все зависимости и код всего приложения.
 </p>
 
-### Params
+Во втором случае мы можем запустить: `ruby -Ispec spec/web/controllers/dashboard/index_spec.rb` (или `rspec spec/web/controllers/dashboard/index_spec.rb` для RSpec).
+Когда мы запускаем отдельный файл **загружаются только необходимые части приложения**.
 
-When testing an action, we can easily simulate parameters and headers coming from the request.
-We just need to pass them as a Hash.
-Headers for Rack env such as `HTTP_ACCEPT` can be mixed with params like `:id`.
+Обратите внимание на `require_relative` в примере.
+Эта строка **сгенерирована автоматически** и она необходима для загрузки отдельного действия для теста.
+Этот механизм позволяет запускать тесты **изолировано**.
+**В этом случае время загрузки будет минимальным**.
 
-The following test example uses both.
+<p class="notice">
+Модульные тесты могут быть запущены по отдельности. Они загрузят только свои зависимости без всего приложения.
+Тестируемый класс будет загружен через строку <code>require_relative</code>, сгенерированную автоматически .
+В этом случае тесты будут проводиться значительно быстрее.
+</p>
+
+### Параметры
+
+Во время тестирования действий мы легко можем имитировать параметры и заголовки запросов.
+Необходимо только передать хэш.
+Заголовки для Rack env, такие как `HTTP_ACCEPT`, могут быть переданы вместе с такими параметрами как `:id`.
+
+Следующий пример использует оба варианта.
 
 ```ruby
 # spec/web/controllers/users/show_spec.rb
@@ -86,7 +88,7 @@ describe Web::Controllers::Users::Show do
 end
 ```
 
-Here the corresponding production code.
+Тестируемый код.
 
 ```ruby
 # apps/web/controllers/users/show.rb
@@ -103,19 +105,19 @@ end
 ```
 
 <p class="notice">
-Simulating request params and headers is simple for Hanami actions. We pass them as a <code>Hash</code> and they are transformed into an instance of <code>Hanami::Action::Params</code>.
+Имитирование параметров и заголовков запроса в случае Hanami происходит просто. Мы передаем их как <code>Hash</code> и они превращаются в <code>Hanami::Action::Params</code>.
 </p>
 
-### Exposures
+### Доступ к внутренним переменным
 
-There are cases where we want to verify the internal state of an action.
-Imagine we have a classic user profile page, like depicted in the example above.
-The action asks for a record that corresponds to the given id, and then set a `@user` instance variable.
-How do we verify that the record is the one that we are looking for?
+Бывают случаи, когда мы хотим убедиться в правильности внутреннего состояния действия.
+Представим, что у нас есть стандартная страница с пользовательским профилем.
+Действие запрашивает запись с необходимым id и определяет переменную экземпляра `@user`.
+Как определить, что это именно та запись, которую мы искали?
 
-Because we want to make `@user` available to the outside world, we're going to use an [_exposure_](/guides/actions/exposures).
-They are used to pass a data payload between an action and the corresponding view.
-When we do `expose :user`, Hanami creates a getter (`#user`), so we can easily assert if the record is the right one.
+В данном случае нас интересует [_доступ к внутренней переменной_](/guides/actions/exposures).
+Он используется для передачи данных между действием и соответствующим представлением.
+Когда мы используем `expose :user`, Hanami создает метод доступа (`#user`), тогда мы легко можем проверить правильность значения в переменной.
 
 ```ruby
 # apps/web/controllers/users/show.rb
@@ -132,7 +134,7 @@ module Web::Controllers::Users
 end
 ```
 
-We have used two _exposures_: `:user` and `:foo`, let's verify if they are properly set.
+Мы использовали две _выстваленные внутренние переменные_: `:user` и `:foo`, проверим их значения.
 
 ```ruby
 # spec/web/controllers/users/show_spec.rb
@@ -158,17 +160,17 @@ end
 ```
 
 <p class="notice">
-The internal state of an action can be easily verified with <em>exposures</em>.
+Внутреннее состояние действий может быть проверено при помощи <em>expose</em>.
 </p>
 
-### Dependency Injection
+### Внедрение зависимостей
 
-During unit testing, we may want to use mocks to make tests faster or to avoid hitting external systems like databases, file system or remote services.
-Because we can instantiate actions during tests, there is no need to use testing antipatterns (eg. `any_instance_of`, or `UserRepository.new.stub(:find)`).
-Instead, we can just specify which collaborators we want to use via _dependency injection_.
+Во время модульного тестирования мы можем захотеть использовать заглушки(mocks), чтобы сделать тесты быстрее или избежать внешних вызовов к базам данным, файловой системе или удаленным сервисам.
+Так как мы можем на время тестов отделить действия от системы, то нам не потребуются антипаттерны из области тестирования (такие как `any_instance_of` или `UserRepository.new.stub(:find)`).
+Вместо этого мы применим технику _внедрения зависимостей_.
 
-Let's rewrite the test above so that it does not hit the database.
-We're going to use RSpec for this example as it has a nicer API for mocks (doubles).
+Перепишем предыдущий тест так, чтобы он не использовал настоящую базу данных.
+Мы используем RSpec для этого примера. В нем заглушки будут выглядеть нагляднее.
 
 ```ruby
 # spec/web/controllers/users/show_spec.rb
@@ -190,8 +192,8 @@ RSpec.describe Web::Controllers::Users::Show do
 end
 ```
 
-We have injected the repository dependency which is a mock in our case.
-Here how to adapt our action.
+Мы внедрили зависимость хранилища, которая на самом деле является заглушкой.
+Вот как необходимо изменить действие.
 
 ```ruby
 # apps/web/controllers/users/show.rb
@@ -212,18 +214,19 @@ end
 ```
 
 <p class="warning">
-Please be careful using doubles in unit tests. Always verify that the mocks are in a true representation of the corresponding production code.
+Будьте осторожны с использованием double в модульных тестах. Всегда проверяйте репрезентативность заглушек.
 </p>
 
-## Requests Tests
+## Тестирование запросов
 
-Unit tests are a great tool to assert that low level interfaces work as expected.
-We always advise combining them with integration tests.
+Модульные тесты это отличный способ убедиться, что низкоуровневые интерфейсы работают так, как это ожидается.
+Мы рекомендуем использовать их вместе с интеграционными тестами.
 
-In the case of Hanami web applications, we can write features (aka acceptance tests) with Capybara, but what do we use when we are building HTTP APIs?
-The tool that we suggest is `rack-test`.
 
-Imagine we have an API application mounted at `/api/v1` in our `Hanami::Container`.
+В случае веб-приложений Hanami мы можем написать приемочные тесты с Capybara, но что мы будем делать если наше приложение является HTTP API?
+Необходимый нам инструмент называется `rack-test`.
+
+Представим, что у нас есть API приложение, расположенное в `/api/v1` внутри `Hanami::Container`.
 
 ```ruby
 # config/environment.rb
@@ -234,7 +237,7 @@ Hanami::Container.configure do
 end
 ```
 
-Then we have the following action.
+У него есть действие.
 
 ```ruby
 # apps/api_v1/controllers/users/show.rb
@@ -251,8 +254,8 @@ module ApiV1::Controllers::Users
 end
 ```
 
-In this case we don't care too much about the internal state of the action, but about the output visible to the external world.
-This is why we haven't set `user` as an instance variable and why we haven't exposed it.
+В этом случае нам не нужно слишком беспокоиться о внутреннем состоянии действия, в отличии от выходных значений.
+Вот почему мы не сделали `user` доступным извне.
 
 ```ruby
 # spec/api_v1/requests/users_spec.rb
@@ -265,7 +268,7 @@ describe "API V1 users" do
     @user = UserRepository.new.create(name: 'Luca')
   end
 
-  # app is required by Rack::Test
+  # app необходим для Rack::Test
   def app
     Hanami.app
   end
@@ -280,5 +283,5 @@ end
 ```
 
 <p class="notice">
-Please avoid <em>test doubles</em> when writing full integration tests, as we want to verify that the whole stack is behaving as expected.
+Избегайте <em>double</em> когда пишите интеграционные тесты, так как они должны проверять корректность выполнения всего приложения.
 </p>
