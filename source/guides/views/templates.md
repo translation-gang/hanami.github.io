@@ -1,52 +1,55 @@
 ---
-title: Guides - View Templates
+title: Руководство - Шаблоны представлений
 ---
 
-# Templates
+# Шаблоны
 
-A template is a file that describes the body of a response.
-It is rendered by bounding the context of a view and using a _template engine_.
+Шаблоны — это файлы, описывающие структуру тела ответа на HTTP запрос.
+При помощи представлений формируется контекст, данные для вывода. Затем _шаблонизатор_ применяя эти данные к шаблону составляет тело ответа.
 
-## Naming
+## Именование
 
-For simplicity sake, there is a correlation between the view class name and the template file name.
-It's the translation of the name into a path: from `Dashboard::Index` to `dashboard/index`.
+Для простоты имя представления соотносится с именем файла шаблона.
+Полное имя класса представления соответствует пути к шаблону: представлению `Dashboard::Index` соответствует шаблон `dashboard/index`.
 
-The remaining part is made of multiple file extensions.
-The first is relative to the **_format_** and the latter is for the **_template engine_**.
+Остальная часть пути зависит от расширений файла.
+Первое расширение описывает **_формат конечного файла_**, а второе **_используемый шаблонизатор_**.
 
 <p class="convention">
-For a given view named <code>Web::Views::Dashboard::Index</code>, there must be at least one template <code>dashboard/index.[format].[engine]</code> under the templates directory.
+
+Представлению с именем <code>Web::Views::Dashboard::Index</code> должен соответствовать шаблон <code>dashboard/index.[расширение конечного файла].[шаблонизатор]</code> в папке шаблонов.
 </p>
 
-## Nested Templates
-To render a partial in other template call `render` method with `partial` option:
+## Вложенные шаблоны
+
+Сборка одного шаблона из нескольких частей доступна при помощи метода `render`, если передать ему `partial` и путь к желаемому шаблону.
 
 ```
-# Given a partial under:
+# Вкладываемый шаблон:
 #   templates/shared/_sidebar.html.erb
 #
-# In the layout template:
+# Шаблон-родитель:
 #   templates/application.html.erb
 #
 <%= render partial: 'shared/sidebar' %>
 ```
 
-To render a template in other template call `render` method with `template` option:
+
+Вставка одного шаблон в другой происходит при помощи метода `render` с аргументом `template`:
 
 ```
-# Given a template under:
+# Вкладываемый шаблон:
 #   templates/articles/index.html.erb
 #
-# In the layout template:
+# Шаблон-родитель:
 #   templates/application.html.erb
 #
 <%= render template: 'articles/index' %>
 ```
 
-### Custom Template
+### Нестандартные шаблоны
 
-If we want to associate a different template to a view, we can use `template`.
+Имя и путь к шаблону можно задать явно при помощи `template`.
 
 ```ruby
 # apps/web/views/dashboard/index.rb
@@ -58,21 +61,21 @@ module Web::Views::Dashboard
 end
 ```
 
-Our view will look for `apps/web/templates/home/index.*` template.
+Представление будет искать шаблон `apps/web/templates/home/index.*`.
 
-## Engines
+## Шаблонизаторы
 
-Hanami looks at the last extension of a template file name to decide which engine to use (eg `index.html.erb` will use ERb).
-The builtin rendering engine is [ERb](http://en.wikipedia.org/wiki/ERuby), but Hanami supports countless rendering engines out of the box.
+Последнее расширение шаблона определяет, какой шаблонизатор Hanami будет использовать(в случае `index.html.erb` будет использоваться ERb).
+По умолчанию генерируются шаблоны [ERb](http://ru.wikipedia.org/wiki/ERuby), но Hanami поддерживает бесчисленное множество других шаблонизаторов из коробки.
 
-This is a list of the supported engines.
-They are listed in order of **higher precedence**, for a given extension.
-For instance, if [ERubis](http://www.kuwata-lab.com/erubis/) is loaded, it will be preferred over ERb to render `.erb` templates.
+Вот их список.
+Они указаны в порядке **возрастания приоритета** для своего расширения.
+Например, если [ERubis](http://www.kuwata-lab.com/erubis/) доступен, то он будет использоваться вместо ERb для файлов `.erb`.
 
 <table class="table table-bordered table-striped">
   <tr>
-    <th>Engine</th>
-    <th>Extensions</th>
+    <th>Шабонизатор</th>
+    <th>Расширения</th>
   </tr>
   <tr>
     <td>Erubis</td>
@@ -188,17 +191,17 @@ For instance, if [ERubis](http://www.kuwata-lab.com/erubis/) is loaded, it will 
   </tr>
 </table>
 
-In order to use a different template engine we need to bundle the gem and to use the right file extension.
+Чтобы использовать несколько шаблонизаторов необходимо просто добавить их в проект и указать соответствующие расширения файлов.
 
 ```haml
 # app/web/templates/dashboard/index.html.haml
 %h1 Dashboard
 ```
 
-## Directory
+## Каталог
 
-Templates are located in the default directory `templates`, located under an application's directory `apps/web`.
-If we want to customize this location, we can amend our application's configuration.
+Шаблоны по умолчанию хранятся в папке `templates` внутри своего приложения `apps/web`.
+Для смены этой папки необходимо добавить следующую строку в файл конфигурации.
 
 ```ruby
 # apps/web/application.rb
@@ -212,4 +215,4 @@ module Web
 end
 ```
 
-The application will now look for templates under `apps/web/path/to/templates`.
+Теперь приложение будет искать шаблоны в папке `apps/web/path/to/templates`.
