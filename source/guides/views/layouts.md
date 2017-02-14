@@ -1,14 +1,15 @@
 ---
-title: Guides - View Layouts
+title: Рукодство - Макеты
 ---
 
-# Layouts
+# Макеты
 
-Layouts are special views, that render the _"fixed"_ part of the HTML markup.
-This is the part that doesn't change from page to page (perhaps navigation, sidebar, header, footer, etc.)
+Макетами(layouts) называют такие файлы представлений, которые ответственны за рендеринг повторяющихся частей HTML страницы.
+Часто они включают в себя хидэр, футер, меню навигации и подобные служебные элементы.
 
-When we generate a new application, there is a default layout called `Web::Views::ApplicationLayout` with a `apps/web/templates/application.html.erb` template.
-It comes with a very basic HTML5 wireframe.
+Во время генерации веб-приложения по умолчанию создается макет с названием `Web::Views::ApplicationLayout` и шаблоном `apps/web/templates/application.html.erb`.
+
+Он будет содержать простой HTML5 каркас.
 
 ```erb
 <!DOCTYPE HTML>
@@ -22,19 +23,19 @@ It comes with a very basic HTML5 wireframe.
 </html>
 ```
 
-The most interesting part is `<%= yield %>`.
-It's replaced at the runtime with the output of a view.
-**The order for rendering is first the view, and then the layout.**
+Интереснее всего здесь строка `<%= yield %>`.
+Во время выполнения она будет заменена на то, что вернет представление.
+**Сначала рендерится представление, а затем макет.**
 
-The context for a layout template is made of the layout and the current view.
-The latter has higher priority.
+Контекст макета содержит в себе контекст текущего представления.
+При этом контекст представления может переназначить собственный контекст макета.
 
-Imagine having the following line `<title><%= page_title %></title>`.
-If both the layout and the view implement `page_title`, Hanami will use the one from the view.
+Представим, что у нас есть строка `<title><%= page_title %></title>`.
+Если макет и представление реализуют каждый свой `page_title`, то Hanami использует реализацию представления.
 
-## Configure Layout
+## Конфигурация макета
 
-The default layout is defined in an application's configuration.
+В конфигурации приложения по умолчанию содержится конфигурация макета.
 
 ```ruby
 # apps/web/application.rb
@@ -48,10 +49,10 @@ end
 ```
 
 <p class="convention">
-Hanami transforms the layout name in the application's configuration, by appending the <code>Layout</code> suffix. For example, <code>layout :application</code> corresponds to <code>Web::Views::ApplicationLayout</code>.
+Hanami добавляет к имени макета из конфигурации окончание <code>Layout</code>. Например, <code>layout :application</code> будет превращен в <code>Web::Views::ApplicationLayout</code>.
 </p>
 
-If we want to disable a layout for a view, we can use a DSL for that:
+Если мы не хотим использовать макет, то можем его отключить так:
 
 ```ruby
 # apps/web/views/dashboard/index.rb
@@ -63,16 +64,17 @@ module Web::Views::Dashboard
 end
 ```
 
-If we want to turn off this feature entirely, we can set `layout nil` into the application's configuration.
+Если мы хотим отключить макеты полностью, то можем использовать `layout nil` в конфигурации приложения.
 
-## Using Multiple Template Layouts
+## Несколько макетов
 
-Sometimes it's useful to have more than one layout.
-For example, if the `application.html.erb` template contains navigation elements, and we want an entirely different layout, without navigation elements, for a login page, we can create a `login.html.erb` layout template.
+Иногда бывает полезно иметь несколько макетов сразу.
+Например, если `application.html.erb` содержит блок навигации и мы не хотим видеть его на странице авторизации, то решить проблему можно создав новый шаблон макета `login.html.erb`.
 
-Assuming we have a `Web::Actions::UserSessions::New` action to log a user in, we can create a `login.html.erb` template right next to the default `application.html.erb` in `apps/web/templates/`.
 
-Then we need to create a new `Web::Views::LoginLayout` class, which will use the new layout template. This file can be named `app/web/views/login_layout.rb`(right next to the default `application_layout.rb`):
+Допустим, у нас уже есть экшн `Web::Actions::UserSessions::New`, тогда мы можем создать `login.html.erb` рядом с основным макетом `application.html.erb` в папке `apps/web/templates/`.
+
+Затем потребуется создать класс `Web::Views::LoginLayout`, который будет использовать шаблон нового макета. Его файл может называться `app/web/views/login_layout.rb`(в той же папке, что и `application_layout.rb`):
 
 ```ruby
 module Web
@@ -84,7 +86,7 @@ module Web
 end
 ```
 
-Now, in our `app/web/views/user_sessions/new.rb` we can specify you'd like to use the login layout for this View:
+Теперь в экшене `app/web/views/user_sessions/new.rb` можно указать, какой макет мы хотим использовать в этом представлении:
 
 ```ruby
 module Web::Views::UserSessions
@@ -95,14 +97,14 @@ module Web::Views::UserSessions
 end
 ```
 
-And we can add `layout :login` to any other View in this app that should use this same layout.
+К тому же, мы сможем использовать `layout :login` в любом другом представлении приложения.
 
-## Optional Content
+## Необязательное содержимое
 
-Sometimes it's useful to render content only on certain pages.
-For example, this could be used to have page-specific javascript.
+Иногда полезно рендерить содержимое не для всех страниц приложения.
+Например, когда в страницу встроен специфичный javascript.
 
-Given the following template for a layout:
+Если в качестве макета дан подобный шаблон:
 
 ```erb
 <!DOCTYPE HTML>
@@ -117,7 +119,7 @@ Given the following template for a layout:
 </html>
 ```
 
-With following views:
+С таким представлением:
 
 ```ruby
 module Web::Views::Books
@@ -127,7 +129,7 @@ module Web::Views::Books
 end
 ```
 
-and
+И другим:
 
 ```ruby
 module Web::Views::Books
@@ -141,5 +143,5 @@ module Web::Views::Books
 end
 ```
 
-The first view doesn't respond to `#javascript`, so it safely ignores it.
-Our second object (`Web::Views::Books::Show`) responds to that method, so the result will be included in the final markup.
+Первое представление ничего не будет знать о методе `#javascript`, оно без последствий его проигнорирует.
+Второе же (`Web::Views::Books::Show`) будет отвечать на этот метод, а возвращенный результат станет содержимым страницы

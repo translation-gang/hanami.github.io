@@ -1,19 +1,19 @@
 ---
-title: Guides - View Share Code
+title: Руководство - Разделение кода представлений
 ---
 
-# Share Code
+# Общий код
 
-## Prepare
+## Метод prepare
 
-In our settings (`apps/web/application.rb`), there is a code block that allows to share the code for **all the views** of our application.
-When a view includes the `Web::View` module, that block code is yielded within the context of that class.
-This is heavily inspired by Ruby Module and its `included` hook.
+В настройках приложения(`apps/web/application.rb`) есть участок кода, разделяемый **всеми представлениями** в нашем приложении. Когда любое представление подключит `Web::View`, будет вызван этот участок кода в контексте данного представления.
 
-Imagine we have an application that only renders JSON.
-For each view we should specify the handled format. This can be tedious to do by hand, but we can easily DRY our code.
+Далее нам следует вспомнить как работают Ruby модули и, в частности, обратный вызов `included`.
 
-We craft a module in `apps/web/views/accept_json.rb`.
+Представим, что у нас есть приложение, которое рендерит только JSON.
+Для каждого представления нам придется указать формат. Добавлять эту строку в каждый файл вручную было бы утомительно, поэтому мы последуем принципу DRY.
+
+Создадим модуль `apps/web/views/accept_json.rb`.
 
 ```ruby
 # apps/web/views/accept_json.rb
@@ -28,7 +28,7 @@ module Web::Views
 end
 ```
 
-Then we include in all the views of our application, via `view.prepare`.
+Затем включим его во все представления приложения сразу при помощи `view.prepare`.
 
 ```ruby
 # apps/web/application.rb
@@ -45,6 +45,5 @@ end
 ```
 
 <p class="warning">
-Code included via <code>prepare</code> is available for ALL the views of an application.
+Код включенный в <code>prepare</code> доступен во всех представлениях приложения.
 </p>
-

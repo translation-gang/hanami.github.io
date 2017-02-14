@@ -1,21 +1,21 @@
 ---
-title: Guides - Custom Error Pages
+title: Руководство - Страницы ошибок
 ---
 
-# Custom Error Pages
+# Настройка страниц ошибок
 
-When an unsuccessful request is returned, there are some special pages that a Hanami application presents to users.
-These pages have a generic graphic and some basic information like the [HTTP status code](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes) and the message.
+Для случаев когда запрос завершается ошибкой, у Hanami есть набор страниц, сообщающих о них.
+Эти страницы имеют минималистичное оформление и информацию об ошибке, такую как [код состояния HTTP](https://ru.wikipedia.org/wiki/List_of_HTTP_status_codes) и его описание.
 
-Hanami allows us to customize them on a per-application basis.
-We just need to create a template with the corresponding HTTP code as the filename (e.g. `apps/web/templates/500.html.erb`).
-From then on, all 500 errors (Internal Server Error) will be presented using that template (like for an exception that is not rescued).
+Hanami позволяет кастомизировать их для каждого приложения в проекте.
+Достаточно создать шаблон, именем которого является код ошибки(например, `apps/web/templates/500.html.erb`).
+Сразу после этого каждая возникшая ошибка с кодом 500 будет возвращать пользователю результат обработки этого шаблона.
 
 <p class="convention">
-  A template for a custom error page MUST be named after the HTTP code that it targets.
-  Example: <code>500.html.erb</code> for Internal Server Error (500).
+  Пользовательские шаблоны для страниц ошибок должны содержать в своем названии код ошибки и расширения файла.
+  Например: <code>500.html.erb</code> для внутренней ошибки сервера(500).
 </p>
 
 <p class="convention">
-  A template for a custom error page MUST be placed under the <code>templates</code> directory of the application.
+  Пользовательские шаблоны для страниц ошибок должны быть расположены внутри папки приложения <code>templates</code>.
 </p>
