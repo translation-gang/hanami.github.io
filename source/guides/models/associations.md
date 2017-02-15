@@ -1,53 +1,53 @@
 ---
-title: Guides - Associations
+title: Руководство - Ассоциации
 ---
 
-# Associations
+# Ассоциации
 
-An association is a logical relationship between two entities.
+Ассоциации — это логическая связь между двумя сущностями.
 
 <p class="warning">
-  As of the current version, Hanami supports associations as an experimental feature only for the SQL adapter.
+  Текущая версия Hanami поддерживает ассоциации в качестве экспериментальной возможности и только для SQL адаптера.
 </p>
 
-## Design
+## Устройство
 
-Because the association is made of data linked together in a database, we define associations in repositories.
+Ассоциации состоят из соединенных записей в базе данных, поэтому мы сделали их частью репозиториев.
 
-### Explicit Interface
+### Явный интерфейс
 
-When we declare an association, that repository **does NOT** get any extra method to its public interface.
-This because Hanami wants to prevent to bloat repositories with several methods that are often unused.
+Когда мы задаем ассоциацию, репозиторий **не получит** дополнительных методов для своего открытого интерфейса.
+Такое решение принято ради предотвращения засорения интерфейса методами, которые почти не будут использоваться.
 
 <p class="notice">
-  When we define an association, the repository doesn't get any extra public method.
+  Репозитории по умолчанию не получают открытых методов для ассоциаций.
 </p>
 
-If we need to create an author, contextually with a few books, we need to explicitely define a method to perform that operation.
+Если в нашем приложении необходима возможность создавать записи с ассоциациями, то метод для этого придется определить явно.
 
-### Explicit Loading
+### Явный доступ
 
-The same principle applies to read operations: if we want to eager load an author with the associated books, we need an explicit method to do so.
+Тот же принцип работает и для методов доступа. Если мы хотим получать ассоциированные записи, то нужно явно задать метод реализующий эту возможность.
 
-If we don't explicitely load that books, then the resulting data will be `nil`.
+Если мы этого не сделаем, то вызов методов доступа всегда будет возвращать `nil`.
 
-### No Proxy Loader
+### Отказ от методов-посредников
 
-Please remember that operations on associations are made via explicit repository methods.
-Hanami **does NOT** support by design, the following use cases:
+Мы рекомендуем производить операции с ассоциациями только через методы определенные в репозиториях явно.
+Hanami намеренно **не поддерживает** подобные методы:
 
-  * `author.books` (to try to load books from the database)
-  * `author.books.where(on_sale: true)` (to try to load _on sale_ books from the database)
-  * `author.books << book` (to try to associate a book to the author)
-  * `author.books.clear` (to try to unassociate the books from the author)
+  * `author.books` (чтобы получить все книги автора из базы данных);
+  * `author.books.where(on_sale: true)` (чтобы получить все книги, имеющиеся в продаже);
+  * `author.books << book` (чтобы ассоциировать книгу с автором);
+  * `author.books.clear` (чтобы убрать ассоциации книг с автором).
 
-Please remember that `author.books` is just an array, its mutation **won't be reflected in the database**.
+Не забывайте, что `author.books` является обыкновенным массивом и изменения в нем **не отразятся на базе данных**.
 
-## Types Of Associations
+## Типы ассоциаций
 
-### Has Many
+### Ассоциация Has Many
 
-Also known as _one-to-many_, is an association between a single entity (`Author`) and a collection of many other linked entities (`Book`).
+Также известна как _один-ко-многим_. Является ассоциацией одной сущности (`Author`) с коллекцией других сущностей(`Book`).
 
 ```shell
 % bundle exec hanami generate migration create_authors
@@ -108,7 +108,7 @@ end
       create  spec/bookshelf/repositories/book_repository_spec.rb
 ```
 
-Let's edit `AuthorRepository` with the following code:
+Давайте добавим к `AuthorRepository` следующий код:
 
 ```ruby
 # lib/bookshelf/repositories/author_repository.rb
@@ -127,10 +127,10 @@ class AuthorRepository < Hanami::Repository
 end
 ```
 
-We have defined [explicit methods](#explicit-interface) only for the operations that we need for our model domain.
-In this way, we avoid to bloat `AuthorRepository` with dozen of unneeded methods.
+Мы [явно объявили методы](#Явный интерфейс) только для тех операций, которые точно будут использоваться в модели.
+Таким образом, мы избавили `AuthorRepository` от множества методов, которые никогда не будут использованы.
 
-Let's create an author with a collection of books with a **single database operation**:
+Давайте создадим автора вместе с коллекцией книг **за один запрос к базе данных**:
 
 ```ruby
 repository = AuthorRepository.new
@@ -146,7 +146,7 @@ author.books
   # => [#<Book:0x007f811c40fe08 @attributes={:id=>1, :author_id=>1, :title=>"The Count of Montecristo", :created_at=>2016-11-15 09:19:38 UTC, :updated_at=>2016-11-15 09:19:38 UTC}>]
 ```
 
-What happens if we load the author with `AuthorRepository#find`?
+Что произойдет если мы попытаемся найти автора при помощи `AuthorRepository#find`?
 
 ```ruby
 author = repository.find(author.id)
@@ -155,8 +155,8 @@ author.books
   # => nil
 ```
 
-Because we haven't [explicitely loaded](#explicit-loading) the associated records, `author.books` is `nil`.
-We can use the method that we have defined on before (`#find_with_books`):
+Мы не определили этого [метода доступа явно](#Явный доступ), поэтому `author.books` вернет `nil`.
+Но мы можем использовать определенный ранее метод `#find_with_books`:
 
 ```ruby
 author = repository.find_with_books(author.id)
@@ -166,12 +166,12 @@ author.books
   # => [#<Book:0x007f811bbea430 @attributes={:id=>1, :author_id=>1, :title=>"The Count of Montecristo", :created_at=>2016-11-15 09:19:38 UTC, :updated_at=>2016-11-15 09:19:38 UTC}>]
 ```
 
-This time `author.books` has the collection of associated books.
+И на этот раз `author.books` вернет коллекцию ассоциированных записей.
 
 ---
 
-What if we need to add or remove books from an author?
-We need to define new methods to do so.
+Что делать если необходимо добавить или удалить книгу конкретного автора?
+Определить новый метод:
 
 ```ruby
 # lib/bookshelf/repositories/author_repository.rb
@@ -184,13 +184,13 @@ class AuthorRepository < Hanami::Repository
 end
 ```
 
-Let's add a book:
+Воспользуемся этим методом:
 
 ```ruby
 book = repository.add_book(author, title: "The Three Musketeers")
 ```
 
-And remove it:
+Аналогично для удаления:
 
 ```ruby
 BookRepository.new.delete(book.id)

@@ -1,16 +1,16 @@
 ---
-title: Guides - PostgreSQL
+title: Руководство - PostgreSQL
 ---
 
 # PostgreSQL
 
-Hanami supports natively PostgreSQL data types.
+В Hanami встроена поддержка типов данных PostgreSQL.
 
-Please check your PostgreSQL version for the available features.
+Не забудьте убедиться, что ваша версия PostgreSQL совместима со всеми описанными функциями.
 
 ## UUID
 
-Here's how to use UUID for a column
+Вот как можно использовать UUID для столбцов:
 
 ```ruby
 # db/migrations/20161113184557_create_projects.rb
@@ -39,7 +39,7 @@ ProjectRepository.new.create(name: "Hanami", token: SecureRandom.uuid)
   # => #<Project:0x007fbbc78f0a40 @attributes={:id=>1, :name=>"Hanami", :token=>"0aa7ecff-15e4-4aa4-8c00-0e699e2c66f0"}>
 ```
 
-### UUID as Primary Key
+### UUID в качестве первичного ключа
 
 ```ruby
 Hanami::Model.migration do
@@ -64,7 +64,7 @@ ProjectFileRepository.new.create(name: "source.rb")
   # => #<ProjectFile:0x007ff29c4b9740 @attributes={:id=>"239f8e0f-d764-4a76-aaa7-7b59b5301c72", :name=>"source.rb"}>
 ```
 
-## Array
+## Массивы
 
 ```ruby
 Hanami::Model.migration do

@@ -1,18 +1,17 @@
 ---
-title: Guides - Use Your Own ORM
+title: Руководство - Пользовательские ORM
 ---
 
-# Use Your Own ORM
+# Пользовательские ORM
 
-Hanami components are decoupled each other.
-This level of separation allows you to use the ORM (data layer) of your choice.
+Компоненты Hanami легко могут быть заменены.
+Их высокая модульность позволяет использовать ORM по вашему выбору.
 
-Here's how to do it:
+Вот как это можно сделать:
 
-  1. Edit your `Gemfile`, remove `hanami-model`, add the gem(s) of your ORM and run `bundle install`.
-  2. Remove `lib/` directory (eg. `rm -rf lib`).
-  3. Edit `config/environment.rb`, then remove `require_relative '../lib/bookshelf'` and `model` block in `Hanami.configure`
-  4. Edit `Rakefile` and remove `require 'hanami/rake_tasks'`.
+  1. В вашем `Gemfile` уберите строку с `hanami-model`, добавьте гем желаемой ORM и выполните `bundle install`.
+  2. Удалите папку `lib/`(например, командой `rm -rf lib`).
+  3. В файле `config/environment.rb` удалите строку `require_relative '../lib/bookshelf'` и блок кода `model` в  `Hanami.configure`.
+  4. В файле `Rakefile` удалите строку `require 'hanami/rake_tasks'`.
 
-Please notice that if `hanami-model` is removed from the project features like [database commands](/guides/command-line/database) and [migrations](/guides/migrations/overview) aren't available.
-
+Обратите внимание, после удаления `hanami-model` перестанут быть доступны [команды баз данных](/guides/command-line/database) и [миграции](/guides/migrations/overview).
