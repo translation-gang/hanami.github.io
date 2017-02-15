@@ -1,17 +1,17 @@
 ---
-title: Guides - Models Overview
+title: Руководство - Обзор моделей
 ---
 
-# Models
+# Модели
 
-Hanami's model domain is implemented in a way that separates the behavior that we want to express ([entities](/guides/models/entities)) from that persistence layer ([repositories](/guides/models/repositories) and database).
-This design helps to keep the interface of our objects really small and, by consequence, fast and reusable.
+Модели Hanami строятся на разделении бизнес-логики приложения([сущностей](/guides/models/entities)) и механизмов хранения данных([репозиториев](/guides/models/repositories)).
+Этот принцип позволяет достигнуть упрощения интерфейсов объектов, что делает их быстрее и удобнее, а также способствует их повторному использованию.
 
-## Basic Usage
+## Использование
 
-To explain the basic usage, we use a PostgreSQL database.
+В нашем примере мы будем использовать базу данных PostgreSQL.
 
-As first step, we generate the model:
+Сгенерируем модель:
 
 ```shell
 % bundle exec hanami generate model book
@@ -21,28 +21,28 @@ As first step, we generate the model:
       create  spec/bookshelf/repositories/book_repository_spec.rb
 ```
 
-This is the generated entity:
+Получим сущность:
 
 ```ruby
 class Book < Hanami::Entity
 end
 ```
 
-While this is the generated repository:
+и репозиторий:
 
 ```ruby
 class BookRepository < Hanami::Repository
 end
 ```
 
-Then we generate the migration:
+Потребуется также сгенерировать миграцию:
 
 ```shell
 % bundle exec hanami generate migration create_books
       create  db/migrations/20161113154510_create_books.rb
 ```
 
-Let's edit the migration with the following code:
+Изменим файл миграции следующим образом:
 
 ```ruby
 Hanami::Model.migration do
@@ -57,13 +57,13 @@ Hanami::Model.migration do
 end
 ```
 
-Now we need to prepare the database to use it:
+Теперь подготовим базу данных:
 
 ```shell
 % bundle exec hanami db prepare
 ```
 
-We're ready to use our repository:
+На этом этапе мы уже можем использовать наш репозиторий:
 
 ```shell
 % bundle exec hanami console
@@ -73,4 +73,4 @@ irb(main):001:0> book = BookRepository.new.create(title: "Hanami")
 
 ---
 
-Learn more about [repositories](/guides/models/repositories), [entities](/guides/models/entities), [migrations](/guides/migrations/overview), and [database CLI commands](/guides/command-line/database).
+Далее вы можете подробнее узнать о [репозиториях](/guides/models/repositories), [сущностях](/guides/models/entities), [миграциях](/guides/migrations/overview), и [консольных командах баз данных](/guides/command-line/database).
