@@ -1,13 +1,13 @@
 ---
-title: Guides - Helpers Overview
+title: Руководство - Обзор хэлперов
 ---
 
-# Overview
+# Обзор
 
-A Hanami view is an object that defines presentational logic.
-Helpers are modules designed to enrich views with a collection of useful features.
+Представления Hanami отвечают за внешний вид нашего приложения.
+Хэлперы же созданы чтобы обогатить представления набором полезных функций.
 
-This concept is probably familiar, if you know some Ruby basics.
+Если вы знакомы с базовыми возможностями Ruby, то без труда поймете эту идею.
 
 ```ruby
 module Printable
@@ -23,23 +23,23 @@ end
 Person.new.print
 ```
 
-The same simple design is applied to views and helpers.
+Подобным образом устроены представления и хэлперы.
 
-Hanami ships with default helpers, but we can also define custom helper modules.
+Hanami по умолчанию включает в себя набор хэлперов, но мы можем определить и собственные.
 
-## Rendering Context
+## В контексте рендеринга
 
-Views are Ruby objects that are responsible for rendering the associated template.
-The context for this activity is defined only by the set of methods that a view can respond to.
+Представления рендерят соответствующие шаблоны.
+Контекст этой операции определяется только теми методами, которые доступны в контексте представления.
 
-If a view has a method `#greeting`, we can use it like this: `<%= greeting %>`.
+Если представление реализует метод `#greeting`, то мы сможем его использовать в шаблоне: `<%= greeting %>`.
 
-This design has a few important advantages:
+Такое решение имеет несколько важных достоинств:
 
-  * It facilitates debugging. In the case of an exception, we know that **the view is the only rendering context to inspect**.
-  * Ruby method dispatcher will be **fast**, as it doesn't need to do a lookup for many method sources.
+  * Это упрощает отладку. При получении исключения у нас будет **узкий круг поиска его источника**.
+  * Интерпретатор Ruby сможет **быстро** найти необходимый метод, так как ему не придется анализировать большое количество источников методов.
 
-Consider the following code:
+Рассмотрим следующий пример:
 
 ```ruby
 # apps/web/views/books/show.rb
@@ -52,43 +52,43 @@ module Web::Views::Books
 end
 ```
 
-Our view responds to `#link_to`, because it includes `Hanami::Helpers::LinkToHelper`, a module that defines that concrete method.
+Наше представление быстро получит отклик на `#link_to`, потому что он находится в модуле  `Hanami::Helpers::LinkToHelper`, специально созданном для этого метода.
 
-## Clean Context
+## Очистка контекста
 
-There are some helpers that have a huge interface.
-Think of the [HTML5](/guides/helpers/html5) or the [routing](/guides/helpers/routing) helpers, they provide hundreds of methods to map tags or application routes.
+Некоторые хэлперы несут с собой огромные интерфейсы.
+Если вспомнить о [HTML5](/guides/helpers/html5) или [маршрутизационных](/guides/helpers/routing) хэлперах, то станет понятно, что они поставляются с сотнями методов.
 
-Making them available directly in the view context, would be source of confusion, slow method dispatch times and name collisions.
+Сделав их доступными прямо внутри представлений мы сильно замедлим их работу и можем спровоцировать коллизии имен.
 
-Imagine we have an application with 100 routes.
-Because Hanami provides both relative and absolute URI facilities, if used directly, it would mean adding **200 methods** to all the views.
-Which is overkill.
+Представим, у нас есть приложение с сотней маршрутов.
+Hanami создает хэлперы для относительных и абсолютных URI. Сделав их доступными напрямую мы добавим во все представления **200 методов**.
+Это перебор.
 
-For this reason, certain helpers act as a proxy to access these large set of methods.
+По этой причине некоторые хэлперы выполняют роль прокси для доступа к большому набору методов.
 
 ```erb
 <%= routes.home_path %>
 ```
 
-In this case we have **only one method** to add to our views, but it opens an infinite number of possibilities without causing performance issues.
+В этом случае в контекст представлений будет добавлен **только один метод**, но он откроет бесконечные возможности, не оказывая такого большого влияния на производительность.
 
-## Explicit Interfaces
+## Явные интерфейсы
 
-Hanami guides developers to design explicit and intention revealing interfaces for their objects.
-Almost all the default helpers, make **private methods** available to our views.
+Hanami подталкивает разработчиков создавать явные и открытые интерфейсы для их объектов.
+Почти все стандартные хэлперы открывают представлениями доступ к своим **закрытым методам**.
 
-We want to avoid complex expressions that will clutter our templates, and make sure that views remain testable.
+Мы хотим избежать сложных выражений, которые будут засорять шаблоны и сделают тестирование невозможным.
 
-Here an example of **poor** and **untestable** code in a template.
+Вот пример **чистого**, но **нетестируемого** кода в шаблоне.
 
 ```erb
 <%= format_number book.downloads_count %>
 ```
 
-If we want to unit test this logic, we can't do it directly, unless we render the template and match the output.
+Если мы захотим создать модульные тесты для него, то не сможем сделать этого напрямую, пока не отрендерим шаблон и не получим результат.
 
-For this reason `#format_number`, is shipped as a private method, so we are forced to define an explicit method for our interface.
+По этой причине `#format_number` поставляется как закрытый метод, поэтому мы будем вынуждены явно определить следующий метод.
 
 ```ruby
 # apps/web/views/books/show.rb
@@ -101,22 +101,22 @@ module Web::Views::Books
 end
 ```
 
-To be used like this:
+Он будет использоваться так:
 
 ```erb
 <%= downloads_count %>
 ```
 
-This version is **visually simpler** and **testable**.
+Этот код гораздо более **семантичен** и легко поддается **тестированию**.
 
-## Disable Helpers
+## Отключение хэлперов
 
-Helpers aren't mandatory for Hanami applications.
-If we want to get rid of them, we just to need to remove two lines of code.
+Хэлперы не всегда нужны в приложениях Hanami.
+Если мы не захотим их использовать, то достаточно удалить две строки кода.
 
 ```ruby
 # apps/web/application.rb
-require 'hanami/helpers' # REMOVE THIS LINE
+require 'hanami/helpers' # Удалить эту строку
 
 module Web
   class Application < Hanami::Application
@@ -124,7 +124,7 @@ module Web
       # ...
 
       view.prepare do
-        include Hanami::Helpers # AND THIS ONE
+        include Hanami::Helpers # И эту
       end
     end
   end
