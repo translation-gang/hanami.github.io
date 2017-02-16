@@ -1,32 +1,33 @@
 ---
-title: Guides - Migrations Alter Tables
+title: Руководство - Преобразования таблиц
 ---
 
-# Migrations
+# Миграции
 
-## Alter Tables
+## Преобразования таблиц
 
-The following methods are available for table alterations:
+Следующие методы помогут преобразовать существующие таблицы:
 
-  * `#add_column` (see `#column` for usage)
-  * `#drop_column`
-  * `#rename_column` (the first argument is the **old name**, while the second is the **new name**)
-  * `#add_index` (see `#index` for usage)
-  * `#drop_index`
-  * `#add_primary_key` (see `#primary_key` for usage)
-  * `#add_foreign_key` (see `#foreign_key` for usage)
-  * `#add_constraint` (see `#constraint` for usage)
-  * `#drop_constraint` (accepts the **name** of the constraint as argument)
-  * `#add_unique_constraint`
-  * `#set_column_default` (accepts the **name** of the column and the **default value** as comma separated args)
-  * `#set_column_type` (accepts the **name** of the column and the **new type** as comma separated args)
-  * `#set_column_allow_null` (accepts the **name** of the column)
-  * `#set_column_not_null` (accepts the **name** of the column)
+  * `#add_column` (добавить поле, см.`#column`);
+  * `#drop_column` (удалить поле);
+  * `#rename_column` (переименовать поле, принимает первым аргументом **старое имя**, а вторым **новое имя**);
+  * `#add_index` (добавить индекс, см. `#index`);
+  * `#drop_index` (удалить индекс);
+  * `#add_primary_key` (добавить первичный ключ, см. `#primary_key`);
+  * `#add_foreign_key` (добавить внешний ключ, см. `#foreign_key`);
+  * `#add_constraint` (добавить ограничение, см. `#constraint`);
+  * `#drop_constraint` (удалить ограничение, принимает **имя** ограничения);
+  * `#add_unique_constraint` (добавить ограничение по признаку уникальности записи);
+  * `#set_column_default` (установить значение поля по умолчанию, принимает первым аргументом **имя поля** и вторым **значение по умолчанию**);
+  * `#set_column_type` (установить тип данных поля, принимает первым аргументом **имя поля**, а вторым **тип данных**);
+  * `#set_column_allow_null` (разраешает значение null для поля, принимает **имя поля**);
+  * `#set_column_not_null` (запрещает значение null для поля, принимает **имя поля**).
 
-Those methods accept the **name of the target table as first argument**, then the other args.
-There is a convenient shortcut for this: `#alter_table`. It accepts the **name of the table** and a **block** that describes the alterations.
+Все эти методы принимают **имя таблицы в качестве первого аргумента** и только затем остальные.
 
-The following syntaxes are **equivalent**.
+Есть более короткий способ использовать их. Имя таблицы можно будет опустить, если вызывать методы **внутри блока** метода: `#alter_table`, который принимает в качестве первого аргумента **имя таблицы**.
+
+Следующие примеры приведут к **одинаковому** результату:
 
 ```ruby
 Hanami::Model.migration do
@@ -37,13 +38,13 @@ Hanami::Model.migration do
 end
 ```
 
-The code above can be DRY'd with:
+Этот вариант, в отличии от первого, следует принципу DRY:
 
 ```ruby
 Hanami::Model.migration do
   change do
     alter_table :users do
-      # `users` table is implicit within this block, so it can be omitted.
+      # в следующих методах имя таблицы `users` передавать не нужно
       add_column :email, String,  null: false, unique: true    
       set_column_default :visits_counts, default: 0
     end
@@ -51,20 +52,20 @@ Hanami::Model.migration do
 end
 ```
 
-### Rename Table
+### Переименование таблицы
 
-Tables can be renamed via `#rename_table`. It accepts the **old name** and the **new name** as arguments.
+Таблицы можно переименовать методом `#rename_table`. Он принимает **старое имя** в качестве первого аргумента и **новое имя** в качестве второго.
 
 ```ruby
 rename_table :users, :people
 ```
 
-### Drop Table
+### Удаление таблицы
 
-Tables can be dropped via `#drop_table`. It accepts the **name** as argument.
+Таблицы можно удалять методом `#drop_table`. Он принимает в качестве аргумента **имя таблицы**.
 
 ```ruby
 drop_table :users
 ```
 
-Safe operation can be performed via `#drop_table?`. It drops the table only if it exists.
+Есть более безопасный аналог этой операции `#drop_table?`. Он проверяет наличие таблицы перед удалением.
