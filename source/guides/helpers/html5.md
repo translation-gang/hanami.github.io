@@ -1,15 +1,15 @@
 ---
-title: Guides - HTML5 Helpers
+title: Руководство - Хелперы HTML5
 ---
 
-## HTML5 Helpers
+## Хелперы HTML5
 
-This helper makes available an HTML5 generator that is **template engine independent**.
-It's a **private method for views and layouts** called `#html`.
+Эти хэлперы упрощают работу с HTML5. Они **не привязаны к конкретному шаблонизатору**.
+Доступ к ним осуществляется как к **закрытым методам представлений** посредством вызова `#html`.
 
-## Usage
+## Использование
 
-This is how it will look used with a layout:
+Вот как их можно использовать в макете:
 
 ```ruby
 module Web::Views
@@ -29,7 +29,7 @@ end
 <%= sidebar %>
 ```
 
-It generates:
+Будет сгенерировано:
 
 ```html
 <aside id="sidebar">
@@ -37,15 +37,15 @@ It generates:
 </aside>
 ```
 
-## Features
+## Особенности
 
-  * It knows how to close tags according to HTML5 spec (1)
-  * It accepts content as first argument (2)
-  * It accepts builder as first argument (3)
-  * It accepts content as block which returns a string (4)
-  * It accepts content as a block with nested markup builders (5)
-  * It builds attributes from given hash (6)
-  * it combines attributes and block (7)
+  1) Метод закроет тэг согласно стандарту HTML5;
+  2) Первый аргумент станет содержимым тэга;
+  3) В качестве первого аргумента может быть передан аналогичный метод;
+  4) В качестве первого аргумента может быть передан блок, который возвращает строку;
+  5) Переданный блок может содержать в себе другие методы разметки;
+  6) Атрибуты тэга передаются в качестве хэша;
+  7) Атрибуты и блок могут использоваться вместе.
 
 ```ruby
 # 1
@@ -116,23 +116,23 @@ end
 #  </section>
 ```
 
-The result is a very clean Ruby API.
+В результате можно получить очень чистый API.
 
-## Custom tags
+## Пользовательские тэги
 
-Hanami helpers support 100+ most common tags, such as `div`, `video` or `canvas`. 
-However, HTML5 is fast moving target so we wanted to provide an open interface to define **new or custom tags**.
+Хэлперы Ханами поддерживают более 100 стандартных тэгов, таких как `div`, `video` и `canvas`.
+Тем не менее, HTML5 продолжает развиваться и мы хотим иметь достаточно открытый интерфейс для работы с **новыми или пользовательскими тэгами**.
 
-The API is really simple: `#tag` must be used for a self-closing tag, where `#empty_tag` does the opposite.
+Соответствующий API очень прост: `#tag` создаст парный тэг, а `#empty_tag` одиночный.
 
 ```ruby
 html.tag(:custom, 'Foo', id: 'next') # => <custom id="next">Foo</custom>
 html.empty_tag(:xr, id: 'next')      # => <xr id="next">
 ```
 
-## Other helpers
+## Другие хелперы
 
-Hanami html helpers also support other assembled helpers. For example `link_to` helper:
+Хэлперы Ханами для HTML дают еще несколько возможностей. Например, хэлпер `link_to`:
 
 ```ruby
 html.div do
@@ -155,9 +155,9 @@ end
 # => </div>
 ```
 
-## Auto escape
+## Экранирование
 
-The tag contents are automatically escaped for **security** reasons:
+Тэги автоматически экранируются из соображений **безопасности**:
 
 ```ruby
 html.div('hello')         # => <div>hello</div>
@@ -184,11 +184,11 @@ end
   # => "<div><p>&lt;script&gt;alert(&apos;xss&apos;)&lt;&#x2F;script&gt;</p></div>"
 ```
 
-**HTML attributes aren't automatically escaped**, in case we need to use a value that comes from a user input, we suggest to use `#ha`, which is the escape helper designed for this case. See [Escape Helpers](`/guides/helpers/escape`) for a deep explanation.
+**Атрибуты тэгов не экранируются автоматически**. В случаях, когда значения атрибутов вводятся пользователем, мы рекомендуем  использовать метод `#ha`, который создан как раз для этого. Больше информациии об экранирующих тэгах можно найти в [соответствующем разделе](`/guides/helpers/escape`).
 
-## View Context
+## Контекст представлений
 
-Local variables from views are available inside the nested blocks of HTML builder:
+Локальные переменные представлений будут доступны внутри блоков, переданых хэлперам:
 
 ```ruby
 module Web::Views::Books

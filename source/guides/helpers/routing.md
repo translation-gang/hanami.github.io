@@ -1,19 +1,19 @@
 ---
-title: Guides - Routing Helpers
+title: Руководство - Хелперы маршрутов
 ---
 
-## Routing Helpers
+## Хэлперы маршрутов
 
-Routing helpers are made of one **public method** (`#routes`), available for actions, views and templates.
-It's a factory to generate **relative** or **absolute URLs**, starting from [named routes](/guides/routing/basic-usage).
+Хэлперы маршрутов доступны через единственный **открытый метод**(`#routes`), доступный в экшенах, представлениях и шаблонах.
+Это фабрика, генерирующая **относительные** и **абсолютные** URL, основываясь на [именованных маршрутах](/guides/routing/basic-usage).
 
 <p class="convention">
-  For a given route named <code>:home</code>, we can use <code>home_path</code> or <code>home_url</code> to generate relative or absolute URLs, respectively.
+  Для маршрута именованного как <code>:home</code> можно использовать <code>home_path</code> или <code>home_url</code> чтобы сгенерировать относительный или абсолютный URL.
 </p>
 
-## Usage
+## Использование
 
-Imagine we have the following routes for our application:
+Представим, что у нас в приложении есть следующие маршруты:
 
 ```ruby
 # web/apps/config/routes.rb
@@ -23,9 +23,9 @@ get '/foo', to: 'foo#index'
 resources :books
 ```
 
-### Relative URLs
+### Относительные URL
 
-We can do:
+Мы можем написать:
 
 ```erb
 <ul>
@@ -34,7 +34,7 @@ We can do:
 </ul>
 ```
 
-Which generates:
+Чтобы сгенерировать:
 
 ```html
 <ul>
@@ -43,9 +43,9 @@ Which generates:
 </ul>
 ```
 
-We can't link `/foo`, because it isn't a named route (it lacks of the `:as` option).
+При этом мы не можем поступить так же с `/foo`, т.к. он не является именованным маршрутом(у него отсутствует параметр `:as`).
 
-### Absolute URLs
+### Абсолютные URL
 
 ```ruby
 module Web::Controllers::Books
@@ -59,5 +59,4 @@ module Web::Controllers::Books
   end
 end
 ```
-
-In the case above, we have passed a Hash as set of params that are required to generate the URL.
+В примере выше мы дополнительно передали Хэш, при помощи которого будет сгенерирован URL для отдельного экземпляра ресурса.

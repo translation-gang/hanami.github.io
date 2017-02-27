@@ -1,82 +1,82 @@
 ---
-title: Guides - Markup Escape Helpers
+title: Руководство - Хэлперы экранирования разметки
 ---
 
-## Markup Escape Helpers
+## Хэлперы экранирования разметки
 
-**Views escape automatically the output of their methods.**
-There are complex situations that views can't cover properly and that require an extra attention from us.
+**Представления автоматически экранируют результат вызова всех методов.**
+Есть ряд случаев, когда представления не могут справиться должным образом самостоятельно. Эти случаи требуют от нас особого внимания.
 
-Hanami makes available a set of escape helpers, to increase the security of our web applications.
-They are **public methods** that are available both in views and templates.
+Ханами поставляется с набором экранирующих хэлперов, которые позволяют сделать веб-приложения более защищенными.
+Они доступны в качестве **открытых методов**, доступных в шаблонах и представлениях.
 
-## Escape HTML Contents
+## Экранирование содержимого тэгов HTML
 
-It's a method called `#escape_html` (aliased as `#h`), that escapes the input.
+Метод`#escape_html` (или синоним`#h`) экранирует переданную строку.
 
 ```erb
 <p><%= h "<script>alert('xss')</script>" %></p>
 ```
-
-Returns
+ 
+Вернет:
 
 ```html
 <p>&lt;script&gt;alert(&apos;xss&apos;)&lt;&#x2F;script&gt;</p>
 ```
 
-## Escape HTML Attributes
+## Экранирование атрибутов HTML
 
-HTML attributes are more complex to escape, because they involve attribute delimitation chars (eg. single or double quotes).
+HTML атрибуты более сложны для экранирования, они содержат ограничительные символы(двойные или одинарные кавычки).
 
-We have an extra helper for this specific task: `#escape_html_attribute` (aliased as `#ha`)
-**This should be used only when the value of an attribute comes from a user input.**
+Для этого создан специальный хэлпер: `#escape_html_attribute` (или синоним`#ha`)
+**Его стоит применять только там, где источником данных может быть пользователь**
 
 ```erb
 <img="/path/to/avatar.png" title="<%= ha(user.name) %>'s Avatar">
 ```
 
-## Whitelisted URLs
+## Белый список URL
 
-Imagine we have a feature in our application that allows users to link from their profile, a website.
-In the edit profile form we have a text field that accepts a URL.
+Представим, что у нас в приложении есть возможность, позволяющая пользователям делиться ссылками на свой сайт.
+Во время редактирования профиля пользователь может заполнить простое текстовое поле, в котором будет содержаться URL.
 
-In the profile page we have a link like this:
+Тогда страница профиля будет содержать эту ссылку примерно так:
 
 ```erb
 <%= link_to "Website", user.website_url %>
 ```
 
-A malicious user can edit their profile, by entering javascript code as the website URL.
-When somebody else clicks on that link, they can receive an XSS attack.
+Это позволит злоумышленнику вставить код JavaScript в качестве URL.
+Когда кто-то кликнет по такой ссылке, он станем жертвой XSS атаки.
 
-Example:
+Пример:
 
 ```html
 <a href="javascript:alert('hack!');">Website</a>
 ```
 
-The solution to this problem is to wrap the output with the `#escape_url` (aliased as `#hu`) helper.
+Решением этой проблемы является обертка вокруг выводимого поля при помощи хэлпера `#escape_url` (или синоним`#hu`).
 
-It whitelists URLs that use `http`, `https`, and `mailto` schemes, everything else is scraped.
+Он будет пропускать URL соответствующие схемам `http`, `https` и`mailto`. Все остальное не будет пропущено.
 
 ```erb
 <%= link_to "Website", hu(user.website_url) %>
 ```
 
-In case we need a different set of schemes, we can specify them as second argument.
+Если нам нужно несколько видов таких схем, то мы можем явно указать это во втором аргументе.
 
 ```erb
 <%= link_to "Website", hu(user.website_url, ['https']) %>
 ```
 
-In the code above, we're restricting to URLs that only use HTTPS.
+В этом примере будут пропущены только ссылки на HTTPS.
 
-## Raw Contents
+## Неэкранированный контент
 
-There are cases when we want to print the raw contents.
-**Please be careful with this, because unescaped contents can open a breach for XSS attacks.**
+В ряде случаев мы хотим вывести неэкранированный контент.
+**Используйте эту возможность с осторожностью. Это потенциальная уязвимость для XSS атаки.**
 
-The helper is called `#raw`.
+Хэлперь называется `#raw`.
 
 ```ruby
 # apps/web/views/books/json_show.rb
