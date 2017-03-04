@@ -1,31 +1,31 @@
 ---
-title: Guides - View Templates
+title: Руководство - Шаблоны мэйлеров
 ---
 
-# Templates
+# Шаблоны
 
-A template is a file that contains a body for a specific format of a multipart email.
-For instance, `welcome.html.erb` describes the markup of the HTML part of the message, while `welcome.txt.erb` is for the textual part.
+Шаблоном называется файл определенного формата, описывающий содержимое будущего электронного письма.
+Например, файл `welcome.html.erb` описывает HTML составляющую письма, а `welcome.txt.erb` текстовую.
 
-It is rendered by bounding the [context](/guides/mailers/basic-usage) of a mailer and using a _template engine_.
+Их обработка будет выполняться _шаблонизатором_ в [контексте](/guides/mailers/basic-usage) мэйлера.
 
-## Naming
+## Именование
 
-For convenience, there is a correlation between the view mailer name and the template file name.
-It's the translation of the name into a path: from `Mailers::ForgotPassword` to `forgot_password`.
+По общепринятому соглашению имя мэйлера определяет имя соответствующего шаблона.
+Так для мэйлера `Mailers::ForgotPassword` будет использован шаблон начинающийся с `forgot_password`.
 
-The remaining part is made of multiple file extensions.
-The first is relative to the **_format_** and the latter is for the **_template engine_**.
+Оставшаяся часть имени будет состоять из нескольких расширений файла.
+Первое из них определит **_формат_**, а последующие – **_шаблонизаторы_**.
 
-**Hanami only accepts `html` and `txt` formats for emails.**
+**Ханами использует для электронных писем только форматы `html` и `txt`.**
 
 <p class="convention">
-For a given mailer named <code>Mailers::ForgotPassword</code>, there must be at least one template <code>forgot_password.[format].[engine]</code> under the mailers templates directory.
+Для мэйлера с именем <code>Mailers::ForgotPassword</code> должен существовать хотя бы один шаблон с именем формата <code>forgot_password.[формат].[шаблонизатор]</code> в папке почтовых шаблонов.
 </p>
 
-### Custom Template
+### Нестандартные шаблоны
 
-If we want to associate a different template to a mailer, we can use `template`.
+Если мы хотим воспользоваться другим шаблоном, то можем вызвать метод `template`.
 
 ```ruby
 # lib/bookshelf/mailers/forgot_password.rb
@@ -35,21 +35,22 @@ class Mailers::ForgotPassword
 end
 ```
 
-Our view will look for `lib/bookshelf/mailers/templates/send_password.*` template.
+Тогда мэйлер будет искать шаблон `lib/bookshelf/mailers/templates/send_password.*`.
 
-## Engines
+## Шаблонизаторы
 
-Hanami looks at the last extension of a template file name to decide which engine to use (eg `welcome.html.erb` will use ERb).
-The builtin rendering engine is [ERb](http://en.wikipedia.org/wiki/ERuby), but Hanami supports countless rendering engines out of the box.
+Ханами определяет шаблонизатор исходя из последнего расширения файла шаблона. Так для файла `welcome.html.erb` будет использован ERb.
 
-This is a list of the supported engines.
-They are listed in order of **higher precedence**, for a given extension.
-For instance, if [ERubis](http://www.kuwata-lab.com/erubis/) is loaded, it will be preferred over ERb to render `.erb` templates.
+В качестве стандартного шаблонизатора используется [ERb](http://ru.wikipedia.org/wiki/ERuby), но Ханами также поддерживает огромное число и других шаблонизаторов.
+
+Ниже представлен их список.
+Они перечислены в порядке **предпочтения для отдельного формата**.
+Например, если установлен [ERubis](http://www.kuwata-lab.com/erubis/), то именно он будет использован для шаблонов`.erb`.
 
 <table class="table table-bordered table-striped">
   <tr>
-    <th>Engine</th>
-    <th>Extensions</th>
+    <th>Шаблонизатор</th>
+    <th>Расширения</th>
   </tr>
   <tr>
     <td>Erubis</td>
@@ -165,17 +166,17 @@ For instance, if [ERubis](http://www.kuwata-lab.com/erubis/) is loaded, it will 
   </tr>
 </table>
 
-In order to use a different template engine we need to bundle the gem and to use the right file extension.
+Чтобы начать использовать любой из них, достаточно включить нужный гем в сборку и указать соответствующее расширение файла.
 
 ```haml
 # lib/bookshelf/mailers/templates/welcome.html.haml
 %h1 Welcome
 ```
 
-## Templates Directory
+## Папка шаблонов
 
-Templates are located in the default directory `mailers/templates`, located under an application's directory `lib/bookshelf`, where `bookshelf` is the name of our application.
-If we want to customize this location, we can set a different value in Hanami::Mailer configuration.
+По умолчанию шаблоны располагаются в `mailers/templates`, находящейся внутри папки приложения `lib/bookshelf`, где `bookshelf` это имя приложения.
+Для переопределения каталога необходимо явно указать его в Hanami::Mailer.
 
 ```ruby
 # lib/bookshelf.rb
@@ -187,4 +188,4 @@ Hanami::Mailer.configure do
 end.load!
 ```
 
-The application will now look for templates under `path/to/templates`.
+В этом случае приложение будет искать шаблоны в `path/to/templates`.

@@ -1,62 +1,60 @@
 ---
-title: Guides - Mailers Delivery
+title: Руководство - Доставка почты
 ---
 
-# Delivery
+# Доставка
 
 ## Multipart Delivery
 
-By default a mailer delivers a multipart email, that has a HTML and a text part.
-This is the reason why the generator creates two templates.
+По умолчанию мэйлер составляет письма из двух частей. Одна включает в себя разметку HTML, а вторая текст.
+Именно поэтому генератор создает два файла шаблона.
 
-To render both the templates and deliver them as a multipart message, we simply do:
+Чтобы обработать обе эти части и доставить их, необходимо использовать метод:
 
 ```ruby
 Mailers::Welcome.deliver
 ```
 
-Hanami mailers are flexible enough to adapt to several scenarios.
+Мэйлеры Ханами гибко подстраиваются под ряд сценариев.
 
-## Single Part Delivery
+## Обработка единственной составляющей
 
-Let's say in our application users can opt for HTML or textual emails.
-According to this configuration, we want to selectively send only the wanted format:
+Предположим, нам необходимо отправить письмо только из HTML или текстового файла.
+Тогда мы можем указать это при вызове метода доставки:
 
 ```ruby
 Mailers::Welcome.deliver(format: :html)
-# or
+# или
 Mailers::Welcome.deliver(format: :txt)
 ```
 
-By using only one format, it will render and deliver only the specified template.
+В этом случае будет обработан только один шаблон.
 
-## Remove Templates
+## Удаление шаблонов
 
-If in our application, we want only to deliver HTML templates, we can **safely** remove textual templates (`.txt` extension) and every time we will do `Mailers::Welcome.deliver` it will only send the HTML message.
-
-The same principle applies if we want only to send textual emails, just remove HTML templates (`.html` extension).
+Если в приложении используется только одна составляющая шаблона, то из него можно без последствий удалить вторую.
 
 <p class="warning">
-  At the delivery time, a mailer MUST have at least one template available.
+  Для отправки письма достаточно одного шаблона.
 </p>
 
-## Configuration
+## Конфигурация
 
-In order to specify the gateway to use for our email messages, we can use `delivery` configuration.
+Для определения шлюза отправки электронных писем используется конфигурация`delivery`.
 
-### Built-in Methods
+### Встроенные методы
 
-It accepts a symbol that is translated into a delivery strategy:
+Способ доставки определяется соответствующим символом:
 
-  * Exim (`:exim`)
-  * Sendmail (`:sendmail`)
-  * SMTP (`:smtp`, for local SMTP installations)
-  * SMTP Connection (`:smtp_connection`, via `Net::SMTP` - for remote SMTP installations)
-  * Test (`:test`, for testing purposes)
+  * Exim (`:exim`);
+  * Sendmail (`:sendmail`);
+  * SMTP (`:smtp`, для локального SMTP);
+  * SMTP соединение (`:smtp_connection`, посредством `Net::SMTP` - для удаленного SMTP);
+  * Test (`:test`, для тестов).
 
-It defaults to SMTP (`:smtp`) for production environment, while `:test` is automatically set for development and test.
+По умолчанию используется SMTP (`:smtp`) в режиме эксплуатации(production) и `:test` в режиме разработки и тестирования.
 
-The second optional argument is a set of arbitrary configurations that we want to pass to the configuration:
+Вторым необязательным аргументов является остальная конфигурация:
 
 ```ruby
 # lib/bookshelf.rb
@@ -78,17 +76,17 @@ Hanami::Mailer.configure do
 end.load!
 ```
 
-For advanced configurations, please have a look at `mail` [gem](https://github.com/mikel/mail) by Mikel Lindsaar.
-At the low level, **Hanami::Mailer** uses this rock solid library.
+Для более сложных конфигураций мы рекомендуем обратиться к документации [гема "mail"](https://github.com/mikel/mail).
+В низкоуровневой основе **Hanami::Mailer** лежит именно эта библиотека.
 
-Because Hanami uses `mail` gem, which is a _de facto_ standard for Ruby, we can have interoperability with all the most common gateways vendors.
-[Sendgrid](https://devcenter.heroku.com/articles/sendgrid#ruby-rails), [Mandrill](https://devcenter.heroku.com/articles/mandrill#sending-with-smtp), [Postmark](https://devcenter.heroku.com/articles/postmark#sending-emails-via-the-postmark-smtp-interface) and [Mailgun](https://devcenter.heroku.com/articles/mailgun#sending-emails-via-smtp) just to name a few, use SMTP and have detailed setup guides.
+А так как Ханами использует гем `mail`, который _де-факто_ является стандартом для Руби приложений, то мы имеем полную совместимость с шлюзами наиболее популярных поставщиков.
+[Sendgrid](https://devcenter.heroku.com/articles/sendgrid#ruby-rails), [Mandrill](https://devcenter.heroku.com/articles/mandrill#sending-with-smtp), [Postmark](https://devcenter.heroku.com/articles/postmark#sending-emails-via-the-postmark-smtp-interface) и [Mailgun](https://devcenter.heroku.com/articles/mailgun#sending-emails-via-smtp) это одни из нескольких, использующих SMTP и имеющих подробные руководства.
 
-### Custom Methods
+### Нестандартные методы 
 
-If we need to a custom delivery workflow, we can pass a class to the configuration.
+Если необходимо наладить нестандартный способ доставки почты, то можно передать соответствующий класс в конфигурацию. 
 
-Here's an example on how to use [Mandrill API](https://mandrillapp.com/api/docs/) to deliver emails.
+Например, так можно использовать [Mandrill API](https://mandrillapp.com/api/docs/) для доставки электронной почты.
 
 ```ruby
 # lib/bookshelf.rb
@@ -103,7 +101,7 @@ Hanami::Mailer.configure do
 end.load!
 ```
 
-The object MUST respond to `#initialize(options = {})` and to `#deliver!(mail)`, where `mail` is an instance of [`Mail::Message`](https://github.com/mikel/mail/blob/master/lib/mail/mail.rb).
+Объект должен отвечать на сообщения `#initialize(options = {})` и`#deliver!(mail)`, где `mail` экземпляр класса [`Mail::Message`](https://github.com/mikel/mail/blob/master/lib/mail/mail.rb).
 
 ```ruby
 class MandrillDeliveryMethod
@@ -133,5 +131,5 @@ end
 ```
 
 <p class="notice">
-  Please notice that this is only an example that illustrates custom policies. If you want to use Mandrill, please prefer SMTP over this strategy.
+  Обратите внимание, что этот пример иллюстрирует только один из очень специфических вариантов. Если вы хотите использовать Mandrill, более предпочтительным выбором будет SMTP.
 </p>

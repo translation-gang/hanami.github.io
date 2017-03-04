@@ -1,15 +1,15 @@
 ---
-title: Guides - Mailers Testing
+title: Руководство - Тестирование мэйлеров
 ---
 
-# Testing
+# Тестирование
 
-During development and testing we don't want to accidentally send emails to the real world.
-The [delivery method](/guides/mailers/delivery) for these two envs is set to `:test`.
+Мы не хотим, чтобы электронные письма из среды разработки и тестирования попали во внешний мир.
+Для этих двух видов окружения [метод доставки](/guides/mailers/delivery) должен быть установлен как `:test`.
 
-In order to assert that a mailer sent a message, we can look at `Hanami::Mailer.deliveries`.
-It's an array of messages that the framework pretended to deliver during a test.
-Please make sure to **clear** them in testing setup.
+Чтобы убедиться, что электронные письма отправляются согласно ожиданиям, мы можем посмотреть в `Hanami::Mailer.deliveries`.
+Это массив писем, которые приложение отправило бы в режиме эксплуатации.
+Перед тестированием следует убедиться, что этот массив очищен.
 
 ```ruby
 # spec/bookshelf/mailers/welcome_spec.rb
