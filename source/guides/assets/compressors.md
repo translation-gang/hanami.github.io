@@ -1,15 +1,15 @@
 ---
-title: Guides - Assets Compressors
+title: Руководство - Сжатие ассетов
 ---
 
-# Assets
+# Ассеты
 
-## Compressors
+## Сжатие
 
-Assets compression (aka minification) is a process to shrink the file size of a file in order to reduce the time that a browser needs to download it.
-Usually, it's applied to javascripts and stylesheets.
+Сжатие ассетов, или минификация — это процесс сокращения размеров файлов, благодаря которому браузер будет быстрее загружать их.
+Обычно оно применяется к таблицам стилей и сценариям JavaScript.
 
-In order to set one of the following engines, we need to open `apps/web/application.rb` and write:
+За включение этой функции отвечают следующие строки в `apps/web/application.rb`:
 
 ```ruby
 # apps/web/application.rb
@@ -27,37 +27,37 @@ module Web
 end
 ```
 
-If we want to skip compression, just comment one or both the lines above.
+Чтобы отключить ее, достаточно просто закомментировать одну или каждую из этих строк.
 
 ### JavaScript
 
-We support the following engines:
+Мы поддерживаем следующие движки для сжатия:
 
-  * `:builtin` - It isn't efficient like the other algorithms, but it's a good starting point because it's written in **pure Ruby** and **it doesn't require external dependencies**.
-  * `:yui` - It's based on [Yahoo! YUI Compressor](http://yui.github.io/yuicompressor). It requires [`yui-compressor`](https://rubygems.org/gems/yui-compressor) gem and Java 1.4+
-  * `:uglifier` - It's based on [UglifyJS2](http://lisperator.net/uglifyjs). It requires [uglifier](https://rubygems.org/gems/uglifier) gem and Node.js
-  * `:closure` - It's based on [Google Closure Compiler](https://developers.google.com/closure/compiler). It requires [`closure-compiler`](https://rubygems.org/gems/closure-compiler) gem and Java
-
-<p class="warning">
-  In order to use <code>:yui</code>, <code>:uglifier</code> and <code>:closure</code> compressors, you need to add the corresponding gem to <code>Gemfile</code>.
-</p>
-
-### Stylesheet
-
-We support the following engines:
-
-  * `:builtin` - It isn't efficient like the other algorithms, but it's a good starting point because it's written in **pure Ruby** and **it doesn't require external dependencies**.
-  * `:yui` - It's based on [Yahoo! YUI Compressor](http://yui.github.io/yuicompressor). It requires [`yui-compressor`](https://rubygems.org/gems/yui-compressor) gem and Java 1.4+
-  * `:sass` - It's based on [Sass](http://sass-lang.com). It requires [sass](https://rubygems.org/gems/sass) gem
+  * `:builtin` - использующий не самые эффективные алгоритмы, но зато написанный на **чистом Руби** и **не требует разрешения внешних зависимостей**.
+  * `:yui` - использующий [Yahoo! YUI Compressor](http://yui.github.io/yuicompressor). Требует установки гема [`yui-compressor`](https://rubygems.org/gems/yui-compressor) и Java 1.4+.
+  * `:uglifier` - использующий [UglifyJS2](http://lisperator.net/uglifyjs). Требует установки гема [uglifier](https://rubygems.org/gems/uglifier) и Node.js.
+  * `:closure` - использующий [Google Closure Compiler](https://developers.google.com/closure/compiler). Требует установки гема [`closure-compiler`](https://rubygems.org/gems/closure-compiler) и Java.
 
 <p class="warning">
-  In order to use <code>:yui</code>, and <code>:sass</code> compressors, you need to add the corresponding gem to <code>Gemfile</code>.
+  Для использования движков сжатия <code>:yui</code>, <code>:uglifier</code> и <code>:closure</code>, необходимо добавить соответствующие гемы в <code>Gemfile</code> проекта.
 </p>
 
-### Custom Compressors
+### Таблицы стилей
 
-We can use our own compressor for **both JS and CSS**.
-It **MUST** respond to `#compress(filename)` and return a `String` with the minification output.
+Мы поддерживаем следующие движки для сжатия:
+
+  * `:builtin` - использующий не самые эффективные алгоритмы, но зато написанный на **чистом Руби** и **не требует разрешения внешних зависимостей**.
+  * `:yui` - использующий [Yahoo! YUI Compressor](http://yui.github.io/yuicompressor). Требует установки гема [`yui-compressor`](https://rubygems.org/gems/yui-compressor) и Java 1.4+.
+  * `:sass` - использующий [Sass](http://sass-lang.com). Требует установки гема [sass](https://rubygems.org/gems/sass).
+
+<p class="warning">
+  Для использования движков сжатия <code>:yui</code> и <code>:sass</code>, необходимо добавить соответствующие гемы в <code>Gemfile</code> проекта.
+</p>
+
+### Пользовательские движки
+
+Мы можем использовать собственный движок для **JS и CSS**.
+Соответствующий объект **должен** иметь метод `#compress(filename)` и возвращать `String` со сжатым содержимым.
 
 ```ruby
 class MyCustomJavascriptCompressor
@@ -67,7 +67,7 @@ class MyCustomJavascriptCompressor
 end
 ```
 
-Then we can use it with our configuration:
+А затем этот объект нужно передать в конфигурацию:
 
 ```ruby
 # apps/web/application.rb
