@@ -1,15 +1,15 @@
 ---
-title: Guides - Assets Content Delivery Network (CDN)
+title: Руководство - Content Delivery Network (CDN)
 ---
 
-# Assets
+# Ассеты
 
 ## Content Delivery Network (CDN)
 
-A Hanami application can serve assets from a [Content Delivery Network](https://en.wikipedia.org/wiki/Content_delivery_network) (CDN).
-This feature is useful in _production_ environment, where we want to speed up static assets serving.
+Приложения Ханами могут раздавать ассеты из [Content Delivery Network](https://ru.wikipedia.org/wiki/Content_delivery_network) (CDN).
+Эта функция особенно полезна в режиме _эксплуатации_, когда мы хотим ускорить раздачу ассетов.
 
-In order to take advantage of this feature, we need to specify CDN settings.
+Чтобы воспользоваться ей, потребуется указать настройки CDN.
 
 ```ruby
 # apps/web/application.rb
@@ -35,7 +35,7 @@ module Web
 end
 ```
 
-Once _CDN mode_ is on, all the [asset helpers](/guides/helpers/assets) will return **absolute URLs**.
+Включив CDN один раз, все [хэлперы ассетов](/guides/helpers/assets) будут возвращать нужные **абсолютные URL**.
 
 ```erb
 <%= stylesheet 'application' %>
@@ -45,36 +45,38 @@ Once _CDN mode_ is on, all the [asset helpers](/guides/helpers/assets) will retu
 <link href="https://123.cloudfront.net/assets/application-9ab4d1f57027f0d40738ab8ab70aba86.css" type="text/css" rel="stylesheet">
 ```
 
-## Subresource Integrity
+## Целостность подресурсов
 
-A CDN can dramatically improve page speed, but it can potentially open a security breach.
-If the CDN that we're using is compromised and serves evil javascript or stylesheet files, we're exposing our users to security attacks like Cross Site Scripting (XSS).
+CDN способен значительно ускорить загрузку ваших страниц, но вместе с тем может стать причиной уязвимости в вашей системе безопасности.
 
-To solve this problem, browsers vendors introduced a defense called [Subresource Integrity](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity).
+Если ваш CDN будет скомпроментирован и начнет раздавать файлы JavaScript и таблиц стилей злоумышленников, то пользователи вашего приложения могут стать жертвой атак как XSS.
 
-When enabled, the browser verifies that the checksum of the downloaded file, matches with the declared one.
+Для решения этой проблемы поставщики браузеров создали средство защиты, названное [проверкой целостности подресурсов](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity).
 
-### From A CDN
+Когда эта функция включена, браузер будет сравнивать контрольные суммы загружаемых файлов CDN с полученными от вашего приложения.
 
-If we're using jQuery from their CDN, we should find the checksum of the `.js` file on their website and write:
+### В случае CDN
+
+Если мы хотим использовать jQuery из их CDN, то нам нужно найти контрольные суммы нужного файла `.js` и написать:
+
 
 ```erb
 <%= javascript 'https://code.jquery.com/jquery-3.1.0.min.js', integrity: 'sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=' %>
 ```
 
-The output will be:
+На выходе получим:
 
 ```html
 <script integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" src="https://code.jquery.com/jquery-3.1.0.min.js" type="text/javascript" crossorigin="anonymous"></script>
 ```
 
-### Local Assets
+### Локальные ассеты
 
-The security problem described above doesn't concern only CDNs, but local files too.
-Imagine we have a compromised file system and someone was able to replace our javascripts with evil files: we would be vulnerable to the same kind of attack.
+Проблема безопасности актуальна не только для ассетов с CDN, но и для локальных файлов тоже.
+Представим, что кто-то получил доступ к нашей файловой системе и заменил наши сценарии JavaScript своими.
 
-As a defense against this security problem, Hanami **enables Subresource Integrity by default in production.**
-When we [precompile assets](/guides/command-line/assets) at deploy time, Hanami calculates the checksum of all our assets and it adds a special HTML attribute `integrity` to our asset tags like `<script>`.
+Для исправления этой уязвимости Ханами **по умолчанию включает проверку целостности подресурсов в режиме эксплуатации**.
+Когда мы проводим [прекомпиляцию ассетов](/guides/command-line/assets) перед развертыванием прилоежния, Ханами подсчитывает контрольные суммы всех ассетов и добавляет специальный HTML атрибут `integrity` ко всем тегам ассетов, таким как `<script>`.
 
 ```erb
 <%= javascript 'application' %>
@@ -84,9 +86,9 @@ When we [precompile assets](/guides/command-line/assets) at deploy time, Hanami 
 <script src="/assets/application-92cab02f6d2d51253880cd98d91f1d0e.js" type="text/javascript" integrity="sha256-WB2pRuy8LdgAZ0aiFxLN8DdfRjKJTc4P4xuEw31iilM=" crossorigin="anonymous"></script>
 ```
 
-### Settings
+### Настройки
 
-To turn off this feature, or to configure it, please have a look at the `production` block in `apps/web/application.rb`
+Чтобы отключить или настроить эту функцию, обратитесь к блоку `production` в конфигурации `apps/web/application.rb`
 
 ```ruby
 module Web
@@ -101,18 +103,18 @@ module Web
 end
 ```
 
-By removing or commenting that line, the feature is turned off.
+Закомментировав или удалив эту строку мы отключим эту функцию.
 
-We can choose one or more checksum algorithms:
+Также мы можем выбрать один или несколько алгоритмов подсчета:
 
 ```ruby
 subresource_integrity :sha256, :sha512
 ```
 
-With this setting, Hanami will render `integrity` HTML attribute with two values: one for `SHA256` and one for `SHA512`.
+Для такой конфигурации, Ханами будет выводить HTML атрибут `integrity` с двумя значениями: одним для алгоритма `SHA256`, и другим для `SHA512`.
 
 ```html
 <script src="/assets/application-92cab02f6d2d51253880cd98d91f1d0e.js" type="text/javascript" integrity="sha256-WB2pRuy8LdgAZ0aiFxLN8DdfRjKJTc4P4xuEw31iilM= sha512-4gegSER1uqxBvmlb/O9CJypUpRWR49SniwUjOcK2jifCRjFptwGKplFWGlGJ1yms+nSlkjpNCS/Lk9GoKI1Kew==" crossorigin="anonymous"></script>
 ```
 
-**Please note** that checksum calculations are CPU intensive, so adding an additional `subresource_integrity` scheme will extend the time it takes to _precompile assests_, and therefore deploy. We suggest leaving the default setting (`:sha256`).
+**Обратите внимание**, подсчет контрольных сумм является интенсивной вычислительной операцией. Поэтому добавление каждого алгоритма в `subresource_integrity` будет увеличивать время _прекомпеляции ассетов_ перед развертыванием приложения. Мы рекомендуем использовать значение по умолчанию(`:sha256`).
