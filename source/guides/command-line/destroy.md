@@ -1,70 +1,71 @@
 ---
-title: "Guides - Command Line: Destroy"
+title: "Руководство - Командная строка: Отмена"
 ---
 
-# Command Line
+# Командная Строка
 
-## Destroy
+## Отмена
 
-Hanami has convenient [code generators](/guides/command-line/generators) to speed up our development process.
-If we commit a mistake, we can destroy what we just generated via `hanami destroy` command.
+[Генераторы кода](/guides/command-line/generators) Ханами позволяют ускорить процесс разработки. При этом никто не застрахован от ошибки во время вызова команд генерации кода.
+Если была допущена такая ошибка, то мы легко можем ее исправить отменив действия генератора при помощи команды `hanami destroy`.
 
-### Applications
 
-With the Container architecture, we can have multiple Hanami applications running under `apps/`.
-We can [generate new applications](/guides/command-line/generators) for different components that we want to add to our project.
+### Генератор приложений
 
-To destroy one of them:
+Контейнерная архитектура позволяет запускать несколько приложений Ханами из папки проекта `apps/`.
+Мы можем создавать их при помощи [генератора приложений](/guides/command-line/generators).
+
+Чтобы отменить действия этого генератора используем команду:
 
 ```shell
 % bundle exec hanami destroy app admin
 ```
 
-This removes an application named `Admin` under `apps/admin`.
+Она удалит приложение `Admin` из папки `apps/admin`.
 
-### Actions
+### Генератор экшенов
 
-We can destroy an action along with the corresponding view, template, route and test code with one command.
+Мы можем отменить создание генератором экшена, представления, шаблона, маршрута и тестов одной командой.
 
 ```shell
 % bundle exec hanami destroy action web books#show
 ```
 
-The first argument, `web`, is the name of the target application in a Container architecture.
-**It must be omitted if used within an Application architecture:**
+Первый аргумент, `web`, определяет имя приложения в контейнере проекта.
+**Его можно пропустить, если контейнерная архитектура не используется:**
 
 ```shell
 % bundle exec hanami destroy action books#show
 ```
 
-The argument `books#show` is the name of the controller and the action separated by the number sign (`#`).
+Аргумент `books#show` содержит имя контроллера и экшена, разделенных знаком (`#`).
 
-### Models
+### Генератор моделей
 
-We can destroy a model.
+Следующая команда отменяет создание модели.
 
 ```shell
 % bundle exec hanami destroy model book
 ```
 
-It removes an entity with the corresponding repository and test code.
+Будет удалена сущность, связанный репозиторий и файлы тестов.
 
-### Migrations
+### Генератор миграций
 
-We can destroy a migration.
+Следующая команда отменяет создание файла миграции.
 
 ```shell
 % bundle exec hanami destroy migration create_books
 ```
 
-It deletes the migration with the corresponding name (eg. `db/migrations/20150621181347_create_books.rb`).
+Будет удален файл с соответствующим именем(например: `db/migrations/20150621181347_create_books.rb`).
 
-### Mailers
+### Генератор мэйлеров
 
-We can destroy a mailer.
+Следующая команда отменяет создание мэйлера.
 
 ```shell
 % bundle exec hanami destroy mailer welcome
 ```
 
-It removes the mailer, and the associated templates.
+Будет удален мэйлер и связанные шаблоны.
