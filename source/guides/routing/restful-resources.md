@@ -1,10 +1,10 @@
 ---
-title: Руководство - Ресурсы в стиле REST
+title: Руководство - Маршруты: Ресурсы в стиле REST
 ---
 
 # REST
 
-В Hanami встроена поддержка [REST-архитектуры](http://en.wikipedia.org/wiki/Representational_state_transfer).
+В Ханами встроена поддержка [REST-архитектуры](http://en.wikipedia.org/wiki/Representational_state_transfer).
 
 Для ее определения на уровне маршрутов существует два метода: `resources` и `resource`.
 
