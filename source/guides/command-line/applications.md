@@ -1,44 +1,44 @@
 ---
-title: "Guides - Command Line: Applications"
+title: "Руководство - Командная строка: Приложения"
 ---
 
-# Command Line
+# Командная строка
 
-## Applications
+## Приложения
 
-We can generate a new project via `hanami new`, followed by the name that we want to use.
+Сгенерировать новый проект можно командой `hanami new`, за которой следует желаемое имя проекта.
 
 ```shell
 % hanami new bookshelf
 ```
 
-### Architecture
+### Архитектура
 
-The default architecture for a newly generated project is _Container_.
+По умолчанию проект генерируется с архитектурой _"Контейнер"_.
 
-We can use the `--architecture` argument (aliased as `--arch`) to specify a different architecture.
+Мы можем передать аргумент `--architecture`(сокращенно `--arch`) чтобы указать другую архитектуру.
 
-It supports:
+На текущий момент поддерживаются два типа архитектуры:
 
-  * `container` (default)
+  * `container` (по умолчанию)
   * `app`
 
-The following command will generate an `admin` project that uses the _Application_ architecture.
+Следующая команда сгенерирует проект `admin`, использующий архитектуру _"Приложение"_.
 
 ```shell
 % hanami new admin --arch=app
 ```
 
-### Database
+### База данных
 
-The default storage used is a toy file system database.
-This is because we want to provide a quick prototyping tool.
+По умолчанию в качестве хранилища данных используется "игрушечная" база данных на файловой системе.
+Это сделано для того, чтобы обеспечить разработчиков быстрым инструментом для прототипирования.
 
-We can use the `--database` argument to let Hanami to generate code for a specific data store.
+Мы можем передать аргумент `--database`, чтобы Ханами сгенерировал файлы для соответствующей базы данных.
 
-It supports:
+Поддерживаются:
 
-  * `filesystem` (default)
+  * `filesystem` (по умолчанию)
   * `memory`
   * `postgres`
   * `postgresql`
@@ -46,11 +46,11 @@ It supports:
   * `sqlite3`
   * `mysql`
 
-### Testing Framework
+### Фреймворк тестирования
 
-The default testing framework is Minitest.
+По умолчанию в качестве фреймворка для тестирования используется Minitest.
 
-We can use the `--test` argument to specify a different framework, from the list below:
+Мы можем передать аргумент `--test`, чтобы указать другой фреймворк из списка ниже:
 
   * `minitest` (default)
   * `rspec`

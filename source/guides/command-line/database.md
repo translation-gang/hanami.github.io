@@ -1,47 +1,47 @@
 ---
-title: "Guides - Command Line: Database"
+title: "Руководство - Командная строка: База данных"
 ---
 
-# Command Line
+# Командная строка
 
-## Database
+## База данных
 
-We can manage our database via the command line.
+В Ханами мы можем управлять базами данных прямо из командной строки.
 
-**The following commands can be only used with the SQL adapter and with the following databases:**
+**Из командной строки можно работать только со следующими реляционными базами данных:**
 
   * PostgreSQL
   * MySQL
   * SQLite3
 
-The [adapter](/guides/models/overview) is set in `lib/bookshelf.rb`.
-It uses an environment variable, defined in the `.env.*` files at the root of the project.
+[Адаптер базы данных](/guides/models/overview) для проекта `bookshelf` устанавливается в файле `lib/bookshelf.rb`.
+Он будет использовать конфигурацию окружения из файла `.env.*` в корневом каталоге проекта.
 
-### Create
+### Создание
 
-With `db create` we can create the database for the current environment.
+Команда `db create` создаст базу данных для текущего окружения.
 
 ```shell
 % bundle exec hanami db create
 ```
 
-In order to preserve production data, this command can't be run in the production environment.
+Эта команда не может быть запущена в окружении `production`.
 
-### Drop
+### Сброс
 
-With `db drop` we can drop the existing database for the current environment.
+Команда `db drop` сбросит базу данных текущего окружения.
 
 ```shell
 % bundle exec hanami db drop
 ```
 
-In order to preserve production data, this command can't be run in the production environment.
+Эта команда не может быть запущена в окружении `production`.
 
-### Migrate
+### Запуск миграций
 
-With `db migrate` we can run [migrations](/guides/migrations/overview) found in `db/migrations`.
+Команда `db migrate` запустит [миграции](/guides/migrations/overview) из папки `db/migrations`.
 
-Given the following migrations:
+Если есть следующие миграции:
 
 ```shell
 % tree db/migrations
@@ -50,59 +50,60 @@ db/migrations
 └── 20150613165900_create_authors.rb
 ```
 
-We run `db migrate`, then the database _version_ becomes `20150613165900`, which is the maximum timestamp from the migrations above.
+То запуск `db migrate` приведет базу данных к _версии_ `20150613165900`, которая соответствует временной метке последней запущенной миграции.
 
 ```shell
 % bundle exec hanami db migrate # Migrates to max migration (20150613165900)
 ```
 
-This command accepts an optional argument to specify the target version.
-For instance, if we want to **rollback** the changes from `20150613165900_create_authors.rb`, we can migrate _**"down"**_.
+Это команда может принимать необязательный аргумент с желаемой версией базы.
+Например, если мы хотим **откатить** изменения миграции `20150613165900_create_authors.rb`, то мы можем запустить миграцию _**"в направлении вниз"**_.
 
 ```shell
-% bundle exec hanami db migrate 20150613165259 # Migrates (down) to 20150613165259
+% bundle exec hanami db migrate 20150613165259 # Миграция (вниз) to 20150613165259
 ```
-
+**Эта команда доступна для любого окружения и любой реляционной базы данных.**
 **This command is available in ALL the environments and ALL the SQL databases.**
 
-### Prepare
+### Подготовка
 
-Prepares database for the current environment. This command can't be run in the production environment.
+Команда подготовки базы данных текущего окружения, недоступна в окружении `production`.
 
-When we run `db prepare` it:
+После запуска `db prepare` будет:
 
-  * Creates the database
-  * Loads SQL dump (if any, see `db apply`)
-  * Runs pending migrations
+  * Создана база данных;
+  * Загружен дамп базы(если он есть, см. `db apply`);
+  * Запущены все миграции.
 
 ```shell
 % bundle exec hanami db prepare
 ```
 
-This command SHOULD be used as a database setup command.
+Это команду следует использовать в качестве установщика базы данных.
 
 ### Apply
 
-This is an experimental feature.
-When an application is developed after years, it accumulates a large number of migrations, this slows down database operations for development and test (CI).
+Это экспериментальная функция.
 
-Because it does destructive changes to files under SCM, this is only allowed in development mode.
+Когда приложение разрабатывается на протяжении лет, оно накапливает больше число миграций и это замедляет работу с базой данных в режиме разработки и тестирования.
 
-When we run `db apply`, it:
+Эта функция бывает не стабильна и поэтому может быть запущена только в окружении разработки.
 
-  * Runs pending migrations
-  * Dumps a fresh schema into `db/schema.sql`
-  * Deletes all the migrations from `db/migrations`
+После запуска `db apply` будут:
+
+  * Запущены ожидающие миграции;
+  * Создан дамп схемы новой базы в `db/schema.sql`;
+  * Удалены все миграции в `db/migrations`.
 
 ```shell
 % bundle exec hanami db apply
 ```
 
-This command is available only in the development environment.
+Команда доступна только в окружении разработки.
 
-### Version
+### Версия
 
-Prints current database version. Given the following migrations:
+Команда выводит версию текущей базы данных. Например, есть такие миграции:
 
 ```shell
 % tree db/migrations
@@ -111,13 +112,13 @@ db/migrations
 └── 20150613165900_create_authors.rb
 ```
 
-When we migrate the database:
+После запуска миграций:
 
 ```shell
 % bundle exec hanami db migrate
 ```
 
-We can then ask for the current version:
+Версия базы будет такой:
 
 ```shell
 % bundle exec hanami db version

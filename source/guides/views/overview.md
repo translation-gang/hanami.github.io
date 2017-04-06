@@ -1,17 +1,17 @@
 ---
-title: Guides - Views Overview
+title: Руководство - Представления: Обзор
 ---
 
-# Overview
+# Обзор
 
-A view is an object that's responsible for rendering a template.
+Представлением мы называем объект, который отвечает за рендеринг(отрисовку) шаблона.
 
-In a full stack Hanami application, an incoming HTTP request goes through the [router](/guides/routing/overview), it instantiates and calls an [action](/guides/actions/overview), which sets the status code and the headers for the response.
-The last bit is the body, which is set by the corresponding view's output.
+В общем случае в приложении Ханами входящие HTTP запросы направляются в [маршрутизатор](/guides/routing/overview). Он создает объект [экшена](/guides/actions/overview), ответственного за подготовку данных для ответа и выставление его заголовков и статуса.
+В конце остается только создать тело ответа. Этим и займется слой представления.
 
-## A Simple View
+## Простое представление
 
-Hanami ships a generator for actions that creates a view and a template.
+Ханами поставляется с генератором для экшенов, который также создает файл представления и шаблон.
 
 ```shell
 % hanami generate action web dashboard#index
@@ -23,10 +23,10 @@ Hanami ships a generator for actions that creates a view and a template.
     create  spec/web/views/dashboard/index_spec.rb
 ```
 
-Looking at those file names, we have an action called `Web::Controllers::Dashboard::Index` (read about [actions naming](/guides/actions/overview)).
-Our view has a similar name: `Web::Views::Dashboard::Index`.
+Обратим внимание на имена файлов. У нас будет экшн `Web::Controllers::Dashboard::Index` ([подробнее об именовании экшенов](/guides/actions/overview)).
+Представление же получит похожее имя: `Web::Views::Dashboard::Index`.
 
-Let's examine the view:
+Содержание файла будет таким:
 
 ```ruby
 # apps/web/views/dashboard/index.rb
@@ -37,32 +37,34 @@ module Web::Views::Dashboard
 end
 ```
 
-### Naming
+### Именование
 
-That file begins with a module declaration which is similar to the [action naming structure](/guides/actions/overview).
-The only difference is that we use `Views` module instead of `Controllers`.
-**All the views are nested under it.**
-This module is generated at the runtime for us, when the application starts.
+Начало файла выглядит почти так же, как начало файла соответствующего [экшена](/guides/actions/overview).
+Отличается только название модуля: `Views`, вместо `Controllers`.
+
+**Все представления содержатся в этом модуле.**
+Он создается во время запуска приложения.
 
 <p class="convention">
-  For a given application named <code>Web</code>, views are available under <code>Web::Views</code>.
+  В приложении с именем <code>Web</code> все представления будут доступны через <code>Web::Views</code>.
 </p>
 
-**This symmetry is really important at run time.**
-After the action has finished its job, control passes to the framework which looks for the matching view.
+**Это важное условие выполнения программы.**
+
+Если явно не указано иное, то когда экшн выполнит свои инструкции, фреймворк попытается использовать соответствующий файл представления.
 
 <p class="convention">
-  For a given action named <code>Web::Controllers::Home::Index</code> which is handling a request, Hanami will look for a corresponding <code>Web::Views::Home::Index</code> view.
+  Для экшена с именем <code>Web::Controllers::Home::Index</code> Ханами ожидает наличие представления с именем <code>Web::Views::Home::Index</code>.
 </p>
 
-### View Module
+### Модуль View
 
-All the main Hanami components are mixins meant to be included.
-Because a Hanami Container can run multiple applications within the same Ruby process, the configurations of these different components should be kept separated.
+Все главные компоненты Ханами являются подключаемым модулями(mixins).
+Ханами может включать несколько приложений в рамках одного процесса, а значит конфигурации компонентов этих приложений должны быть жестко разграничены.
 
-In our example, we have a directive `include Web::View`.
-That means our view will behave according to the configuration of the `Web` application.
+В нашем примере есть строка кода `include Web::View`.
+Она означает, что наше представление будет использовать конфигурацию приложения с именем `Web`.
 
 <p class="convention">
-  For a given application named <code>Web</code>, the view mixin to include is <code>Web::View</code>.
+  Для приложения с именем <code>Web</code> будет использоваться модуль <code>Web::View</code>.
 </p>

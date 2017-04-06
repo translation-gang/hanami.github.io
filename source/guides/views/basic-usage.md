@@ -1,39 +1,39 @@
 ---
-title: Guides - Views Basic Usage
+title: Руководство - Представления: Использование
 ---
 
-# Basic Usage
+# Использование
 
-In the [previous section](/guides/views/overview) we generated a view. Let's use it.
+В [предыдущем разделе](/guides/views/overview) мы создали представление. Попробуем его использовать.
 
-## Default Rendering
+## Стандартный рендер
 
-First, we edit the corresponding template:
+Для начала изменим сответствующий шаблон:
 
 ```erb
 # apps/web/templates/dashboard/index.html.erb
 <h1>Dashboard</h1>
 ```
 
-By visiting `/dashboard`, we should see `<h1>Dashboard</h1>` in our browser.
+Открыв в браузере `/dashboard` мы должны будем увидеть `<h1>Dashboard</h1>`.
 
-Again we should look at the naming convention.
-Our view is `Web::Views::Dashboard::Index`, while the file name of the template is `web/templates/dashboard/index`.
+Здесь мы снова сталкиваемся с соглашением об именовании.
+Наше представление называется `Web::Views::Dashboard::Index`, а файл шаблона `web/templates/dashboard/index`.
 
 <p class="convention">
-  For a given view <code>Web::Views::Dashboard::Index</code>, the corresponding template MUST be available at <code>apps/web/templates/dashboard/index.html.erb</code>.
+  Для представления <code>Web::Views::Dashboard::Index</code> должен существовать шаблон <code>apps/web/templates/dashboard/index.html.erb</code>.
 </p>
 
-### Context
+### Контекст
 
-While rendering a template, varible lookups requested by the template go to a view _context_.
+Во время рендера файла шаблона используется _контекст представления_.
 
 ```erb
 # apps/web/templates/dashboard/index.html.erb
 <h1><%= title %></h1>
 ```
 
-If we amend our template by adding an interpolated variable, the view is responsible for providing it.
+Наличие переменных в шаблоне соответствует их наличию в представлении.
 
 ```ruby
 # apps/web/views/dashboard/index.rb
@@ -48,13 +48,13 @@ module Web::Views::Dashboard
 end
 ```
 
-The view now responds to `#title` by implementing it as a concrete method.
-We still see `<h1>Dashboard</h1>` when we visit `/dashboard`.
+В этом случае представление обеспечит доступ к `#title` внутри шаблона определив этот метод.
+Мы снова увидим `<h1>Dashboard</h1>` на странице `/dashboard`.
 
-### Exposures
+### Данные из экшена
 
-There is another source for our context: [_exposures_](/guides/actions/exposures).
-They are a payload that comes from the action.
+Контекст формируется также и [_выставлениями(exposures)_](/guides/actions/exposures).
+Это те данные, которые передаются из экшена.
 
 ```ruby
 # apps/web/controllers/dashboard/index.rb
@@ -70,7 +70,7 @@ module Web::Controllers::Dashboard
 end
 ```
 
-We can remove `#title` from our view, to get the same output when accessing `/dashboard`.
+Мы можем убрать `#title` из представления и сделать его доступным другим способом.
 
 ```ruby
 # apps/web/views/dashboard/index.rb
@@ -82,15 +82,16 @@ end
 ```
 
 <p class="notice">
-Rendering context for a template is made of view methods and exposures.
+Контекст внутри шаблона определяется контекстом представления и выставлениями(exposures) экшена.
 </p>
 
-## Custom Rendering
+## Управление рендерингом
 
-Hanami performs rendering by calling `#render` on a view and it expects a string in return.
-The benefit of an object-oriented approach is the ability to easily diverge from default behavior.
+Ханами формирует страницу при помощи вызова `#render` внутри представления и ожидает от него возврата строки.
 
-We can override that method to define a custom rendering policy.
+Объектно-ориентированный подход позволяет легко изменить это поведение.
+
+Мы можем просто переопределить этот метод.
 
 ```ruby
 # apps/web/views/dashboard/index.rb
@@ -105,13 +106,12 @@ module Web::Views::Dashboard
 end
 ```
 
-Once again our output is still the same, but the template isn't used at all.
+Результат в браузере не изменится, но на этот раз шаблон не будет использован совсем.
 
 <p class="convention">
-If a view overrides <code>#render</code> the output MUST be a string that will be the body of the response.
-The template isn't used and it can be deleted.
+Если в представлении переопределен метод <code>#render</code>, то он должен возвращать строку. Эта строка станет телом ответа и шаблон можно будет удалить, так как он перестанет использоваться.
 </p>
 
-## Bypass Rendering
+## Пропуск представления
 
-If an action assigns the body of the response with `#body=`, the rendering of the view is [bypassed](/guides/actions/basic-usage).
+Если экшн явно использует определение тела ответа `#body=`, то представление будет [пропущено](/guides/actions/basic-usage).

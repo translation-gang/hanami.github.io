@@ -1,27 +1,28 @@
 ---
-title: Guides - Migrations Create Tables
+title: Руководство - Миграции: Создание таблиц
 ---
 
-# Migrations
+# Миграции
 
-## Create Tables
+## Создание таблиц
 
-A table is defined via `#create_table`. This method accepts two arguments: the **name** and a **block** that expresses the design.
+Таблицы создаются методом `#create_table`. Он принимает два аргумента: **название таблицы** и **блок**, в котором описана структура таблицы.
 
-Safe operation can be performed via `#create_table?`. It only creates the table if it doesn't exist.
-Force operation can be performed via `#create_table!`. It drops the existing table and creates a new one from scratch.
-**These operations shouldn't be used in migrations**.
+У этого метода есть безопасный аналог `#create_table?`. Он создаст таблицу только в том случае, если ее еще не существует.
+Также есть принудительный аналог `#create_table!`. Если таблица с заданным названием уже существует, то он удалит ее и создаст новую.
 
-#### Column Definition
+**Мы не рекомендуем использовать последние два метода в файлах миграций**.
 
-To define a column we use `#column`, followed by the **name**, the **type** and **options**.
-The name must be a unique identifier within the table.
+#### Объявление столбцов
 
-The type can be a Ruby type (e.g. `String`), a symbol that represents a Ruby type (e.g. `:string`)  , or a string that represents the raw database type (e.g. `"varchar(255)"`).
+Для объявления столбцов внутри блока `#create_table` используется метод `#column`. Ему передается **имя столбца**, **тип данных** и **набор опций**.
+Имя столбца должны быть уникальным в пределах таблицы.
 
-##### Type Definition
+В качестве типа можно передать тип данных Руби(например `String`), символ с названием типа данных Руби(например `:string`) или строку с типом данных встроенным в базу данных(например `"varchar(255)"`).
 
-The following Ruby types are supported:
+##### Типы данных
+
+Поддерживаются следующие типы данных Руби:
 
   * `String` (`varchar(255)`)
   * `Numeric` (`numeric`)
@@ -37,34 +38,35 @@ The following Ruby types are supported:
   * `FalseClass` (`boolean`)
   * `File` (`blob`)
 
-Their translation from Ruby types to database types may vary from database to database.
+В зависимости от базы данных это соответствие может незначительно отличаться.
 
-##### Options
+##### Опции
 
-It supports the following options:
+Поддерживаются следующие опции:
 
-  * `:default` (default value)
-  * `:index` (create an index for the column)
-  * `:null` (allow NULL values or not)
-  * `:primary_key` (make the column primary key for the table)
-  * `:unique` (add an uniqueness constraint for the column)
+  * `:default` (задает значение по умолчанию);
+  * `:index` (помечает поле как индекс);
+  * `:null` (разрешает или запрещает значение NULL);
+  * `:primary_key` (помечает поле как первичный ключ);
+  * `:unique` (включает поддержку уникальности значений);
 
 
 
-#### Primary Key
+#### Первичный ключ
 
-We can define **primary keys** with the following syntaxes:
+Мы можем объявить **первичный ключ** используя следующий синтаксис:
 
 ```ruby
 column :id, Integer, null: false, primary_key: true
-# or just use this shortcut
+# или используя такое сокращение
 primary_key :id
 ```
 
-#### Foreign Keys
+#### Внешний ключ
 
-**Foreign keys** are defined via `#foreign_key`, where we specify the **name** of the column, the **referenced table**, and a set of **options**.
-The following example creates an `author_id` column (integer) for `books` and adds a foreign key.
+**Внешние ключи** объявляются через метод `#foreign_key`, которому передается **имя поля** в текущей таблице, **имя внешней таблицы** и **набор опций**.
+
+В следующем примере будет создано поле `author_id`(integer) в таблице `books`, помеченное как внешний ключ.
 
 ```ruby
 create_table :books do
@@ -73,21 +75,21 @@ create_table :books do
 end
 ```
 
-##### Options
+##### Опции
 
-It accepts the following options:
+Этот метод принимает следующий набор опций:
 
-  * `:deferrable` (make the constraint check deferrable at the end of a transaction)
-  * `:key` (the column in the associated table that this column references. Unnecessary if this column references the primary key of the associated table)
-  * `:null` (allow NULL values or not)
-  * `:type` (the column type)
-  * `:on_delete` (action to take if the referenced record is deleted: `:restrict`, `:cascade`, `:set_null`, or `:set_default`)
-  * `:on_update` (action to take if the referenced record is updated: `:restrict`, `:cascade`, `:set_null`, or `:set_default`)
+  * `:deferrable` (допускает задержку во время транзакций);
+  * `:key` (поле в ассоциированной таблице, которому соответствует внешний ключ. Избыточно, если это поле является первичным ключом);
+  * `:null` (разрешены ли NULL значения);
+  * `:type` (тип данных поля);
+  * `:on_delete` (действие после удаления записи во внешней таблице: `:restrict`, `:cascade`, `:set_null` или `:set_default`);
+  * `:on_update` (действие после изменения записи во внешней таблице: `:restrict`, `:cascade`, `:set_null` или `:set_default`).
 
 
-#### Indexes
+#### Индексы
 
-Indexes are defined via `#index`. It accepts the **name(s)** of the column(s), and a set of **options**.
+Индексы объявляются через метод `#index`. Он принимает **имя** одного или нескольких полей и **набор опций**.
 
 ```ruby
 create_table :stores do
@@ -101,19 +103,19 @@ create_table :stores do
 end
 ```
 
-##### Options
+##### Опции
 
-It accepts the following options:
+Этот метод принимает следующий набор опций:
 
-  * `:unique` (uniqueness constraint)
-  * `:name` (custom name)
-  * `:type` (the type of index, supported by some databases)
-  * `:where` (partial index, supported by some databases)
+  * `:unique` (проверка уникальности);
+  * `:name` (выбор нестандартного имени);
+  * `:type` (тип индекса, если поддерживается базой данных);
+  * `:where` (часть индекса, если поддерживается базой данных)
 
 
-#### Constraints
+#### Ограничение
 
-We can define constraints on columns via `#constraint`. It accepts a **name** and a **block**.
+Мы можем задать ограничения на значения полей методом `#constraint`. Он принимает **имя поля** и **блок**.
 
 ```ruby
 create_table :users do
@@ -123,8 +125,9 @@ create_table :users do
 end
 ```
 
-Please note that the block is evaluated in the context of the database engine, **complex Ruby code doesn't work**.
-Database functions are mapped to Ruby functions, but this reduces the portability of the migration.
+Обратите внимание, блок исполняется движком базы данных. **Сложный код Руби не будет работать**.
+
+Функции баз данных имеют аналоги в виде функций Руби, но это может слишком усложнить код миграций.
 
 ```ruby
 create_table :users do
@@ -134,9 +137,9 @@ create_table :users do
 end
 ```
 
-#### Checks
+#### Проверки
 
-Checks are similar to constraints, but they accept an **anonymous block** or a **SQL raw string**.
+Проверки похожи на ограничения, но они принимают только **анонимный блок** или **строку чистого SQL**.
 
 ```ruby
 create_table :users do

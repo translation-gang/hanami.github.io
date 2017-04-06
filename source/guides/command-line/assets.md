@@ -1,29 +1,29 @@
 ---
-title: "Guides - Command Line: Assets"
+title: "Руководство - Командная строка: Ассеты"
 ---
 
-# Command Line
+# Командная строка
 
-## Assets
+## Ассеты
 
-We can manage assets via the command line.
+Мы можем управлять ассетами через командную строку.
 
-### Precompile
+### Прекомпиляция
 
-This command is useful for **deployment** purposes.
+Эта команда удобна для **развертывания** приложения.
 
 ```shell
 % bundle exec hanami assets precompile
 ```
 
-The first step it precompiles and copies all the assets from all the applications and third party gems under `public/assets/` directory.
+Сначала она прекомпилирует и копирует все ассеты из приложения и внешних гемов в папку `public/assets/`.
 
-Then it [compress](/guides/assets/compressors) all the javascripts and stylesheets, in order to save browsers bandwidth.
+Потом [сжимает](/guides/assets/compressors) все таблицы стилей и код JavaScript.
 
-As last thing, it generates a copy of each asset, by appending its checksum to the file name.
-This trick makes assets cacheable by browsers.
+В конце она приписывает к имени каждого файла его контрольную сумму.
+Это позвляет браузерам правильно кэшировать файлы.
 
-It generates a fingeprint manifest that lists all the assets and their checksum counterpart.
+Также она генерирует манифест с контрольными суммами всех ассетов.
 
 ```shell
 % cat public/assets.json
@@ -33,11 +33,11 @@ It generates a fingeprint manifest that lists all the assets and their checksum 
 }
 ```
 
-This is used by assets helpers to resolve an asset name into a relative path.
+Он используется хэлперами ассетов для создания путей к этим файлам.
 
-### Example
+### Пример
 
-Let's say we have a project with three applications: `admin`, `metrics` and `web`.
+Допустим, у нас есть проект с тремя приложениями: `admin`, `metrics` и `web`.
 
 ```ruby
 # config/environment.rb
@@ -49,13 +49,14 @@ Hanami::Container.configure do
 end
 ```
 
-They have the following sources:
+Их ассеты хранятся в следующих папках:
 
-  * Admin: `apps/admin/assets`
-  * Metrics: `apps/metrics/assets`
-  * Web: `apps/web/assets`, `apps/web/vendor/assets`
-
-Furtermore, they all depend on Ember.js, which is distributed by an imaginary gem named `hanami-ember`.
+  * Admin: `apps/admin/assets`;
+  * Metrics: `apps/metrics/assets`;
+  * Web: `apps/web/assets`, `apps/web/vendor/assets`.
+  
+ 
+Более того, все они имеют внешние зависимости в Ember.js, который поставляется с условным гемом `hanami-ember`.
 
 ```shell
 % tree .
@@ -85,7 +86,7 @@ Furtermore, they all depend on Ember.js, which is distributed by an imaginary ge
 # ...
 ```
 
-When we run `hanami assets precompile` on our server, here's the output.
+Запуск `hanami assets precompile` приведет к следующему результату:
 
 ```shell
 % tree public
@@ -121,6 +122,7 @@ public
 ```
 
 <p class="convention">
-  The structure of the output directories in <code>public/assets</code>, reflects the path prefix of each application. The default application named <code>Web</code>, is mounted at <code>/</code>, so the output directory is <code>public/assets</code> and their base URL is <code>/assets</code> (eg. <code>/assets/application-28a6b886de2372ee3922fcaf3f78f2d8.js</code>).
-  Simirarly, for an application <code>Admin</code> mounted at <code>/admin</code>, the assets will be placed under <code>public/assets/admin</code> and reachable at <code>/assets/admin/application-28a6b886de2372ee3922fcaf3f78f2d8.js</code>.
+  Результирующие папки в <code>public/assets</code> отражают структуру приложений проекта. Приложение по умолчанию называется <code>Web</code> и его ассеты хранятся прямо в <code>/</code> в папке <code>public/assets</code>, а их URL будут начинаться с <code>/assets</code> (Например: <code>/assets/application-28a6b886de2372ee3922fcaf3f78f2d8.js</code>).
+  
+  Аналогично, для приложения <code>Admin</code> из папки <code>/admin</code> ассеты будут храниться в <code>public/assets/admin</code> и доступны по URL с соответсвующим префиксом <code>/assets/admin/application-28a6b886de2372ee3922fcaf3f78f2d8.js</code>.
 </p>

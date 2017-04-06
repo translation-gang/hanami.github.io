@@ -1,16 +1,16 @@
 ---
-title: Guides - Action MIME Types
+title: Руководство - Экшены: MIME типы
 ---
 
-# MIME Types
+# MIME типы
 
-Actions have advanced features for MIME type detection, automatic headers, whitelisting etc..
+В экшенах есть продвинутые функции, работающие с MIME: определение, обработка заголовков, белый список и др..
 
-## Request Introspection
+## Анализ запросов
 
-In order to understand what the requested MIME type is, an action looks at the `Accept` request header and exposes a high level API: `#format` and `#accept?`.
+Чтобы определить тип MIME, экшн анализирует заголовок запроса `Accept` и предлагает высокоуровневый API: `#format` и `#accept?`.
 
-The first returns a symbol representation of the MIME type (eg. `:html`, `:json`, `:xml` etc..), while the second is a query method that accepts a MIME type string and checks if it's accepted by the current browser.
+Первый метод возвращает символ, отражающий MIME тип (`:html`, `:json`, `:xml` и др.), а второй делает запрос и проверяет, поддерживает ли данный браузер соответствующий тип.
 
 ```ruby
 # apps/web/controllers/dashboard/index.rb
@@ -28,16 +28,16 @@ module Web::Controllers::Dashboard
 end
 ```
 
-## Automatic Content-Type
+## Автоматическое определение Content-Type
 
-An action returns the `Content-Type` response header automatically according to the requested MIME Type and charset.
+Экшн определяет заголовок ответа `Content-Type` автоматически исходя из MIME типа запроса и его кодировки.
 
-If the client asks for `Accept: text/html,application/xhtml+xml,application/xml;q=0.9`, the action will return `Content-Type: text/html; charset=utf-8`.
+Если клиент пришлет запрос `Accept: text/html,application/xhtml+xml,application/xml;q=0.9`, то экшн вернет `Content-Type: text/html; charset=utf-8`.
 
-### Default Request Format
+### Формат запроса по умолчанию
 
-If a client asks for a generic `Accept: */*`, the action will fall back to the **application default format**.
-This is a setting that allows us to safely handle cases like our example; the default value is `:html`.
+Если клиент делает обобщенный запрос `Accept: */*`, экшн будет использовать **формат по умолчанию**.
+Эта настройка позволяет нам безопасно обрабатывать подобные запросы. По умолчанию ее значение `:html`.
 
 ```ruby
 # apps/web/application.rb
@@ -52,10 +52,9 @@ module Web
 end
 ```
 
-### Default Response Format
+### Формат ответа по умолчанию
 
-If we are building a JSON API app, it can be useful to specify a `:json` as default MIME Type for the response.
-The default value is `:html`.
+Если мы создаем приложение, являющееся JSON API, то нам может пригодиться настройка `:json` в качестве формата ответа по умолчанию. По умолчанию ее значение `:html`.
 
 ```ruby
 # apps/web/application.rb
@@ -70,10 +69,10 @@ module Web
 end
 ```
 
-### Default Charset
+### Кодировка по умолчанию
 
-Similarly, we can specify a different default charset to return.
-The standard value is `utf-8`, but we can change it in our settings.
+Аналогично мы можем указать разные кодировки.
+По умолчанию установлена `utf-8`, но ее мы можем так же изменить в файле конфигурации.
 
 ```ruby
 # apps/web/application.rb
@@ -88,9 +87,9 @@ module Web
 end
 ```
 
-### Override
+### Переназначение
 
-There is a way we can force the returned `Content-Type`: use `#format=`.
+Существует способ указать возвращаемый `Content-Type` используя `#format=`.
 
 ```ruby
 # apps/web/controllers/dashboard/index.rb
@@ -109,12 +108,12 @@ module Web::Controllers::Dashboard
 end
 ```
 
-The example above will return `Content-Type: application/json; charset=utf-8`.
+Пример выше вернет `Content-Type: application/json; charset=utf-8`.
 
-## Whitelisting
+## Белый список
 
-We can also restrict the range of accepted MIME Types.
-If the incoming request doesn't satisfy this constraint, the application will return a `Not Acceptable` status (`406`).
+Мы можем ограничить диапазон MIME типов, которые могут быть приняты.
+Если запрос не удовлетворяет этим ограничениям, то приложение вернет `Not Acceptable` статус (`406`).
 
 ```ruby
 # apps/web/controllers/dashboard/index.rb
@@ -130,12 +129,12 @@ module Web::Controllers::Dashboard
 end
 ```
 
-## Register MIME Types
+## Регистрация MIME типов
 
-Hanami knows about more than 100 of the most common MIME types.
-However, we may want to add custom types in order to use them with `#format=` or `.accept`.
+Ханами распознает более 100 наиболее популярных MIME типов.
+При этом мы можем захотеть добавить свой тип и использовать его с `#format=` и `.accept`.
 
-In our application settings we can use `controller.format`, which accepts a Hash where the key is the format symbol (`:custom`) and the value is a string expressed in the MIME type standard (`application/custom`).
+В настройках нашего приложения мы можем использовать `controller.format`, который принимает хэш, где ключем является символ с именем формата (`:custom`), а значение строкой определяющей стандарт MIME типа (`application/custom`).
 
 ```ruby
 # apps/web/application.rb

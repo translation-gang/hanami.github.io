@@ -1,28 +1,25 @@
 ---
-title: "Guides - Architectures: Container"
+title: "Руководство - Архитектура: Обзор"
 ---
 
-# Architectures
+# Архитектура
 
-Hanami is based in on two principles: [Clean Architecture](https://blog.8thlight.com/uncle-bob/2012/08/13/the-clean-architecture.html) and [Monolith First](http://martinfowler.com/bliki/MonolithFirst.html).
+В основе Ханами лежит принцип [Чистой архитектуры(Clean Architecture)](https://blog.8thlight.com/uncle-bob/2012/08/13/the-clean-architecture.html) и [стремление сохранения монолитной системы(Monolith First)](http://martinfowler.com/bliki/MonolithFirst.html).
 
-## Clean Architecture
+## Чистая архитектура
 
-The main purpose of this architecture is to enforce a **separation of concerns** between the **core** of our product and the **delivery mechanisms**.
-The first is expressed by the set of **use cases** that our product implements, while the latter are interfaces to make these features available to the outside world.
+Такая архитектура предназначена обеспечить **разделение ответственности(separation of concerns)** между **ядром** нашего приложения, которое осуществляет целевую функциональность, и **механизмами доставки**, которые посредством интерфейсов делают ее доступной внешнему миру.
 
-When we generate a new project we can find two important directories: `lib/` and `apps/`.
-They are home to the main parts described above.
+В сгенерированном проекте находятся папки `lib/` и `apps/`. В них и базируются описанные выше части приложения.
 
-### Application Core
+### Ядро приложения
 
-We implement a set of functionalities, without worrying about how they can be exposed to the outside world.
-This is the **cornerstone** of our product, and we want to be careful on how we manage dependencies for it.
+Наше приложение должно выполнять некоторый набор функций независимо от того, как будет организован доступ к ним из внешнего мира.
+Это **краеугольный камень** нашего приложения и нам следует быть внимательными во время управления его зависимостями.
 
-`Hanami::Model` is the default choice for persisting our Ruby objects.
-This is a _soft-dependency_, it can be removed from our `Gemfile` and replaced with something else.
+По умолчанию `Hanami::Model` обеспечивает сопровождение данных от интерфейсов до базы данных(persistence level). Эта часть приложения не имеет жестких зависимостей и может быть заменена в нашем `Gemfile`.
 
-Let's have a look at how the `lib/` directory appears for a new generated project called `bookshelf` that uses `Hanami::Model`.
+Посмотрим на папку `lib/` из только что сгенерированного проекта `bookshelf`, использующего `Hanami::Model`.
 
 ```shell
 % tree lib
@@ -36,29 +33,29 @@ lib
 
 5 directories, 1 file
 ```
+Задумка в том, чтобы разрабатывать приложение так же как и гем Руби.
 
-The idea is to develop our application like a Ruby gem.
+Файл `lib/bookshelf.rb` является связующим звеном(entry point) между модулем и нашим приложением. Включая этот файл при помощи `require` мы включаем и весь код в папке `lib/`.
 
-The `lib/bookshelf.rb` file is the entry point for our application, when we require this file, we require and initialize all the code under `lib/`.
-
-There are two important directories:
+Здесь расположены две важные папки:
 
   * `lib/bookshelf/entities`
   * `lib/bookshelf/repositories`
 
-They contain [entities](/guides/models/entities) that are Ruby objects at the core of our model domain and they aren't aware of any persistence mechanism.
-For this purpose we have a separated concept [repositories](/guides/models/repositories), which are a mediator between our entities and the underlying database.
+Первая содержит [сущности](/guides/models/entities).
+Это объекты Руби, которые составляют ядро модели. Они не должны обеспечивать хранение данных и механизмы транзакций.
+Для этих целей мы выделили классы [репозиториев](/guides/models/repositories), которые определены во второй папке. Именно они выступают посредником между сущностями модели и базами данных.
 
-For each entity named `Book` we can have a `BookRepository`.
+Они работают в паре. Таким образом для сущности `Book` должен быть определен `BookRepository`.
 
-We can add as many directories that we want, such as `lib/bookshelf/interactors` to implement our use cases.
+Таких папок может быть столько, сколько понадобится. Так для нашего примера была создана  `lib/bookshelf/interactors`.
 
-### Delivery Mechanisms
+### Механизмы доставки
 
-Hanami generates a default application named `Web`, which lives under `apps/web`.
-This application **depends** on the core of our product, as it uses entities, repositories and all the other objects defined there.
+Ханами по умолчанию генерирует приложение с названием `Web`, расположенное в `apps/web`
+Это приложение имеет **зависимости** в ядре нашего проекта: сущности, репозитории и другие определенные в нем объекты.
 
-It's used as web delivery mechanism, for our features.
+Это приложение используется как механизм доставки возможностей нашего продукта в веб.
 
 ```shell
 % tree apps/web
@@ -80,35 +77,34 @@ apps/web
 8 directories, 5 files
 ```
 
-Let's have a quick look at this code.
+Коротко рассмотрим этот код.
 
-The file `apps/web/application.rb` contains a Hanami application named `Web::Application`, here we can configure all the settings for this **component** of our project.
-Directories such as `apps/web/controllers`, `views` and `templates` will contain our [actions](/guides/actions/overview), [views](/guides/views/overview) and [templates](/guides/views/templates).
+Файл `apps/web/application.rb` содержит описание объекта Ханами-приложения `Web::Application`. В нем мы можем определить все настройки этого **компонента** проекта.
+Папки `apps/web/controllers`, `views` и `templates` содержат [экшены(actions)](/guides/actions/overview), [представления(views)](/guides/views/overview) и [шаблоны(templates)](/guides/views/templates).
 
-Web assets such as javascripts and stylesheets will be automatically served by the application.
+Загружаемые с HTML-страницей файлы, такие как код JavaScript и таблицы стилей автоматически становятся доступны после помещения их в `/apps/web/assets`.
 
-## Monolith First
+## Монолитная система
 
-Our default application `Web` can be used as a UI interface for our customers.
-At a certain point in our story, we want to manage our users with an admin panel.
+Наше сгенерированное по умолчанию приложение `Web` будет использоваться в качестве источника пользовательского интерфейса.
+Одним из возможных вариантов развития проекта может стать добавление интерфейса для администратора.
 
-We know that the set of features that we're going to introduce doesn't belong to our main UI (`Web`).
-On the other hand, it's **too early** for us to implement a microservices architecture, only for the purpose of helping our users reset their password.
+Мы не хотим чтобы наш проект предоставлял некоторые возможности в рамках главного пользовательского интерфейса(`Web`).
+С другой стороны еще **слишком рано** переходить к микросервисной архитектуре просто ради возможности пользователя сбросить пароль.
 
-Hanami has a solution for our problem: we can generate a new app that lives in the same Ruby process, but it's a separated component.
+Ханами предлагает решение нашей проблемы: мы можем сгенерировать новое приложение, которое будет работать в рамках того же процесса Руби, но при этом останется самостоятельным компонентом.
 
 ```shell
 % bundle exec hanami generate app admin
 ```
+Эта команда должна быть запущена из корневого каталога нашего проекта. Она создаст новое приложение(`Admin::Application`) в папке `apps/admin`.
 
-This command MUST be run from the root of our project. It will generate a new application (`Admin::Application`) under `apps/admin`.
+На более поздней стадии развития проекта мы сможем переместить его и сделать полностью автономным.
+Достаточно перенести папку `apps/admin` в отдельный репозиторий и развернуть приложение.
 
-At the late stages of our product life, we can eventually decide to extract this into a standalone component.
-We just need to move everything under `apps/admin` into another repository and deploy it separately.
+## Каркас приложения
 
-## Anatomy Of A Project
-
-We have examined `lib/` and `apps/` until now, but there are other parts of a new generated project that deserve to be explained.
+Мы рассмотрели содержимое каталогов `lib/` и `apps/`, но есть и другие части нашего проекта заслуживающие внимания.
 
 ```shell
 % tree -L 1
@@ -124,13 +120,11 @@ We have examined `lib/` and `apps/` until now, but there are other parts of a ne
 └── spec
 ```
 
-Let's quickly introduce them:
+Коротко скажем о них:
 
-  * `Gemfile` and `Gemfile.lock` are [Bundler](http://bundler.io) artifacts
-  * `Rakefile` describes Rake task for our project.
-  * `config/` contains an important file `config/environment.rb`, which is the **entry point** for our project.
-    By requiring it, we'll preload our dependencies (Ruby gems), Hanami frameworks and our code.
-  * `config.ru` is a file that describes how a Rack server must run our applications.
-  * `db/` contains database files (for File System adapter or SQLite).
-    When our project uses a SQL database it also contains `db/migrations` and `db/schema.sql`.
-  * `spec/` contains unit and acceptance tests.
+  * `Gemfile` и `Gemfile.lock` необходимы для функционирования [Bundler](http://bundler.io)
+  * `Rakefile` описывает Rake-таски для нашего проекта.
+  * `config/` содержит важный файл `config/environment.rb`, который является **отправной точкой(entry point)** нашего приложения. Вместе с ним включаются зависимости проекта(гемы Руби), модули Ханами и наш код.
+  * `config.ru` файл, который описывает как Rack-сервер будет работать с нашими приложениями.
+  * `db/` содержит файлы относящиеся к базам данных. Если проект использует реляционную базу данных, то он дополнительно включает `db/migrations` и `db/schema.sql`.
+  * `spec/` содержит модульные и приемочные автоматизированные тесты.

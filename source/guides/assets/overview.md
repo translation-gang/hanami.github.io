@@ -1,19 +1,19 @@
 ---
-title: Guides - Assets Overview
+title: Руководство - Ассеты, обзор
 ---
 
-# Assets
+# Ассеты
 
-Hanami supports powerful features for web assets.
+Ханами предоставляет ряд инструментов для работы с ассетами: таблицами стилей, сценариями JavaScript, изображениями и др..
 
-## Configuration
+## Конфигурация
 
-Each application can have its own separated assets settings in application configuration.
+Каждое приложение проекта имеет собственную конфигурацию для ассетов.
 
-### Compile Mode
+### Режим компиляции
 
-Toggle this value, to determine if the application must preprocess or copy assets from sources to public directory.
-It's turned on by default in _development_ and _test_ environments, but turned off for _production_.
+Эта опция определяет, будет ли приложение обрабатывать ассеты или просто копировать их в папку доступную клиентам.
+По умолчанию она включена в режиме _разработки_ и _тестирования_, но отключена в режиме _эксплуатации_.
 
 ```ruby
 # apps/web/application.rb
@@ -22,7 +22,7 @@ module Web
     configure do
       # ...
       assets do
-        # compile true, enabled by default
+        # compile true, по умолчанию опция включена
       end
     end
 
@@ -35,12 +35,12 @@ module Web
 end
 ```
 
-### Fingerprint Mode
+### Контрольные суммы
 
-In order to force browsers to cache the right copy of an asset, during the deploy, Hanami creates a copy of each file by [appending its checksum](/guides/command-line/assets) to the file name.
+Чтобы браузеры правильно кэшировали файлы, во время развертывания приложения Ханами создает копию каждого файла и дополняет их имена [контрольными суммами](/guides/command-line/assets).
 
-We can control this feature via application configuration.
-It's turned on by default only in _production_ environment.
+Мы можем отключить эту функцию в конфигурации приложения.
+По умолчанию она включена только в режиме _эксплуатации_.
 
 ```ruby
 # apps/web/application.rb
@@ -49,7 +49,7 @@ module Web
     configure do
       # ...
       assets do
-        # fingerprint false, disabled by default
+        # fingerprint false, опция отключена по умолчанию
       end
     end
 
@@ -62,7 +62,7 @@ module Web
 end
 ```
 
-If enabled, [assets helpers](/guides/helpers/assets) will generate checksum relative URLs.
+[Хэлперы ассетов](/guides/helpers/assets), если они включены, учтут контрольные суммы при создании относительного пути файла.
 
 ```erb
 <%= javascript 'application' %>
@@ -72,12 +72,12 @@ If enabled, [assets helpers](/guides/helpers/assets) will generate checksum rela
 <script src="/assets/application-d1829dc353b734e3adc24855693b70f9.js" type="text/javascript"></script>
 ```
 
-## Serve Static Assets
+## Работа с статичными файлами
 
-It can dynamically serve them during development.
-It mounts `Hanami::Static` middleware in project Rack stack. This component is conditionally activated, if the environment variable `SERVE_STATIC_ASSETS` equals to `true`.
+Статичные файлы во время разработки обслуживаются наравне с динамическими.
+Для этого подключается специальный слой ПО промежуточного уровня `Hanami::Static`. Этот компонент подключается когда переменная окружения `SERVE_STATIC_ASSETS` равна `true`.
 
-By default, new projects are generated with this feature enabled in _development_ and _test_ mode, via their corresponding `.env.*` files.
+По умолчанию новые проекты включают эту функцию в режиме _разработки_ и _тестирования_ посредством файлов окружения `.env.*`.
 
 ```
 # .env.development
@@ -85,83 +85,83 @@ By default, new projects are generated with this feature enabled in _development
 SERVE_STATIC_ASSETS="true"
 ```
 
-Hanami assumes that projects in _production_ mode are deployed using a web server like Nginx that is responsible to serve them without even hitting the Ruby code.
+Ханами предполагает, что в режиме _эксплуатации_ проект будет использовать веб-сервер, такой как Nginx, который будет быстрее обслуживать статичные файлы не вызывая лишний раз код на Руби.
 
 <p class="convention">
-  Static assets serving is enabled by default in <em>development</em> and <em>test</em> environments, but turned off for <em>production</em>.
+  Статичные файлы по умолчанию обслуживаются в режиме <em>разработки</em> и <em>тестирования</em>, но не в режиме <em>эксплуатации</em>.
 </p>
 
-There are cases where this assumption isn't true. For instance, Heroku requires Ruby web apps to serve static assets.
-To enable this feature in production, just make sure that this special environment variable is set to `true` (in `.env` or `.env.production`).
+Иногда это предположение оказывается неверным. Например, Heroku требует обслуживать статичные файлы при помощи Руби.
+Чтобы включить эту функцию в режиме эксплуатации просто установите вышеописанную переменную окружения как `true` (в файле `.env.production`).
 
-### What Does It Mean To Serve Static Assets With Hanami?
+### Как Ханами обслуживает статичные файлы?
 
-As mentioned above, when this feature is enabled, a special middleware is added in front of the project Rack stack: `Hanami::Static`.
+Как уже было сказано, когда соответствующая функция включена, промежуточный слой ПО `Hanami::Static` устанавливается в контейнер Rack.
 
-Incoming requests can generate the following use cases
+Тогда входящие запросы могут быть обработаны по следующим сценариям.
 
-#### Fresh Asset
+#### "Свежие" ассеты
 
 ```
 GET /assets/application.js
 ```
 
-It copies the `apps/web/assets/javascripts/application.js` to `public/assets/application.js` and then serves it.
+Файл `apps/web/assets/javascripts/application.js` будет скопирован в `public/assets/application.js` и вложен в ответ на запрос.
 
 <p class="notice">
-  Assets are copied only if the destination path is NOT existing (eg. <code>public/assets/application.js</code>).
-  If it DOES exist, the asset is only served, without copying it.
+  Ассеты будут скопированы только если файла не существует по заданному пути(например: <code>public/assets/application.js</code>).
+  Если файл существует, то он будет сразу же вложен в ответ.
 </p>
 
 <p class="warning">
-  When an application has turned OFF assets compilation (Compile mode), Hanami won't copy the file.
+  Когда в приложении отключена компиляция ассетов, Ханами не будет копировать файлы.
 </p>
 
-#### Stale Asset
+#### "Несвежие" ассеты
 
-This could happen in _development_ mode, when we require an asset the first time, it's get copied over `public/`, then we edit it, so the destination file is stale.
+Это то, что происходит в _режиме разработки_, когда мы в первый раз запрашиваем ассет. Файл копируется в папку `public/`, а когда мы редактируем оригинал, копия становится "несвежей".
 
 ```
 GET /assets/application.js
-# edit the original file: apps/web/assets/javascripts/application.js
-# then require it again
+# отредактируем файл: apps/web/assets/javascripts/application.js
+# и запросим его еще раз
 GET /assets/application.js
 ```
 
-It copies **again** the source into the destination file (`public/assets/application.js`) and then serves it.
+Тогда файл будет **скопирован еще раз** в `public/assets/application.js` и передан в ответе.
 
-#### Precompiled Asset
+#### Прекомпилированные ассеты
 
-Let's say we use Sass to write our stylesheets.
+Допустим, мы хотим использовать для таблиц стилей препроцессор Sass.
 
 ```
 GET /assets/application.css
 ```
 
-It preprocess the `apps/web/assets/stylesheet/application.css.sass` to `public/assets/application.css` and then serves it.
+Тогда из файла `apps/web/assets/stylesheet/application.css.sass` будет создан и передан в ответе файл `public/assets/application.css`.
 
-#### Dynamic Resource
+#### Динамические ресурсы
 
 ```
 GET /books/23
 ```
 
-This isn't a static file available under `public/`, so the control passes to the backend that hits the appropriate action.
+Это не статический файл, расположенный в папке `public/`, а значит управление будет передано в соответствующий экшн.
 
-#### Missing Resource
+#### Несуществующий ресурс
 
 ```
 GET /unknown
 ```
 
-This isn't a static file or a dynamic resource, the project returns a `404 (Not Found)`.
+Это и не статический файл, и не динамический ресурс, а значит приложение ответит `404 (Not Found)`.
 
-## Sources
+## Место хранения 
 
-Each application has a separated set of directories where to look up for files.
-Assets are recursively searched under these paths.
+Каждое приложение имеет собственный набор папок, в которых оно будет искать файлы.
+Поиск ассетов будет происходить рекурсивно в этих папках.
 
-New projects have a default directory where to put application assets:
+Новое приложение по умолчанию включает такую папку:
 
 ```
 % tree apps/web/assets
@@ -171,18 +171,18 @@ apps/web/assets
 ├── javascripts
 └── stylesheets
 
-3 directories, 1 file
+3 папки, 1 файл
 ```
 
-We can add as many directories we want under it (eg. `apps/web/assets/fonts`).
+В ней мы можем расположить любое количество других папок(таких как: `apps/web/assets/fonts`).
 
 <p class="convention">
-  For a given application named <code>Web</code>, the default assets source is <code>apps/web/assets</code>
+  Приложение с именем <code>Web</code>, по умолчанию хранит ассеты в <code>apps/web/assets</code>
 </p>
 
-### Adding Sources
+### Пользовательские пути хранения
 
-If we want add other sources for a given application, we can specify them in the configuration.
+Если мы захотим добавить новый путь хранения для отдельного приложения, то можем указать его в конфигурации приложения.
 
 ```ruby
 # apps/web/application.rb
@@ -191,7 +191,7 @@ module Web
     configure do
       # ...
       assets do
-        # apps/web/assets is added by default
+        # apps/web/assets включен по умолчанию
         sources << [
           'vendor/assets'
         ]
@@ -201,18 +201,18 @@ module Web
 end
 ```
 
-This will add `apps/web/vendor/assets` and all its subdirectories.
+Вышеописанный код добавит путь `apps/web/vendor/assets` и все его содержимое в список мест для поиска ассетов.
 
 <p class="warning">
-  Hanami looks recursively to the assets sources. In order to NOT accidentally disclose sensitive files like secrets or source code, please make sure that these sources directories ONLY contain web assets.
+  Ханами проводит рекурсивный поиск в местах хранения ассетов. Пожалуйста, не храните в этих папках файлы, которые не должны быть доступны пользователю.
 </p>
 
-## Third Party Gems
+## Сторонние библиотеки
 
-Hanami allows to use [Rubygems](https://rubygems.org) as a way to distribute web assets and make them available to Hanami applications.
+Ханами позволяет использовать [Rubygems](https://rubygems.org) чтобы расширить возможности использования ассетов.
 
-Third party gems can be maintained by developers who want to bring frontend frameworks support to Hanami.
-Let's say we want to build an `hanami-emberjs` gem.
+Сторонние гемы могут понадобиться разработчикам, желающим использовать клиентские фреймворки вместе с Ханами.
+Предположим, мы хотим создать гем `hanami-emberjs`.
 
 ```shell
 % tree .
@@ -229,8 +229,8 @@ Let's say we want to build an `hanami-emberjs` gem.
 # ...
 ```
 
-We put in an **arbitrary** directory **only** the assets that we want to serve.
-Then we add it to `Hanami::Assets.sources`.
+Мы выбрали **произвольную** папку и сохранили в нее **только** файлы, которые должны быть доступны извне.
+Затем мы просто добавили ее в `Hanami::Assets.sources`.
 
 ```ruby
 # lib/hanami/emberjs.rb
@@ -245,10 +245,10 @@ end
 Hanami::Assets.sources << __dir__ + '/emberjs/source'
 ```
 
-When an application will do `require 'hanami/emberjs'`, that directory will be added to the sources where Hanami will be able to lookup for assets.
+Когда приложение выполнит строку `require 'hanami/emberjs'`, эта папка будет добавлена в список потенциальных источников файлов и при запросе Ханами сможет обслуживать файлы из нее.
 
 ```erb
 <%= javascript 'ember' %>
 ```
 
-We can use the `javascript` [helper](/guides/helpers/assets) to include `ember.js` in our application.
+Для включения файла `ember.js` мы можем использовать [хэлпер](/guides/helpers/assets) `javascript`.

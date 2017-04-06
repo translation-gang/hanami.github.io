@@ -1,85 +1,85 @@
 ---
-title: "Guides - Command Line: Generators"
+title: "Руководство - Командная строка: Генераторы"
 ---
 
-# Command Line
+# Командная строка
 
-## Generators
+## Генераторы
 
-Hanami has convenient code generators to speed up our development process.
+Ханами предлагает удобные генераторы кода для ускорения процесса разработки.
 
-### Applications
+### Генератор приложения
 
-With Hanami architecture, we can have multiple Hanami applications running under `apps/`.
-The default application is called `Web` and lives under `apps/web`.
+Архитектура Ханами позволяет создать несколько приложений Ханами в одном проекте в папке `apps/`.
+Приложение по умолчанию называется `Web` и расположено в `apps/web`.
 
-We can generate new applications for different components that we want to add to our project.
+Мы можем сгенерировать новые приложения следующим образом:
 
 ```shell
 % bundle exec hanami generate app admin
 ```
 
-This generates an application named `Admin` under `apps/admin`.
+Будет сгенерировано приложение `Admin` в папке `apps/admin`.
 
-### Actions
+### Генератор экшенов
 
-Generate an action along with the corresponding view, template, route and test code with one command.
+Генератов экшенов помимо экшена создаст соответствующее представление, шаблон, путь и тест. Все за одну команду.
 
 ```shell
 % bundle exec hanami generate action web books#show
 ```
 
-The first argument, `web`, is the name of the target application in a Hanami project.
+Первый аргумент, `web`, это имя желаемо приложения внутри проекта.
 
-The argument `books#show` is the name of the controller and the action separated by the number sign (`#`).
+Аргумент `books#show` состоит из имени контроллера и экшена, разделенных знаком(`#`).
 
-If you wish to generate only the action, without the view and template, you can do that by using the `--skip-view`.
+Если необходимо сгенерировать только экшн, без представления и шаблона, то следует использовать аргумент `--skip-view`.
 
 ```shell
 % bundle exec hanami generate action web books#show --skip-view
 ```
 
-If you wish to generate action with specific method, you can do that by using the `--method`.
+Если необходимо сгенерировать экшн и указать HTTP глагол, то следует использовать аргумент `--method`.
 
 ```shell
 % bundle exec hanami generate action web books#create --method=post
 ```
 
-#### Route
+#### Маршрут
 
-The generated route is named after the controller name.
+После генерации контроллера создается маршрут.
 
 ```ruby
 # apps/web/config/routes.rb
 get '/books', to: 'books#show'
 ```
 
-If we want to customize the route URL, without editing our routes file, we can specify a `--url` argument.
+Если мы хотим настроить URL маршрута из командной строки, то можем передать аргумент `--url`.
 
 ```shell
 % bundle exec hanami generate action web books#show --url=/books/:id
 ```
 
-This will generate the following route:
+Будет сгенерирован следующий маршрут:
 
 ```ruby
 # apps/web/config/routes.rb
 get '/books/:id', to: 'books#show'
 ```
 
-The default HTTP method is `GET`, except for actions named:
+По умолчанию маршруты создаются для HTTP метода `GET`, если имя экшена не:
 
-- `create`, which will use `POST`
-- `update`, which will use `PATCH`
-- `destroy`, which will use `DELETE`
+- `create`, для которого будет создан `POST`
+- `update`, для которого будет создан `PATCH`
+- `destroy`, для которого будет создан `DELETE`
 
-This should help you route using [RESTful resources](/guides/routing/restful-resources).
+Это поможет вам быстрее создавать [ресурсы в стиле REST](/guides/routing/restful-resources).
 
-You can also set the HTTP method by specifying a `--method` argument when calling `hanami generate action`.
+Также вы все еще сможете явно указать HTTP метод передав во время вызова `hanami generate action` аргумент `--method`.
 
-### Models
+### Генератор моделей
 
-Generate an entity and a repository with a single command
+При помощи одной команды можно сгенерировать сущность и связанный репозиторий:
 
 ```shell
 % bundle exec hanami generate model book
@@ -89,28 +89,28 @@ Generate an entity and a repository with a single command
       create  spec/bookshelf/repositories/book_repository_spec.rb
 ```
 
-It generates an entity with the corresponding repository and test code.
+Также будут сгенерированы файлы тестов.
 
-### Migrations
+### Генератор миграций
 
-Generate a database migration
+Позволяет сгенерировать файл миграции базы данных.
 
 ```shell
 % bundle exec hanami generate migration create_books
       create  db/migrations/20161112113203_create_books.rb
 ```
 
-It generates an empty migration with the UTC timestamp and the name we have specified: `db/migrations/20161112113203_create_books.rb`.
+Будет сгенерирована пустая миграция с временной отметкой и указанным именем: `db/migrations/20161112113203_create_books.rb`.
 
-### Mailers
+### Генератор мэйлеров
 
-Generate a mailer
+Позволяет сгенерироват мэйлер.
 
 ```shell
 % bundle exec hanami generate mailer welcome
 ```
 
-It creates the following files:
+Создаст следующие файлы:
 
 ```shell
 % tree lib/
@@ -125,9 +125,9 @@ lib
 # ...
 ```
 
-### Secret
+### Генератор секретного токена
 
-Generate a HTTP sessions secret for an application.
+Позволяет сгенерировать секретный токен для поддержки HTTP сессий отдельного приложения.
 
 ```shell
 % bundle exec hanami generate secret web

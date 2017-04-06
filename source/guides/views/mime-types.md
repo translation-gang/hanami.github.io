@@ -1,22 +1,22 @@
 ---
-title: Guides - MIME Types
+title: Руководство - Представления: MIME типы
 ---
 
-# MIME Types
+# MIME типы
 
-A view can handle several MIME Types. Before to dive into this subject, please consider to read how actions handle [MIME Types](/guides/actions/mime-types).
+Представления могут работать с несколькими MIME типами. Перед тем как углубиться в эту тему, убедитесь, что вы знакомы с [обработкой MIME типов в экшенах](/guides/actions/mime-types).
 
-It's important to highlight the correlation between the _format_ and template name.
-For a given MIME Type, Rack (and then Hanami) associate a _format_ for it.
-XML is mapped from `application/xml` to `:xml`, HTML is `text/html` and becomes `:html` for us.
+Важно понимать как зависит имя шаблона от _формата_.
+Для каждого MIME типа у Rack(а значит и у Ханами) есть ассоциированный с ним _формат_.
+В случае XML `application/xml` соответствует `:xml`, а HTML `text/html` станет `:html`.
 
 <p class="convention">
-Format MUST be the first extension of the template file name. Eg <code>dashboard/index.html.*</code>.
+Формат определяется по первому расширению файла шаблона. Например, <code>dashboard/index.html.*</code>.
 </p>
 
-## Default Rendering
+## Шаблонизация по умолчанию
 
-If our action (`Web::Controllers::Dashboard::Index`) is handling a JSON request, and we have defined a template for it (`apps/web/templates/dashboard/index.json.erb`), our view will use it for rendering.
+Если экшн (`Web::Controllers::Dashboard::Index`) примет запрос JSON и для него существует шаблон (`apps/web/templates/dashboard/index.json.erb`), то представление использует этот шаблон.
 
 ```erb
 # apps/web/templates/dashboard/index.json.erb
@@ -28,7 +28,7 @@ If our action (`Web::Controllers::Dashboard::Index`) is handling a JSON request,
 {"foo":"bar"}
 ```
 
-We're still able to request HTML format.
+При этом мы все еще можем запросить ответ в формате HTML.
 
 ```erb
 # apps/web/templates/dashboard/index.html.erb
@@ -40,19 +40,19 @@ We're still able to request HTML format.
 <h1>Dashboard</h1>
 ```
 
-In case we request an unsupported MIME Type, our application will raise an error.
+В случае запроса неподдерживаемого MIME типа приложение сообщит об ошибке.
 
 ```shell
 % curl -H "Accept: application/xml" http://localhost:2300/dashboard
 Hanami::View::MissingTemplateError: Can't find template "dashboard/index" for "xml" format.
 ```
 
-## View For Specific Format
+## Представление нестандартного формата
 
-This scenario works well if the presentational logic of a view can be applied for all the format templates that it handles.
-What if we want to have a [custom rendering](/guides/views/basic-usage) or different presentational logic?
+Вышеописанный сценарий хорошо работает когда формат поддерживается по умолчанию.
+Но что если мы хотим [обработать собственный формат](/guides/views/basic-usage) или реализовать дополнительную логику в представлении?
 
-We can inherit from our view and declare that our subclass only handles a specific format.
+Мы можем создать класс наследующий стандартному представлению и позволить ему обработать этот формат.
 
 ```ruby
 # apps/web/views/dashboard/json_index.rb
@@ -69,10 +69,10 @@ module Web::Views::Dashboard
 end
 ```
 
-JSON requests for `/dashboard`, will be handled by our `JsonIndex`.
+Запрос JSON на `/dashboard` будет обработан `JsonIndex`.
 
 <p class="notice">
-There is NO convention between the handled format and the class name. The important part is <code>format :json</code>.
+Не существует соглашения касательно имен таких классов. Важно обращать внимание на <code>format :json</code>.
 </p>
 
-With the example above we took advantage of custom rendering to not use the template and let our serializer to return JSON for us.
+Пример выше показывает как использовать нестандартные методы обработки и заменить шаблоны на сериализацию JSON.

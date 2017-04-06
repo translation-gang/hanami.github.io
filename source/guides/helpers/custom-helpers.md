@@ -1,18 +1,18 @@
 ---
-title: Guides - Custom Helpers
+title: Руководство - Хэлперы: Пользовательские хэлперы 
 ---
 
-## Custom Helpers
+## Пользовательские хэлперы
 
-In the [overview](/guides/helpers/overview) section, we introduced the design for helpers.
-They are modules that enrich views behaviors.
-Because they are just Ruby modules, **we can create our own helpers**.
+В [обзорном](/guides/helpers/overview) разделе мы кратко рассказали о предназначении и реализации хэлперов.
+Мы говорили о них как о модулях, которые созданы для того, чтобы сделать код представлений более выразительным.
+А так как они являются обыкновенными модулями Ruby, то мы можем **создать собственные хэлперы**.
 
-### Example
+### Пример
 
-Imagine we need (for some reason) a helper that shuffles the characters of a string and we want it to be available in our views.
+Представим, что нам необходим хэлпер, который перемешивает символы внутри строки. Мы хотим сделать его доступным на уровне представлений.
 
-As first thing, let's define the module.
+Для начала объявим модуль.
 
 ```ruby
 # app/web/helpers/shuffler.rb
@@ -33,12 +33,13 @@ end
 ```
 
 <p class="notice">
-  There is NO convention between the file name and the name of the module.
-  We can define this code, where and how we want.
+  Не существует соглашения, определяющего имена файлов и модулей.
+  Мы можем сделать их такими, какими захотим.
 </p>
 
-Then let's add that directory to the load paths of the application, so it can be eagerly loaded.
-As third step, we include the module in all the views. See [View's Share Code](/guides/views/share-code) section for low level details.
+После этого добавим его путь к другим путям модулей приложения, чтобы оно могло его загрузить.
+
+На последнем этапе необходимо включить модуль для всех представлений. См. раздел [Общий код представлений](/guides/views/share-code).
 
 ```ruby
 # apps/web/application.rb
@@ -65,5 +66,5 @@ end
 ```
 
 <p class="notice">
-  Please note that our custom helper will work even if we remove <code>include Hanami::Helpers</code> line, because it's just Ruby.
+  Обратите внимание, что наш созданный хэлпер будет работать даже если мы удалим строку <code>include Hanami::Helpers</code>.
 </p>

@@ -1,34 +1,29 @@
 ---
-title: Guides - Entities
+title: Руководство - Модели: Сущности
 ---
 
-# Entities
+# Сущности
 
-An entity is model domain object that is defined by its identity.
-See "Domain Driven Design" by Eric Evans.
+Сущности — это часть модели, описывающая бизнес-логику приложения.
+Эрик Эванс подробно описал их в книге "Проблемно-ориентированное проектирование".
 
-An entity is at the core of an application, where the part of the domain logic is implemented.
-It's a small, cohesive object that expresses coherent and meaningful behaviors.
+Сущности составляют ядро приложения. Они представлены небольшими объектами и реализуют самые важные целевые функции.
 
-It deals with one and only one responsibility that is pertinent to the
-domain of the application, without caring about details such as persistence
-or validations.
+Они спроектированы согласно принципу единственной ответственности(single responsibility) и не предназначены для проведения валидации данных и обеспечения их хранения.
 
-This simplicity of design allows developers to focus on behaviors, or
-message passing if you will, which is the quintessence of Object Oriented Programming.
+Такая простота позволяет разработчику сосредоточиться на поведении объекта, то есть сообщениях, на которые он отвечает.
+Именно так, как это предписывают принципы объектно-ориентированного программирования.
 
-## Entity Schema
+## Структура сущности
 
-Internally, an entity holds a schema of the attributes, made of their names and types.
-The role of a schema is to whitelist the data used during the initialization, and to enforce data integrity via coercions or exceptions.
+Сущности содержат структуру своих атрибутов, их имена и типы.
+Структура выполняет роль фильтра для данных. Если в дальнейшем поступающие данные не будут соответствовать этой схеме, то будет вызвано исключение.
 
-We'll see concrete examples in a second.
+### Автоматическая разметка
 
-### Automatic Schema
+При использовании реляционной базы данных структура формируется автоматически исходя из структуры таблицы.
 
-When using a SQL database, this is derived automatically from the table definition.
-
-Imagine to have the `books` table defined as:
+Представим, что у нас есть следующая таблица `books`:
 
 ```sql
 CREATE TABLE books (
@@ -39,7 +34,7 @@ CREATE TABLE books (
 );
 ```
 
-This is the corresponding entity `Book`.
+А это соответствующая сущность `Book`:
 
 ```ruby
 # lib/bookshelf/entities/book.rb
@@ -49,7 +44,7 @@ end
 
 ---
 
-Let's instantiate it with proper values:
+Попробуем создать ее экземпляр:
 
 ```ruby
 book = Book.new(title: "Hanami")
@@ -58,11 +53,11 @@ book.title      # => "Hanami"
 book.created_at # => nil
 ```
 
-The `created_at` attribute is `nil` because it wasn't present when we have instantiated `book`.
+Атрибут `created_at` равен `nil` из-за того, что мы не указали его явно в конструкторе `book`.
 
 ---
 
-It ignores unknown attributes:
+Конструктор проигнорирует неизвестные атрибуты:
 
 ```ruby
 book = Book.new(unknown: "value")
@@ -71,11 +66,11 @@ book.unknown # => NoMethodError
 book.foo     # => NoMethodError
 ```
 
-It raises a `NoMethodError` both for `unknown` and `foo`, because they aren't part of the internal schema.
+Будет вызвано исключение `NoMethodError` для `unknown` и `foo`. Они не были описаны в структуре сущности.
 
 ---
 
-It can coerce values:
+Конструктор попытается привести данные к ожидаемому типу:
 
 ```ruby
 book = Book.new(created_at: "Sun, 13 Nov 2016 09:41:09 GMT")
@@ -84,24 +79,24 @@ book.created_at       # => 2016-11-13 09:41:09 UTC
 book.created_at.class # => Time
 ```
 
-An entity tries as much as it cans to coerce values according to the internal schema.
+Он предпримет несколько попыток пока не приведет данные к типу, указанному в структуре.
 
 ---
 
-It enforces **data integrity** via exceptions:
+Если все попытки провалятся, то будет вызвано исключение:
 
 ```ruby
 Book.new(created_at: "foo") # => ArgumentError
 ```
 
-If we use this feature, in combination with [database constraints](/guides/migrations/create-table#constraints) and validations, we can guarantee a **strong** level of **data integrity** for our projects.
+В комбинации с [валидациями базы данных](/guides/migrations/create-table#constraints) и валидациями на других уровнях, мы можем поддерживать **высокий уровень целостности данных** в наших проектах.
 
-### Custom Schema
+### Собственная структура
 
-We can take data integrity a step further: we can **optionally** define our own entity internal schema.
+Мы можем поднять поддержание целостности данных на следующую ступень, если дополним внутреннюю структуру.
 
 <p class="notice">
-  Custom schema is <strong>optional</strong> for SQL databases, while it's mandatory for entities without a database table, or while using with a non-SQL database.
+  Пользовательская структура <strong>опционально добавляется</strong> в случае реляционных баз данных, но обязательна для хранилищ, в которых нет структурированных таблиц.
 </p>
 
 ```ruby
@@ -122,7 +117,7 @@ class User < Hanami::Entity
 end
 ```
 
-Let's instantiate it with proper values:
+Создадим экземпляр такой сущности:
 
 ```ruby
 user = User.new(name: "Luca", age: 34, email: "test@hanami.test")
@@ -136,14 +131,14 @@ user.comments # => nil
 
 ---
 
-It can coerce values:
+Значения все еще могут быть приведены к ожидаемому типу:
 
 ```ruby
 user = User.new(codes: ["123", "456"])
 user.codes # => [123, 456]
 ```
 
-Other entities can be passed as concrete instance:
+Частью сущностей могут быть и другие сущности:
 
 ```ruby
 user = User.new(comments: [Comment.new(text: "cool")])
@@ -151,7 +146,7 @@ user.comments
   # => [#<Comment:0x007f966be20c58 @attributes={:text=>"cool"}>]
 ```
 
-Or as data:
+Или их можно передать в виде хэша:
 
 ```ruby
 user = User.new(comments: [{text: "cool"}])
@@ -161,7 +156,7 @@ user.comments
 
 ---
 
-It enforces **data integrity** via exceptions:
+**Целостность данных** будет поддерживаться путем вызова исключений:
 
 ```ruby
 User.new(email: "foo")     # => TypeError: "foo" (String) has invalid type for :email
@@ -171,9 +166,10 @@ User.new(comments: [:foo]) # => TypeError: :foo must be coercible into Comment
 ---
 
 <p class="warning">
-  Custom schema <strong>takes precedence</strong> over automatic schema. If we use custom schema, we're need to add manually all the new columns from the corresponding SQL database table.
+  Пользовательская схема данных <strong>добавляет точности</strong> автоматически созданной схеме.
+  Если мы хотим ее использовать, то сначала необходимо вручную добавить структуру таблицы базы данных.
 </p>
 
 ---
 
-Learn more about data types in the [dedicated article](/guides/models/data-types).
+Узнать больше о типах данных можно в [соответствующем разделе](/guides/models/data-types).

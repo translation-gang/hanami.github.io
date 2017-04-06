@@ -1,31 +1,30 @@
 ---
-title: Guides - Routing Overview
+title: Руководство - Маршруты: Обзор
 ---
 
-# Overview
+# Обзор
 
-Hanami applications use [Hanami::Router](https://github.com/hanami/router) for routing: a Rack compatible, lightweight and fast HTTP router for Ruby.
+Для маршрутизации приложения Ханами используют [Hanami::Router](https://github.com/hanami/router). Это легковесый и быстрый HTTP роутер совместимый с Rack.  
 
-## Getting started
+## Введение
 
-With your favorite editor open `apps/web/config/routes.rb` and add the following line.
+Откроем в текстовом редакторе файл проекта `apps/web/config/routes.rb` и добавим следущие строки.
 
 ```ruby
-get '/hello', to: ->(env) { [200, {}, ['Hello from Hanami!']] }
+get '/hello', to: ->(env) { [200, {}, ['Привет от Ханами!']] }
 ```
 
-Then start the server with `bundle exec hanami server` and visit [http://localhost:2300/hello](http://localhost:2300/hello).
-You should see `Hello from Hanami!` in your browser.
+Затем запустим сервер при помощи команды `bundle exec hanami server` и откроем в браузере [http://localhost:2300/hello](http://localhost:2300/hello). В нем вы должны будете увидеть текст `Привет от Ханами!`.
 
-Let's explain what we just did.
-We created a **route**, an application can have many routes.
-Each route starts with an [HTTP verb](http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html) declaration, `get` in our case.
-Then we specify a relative URI (`/hello` for us) and the object that is responsible to respond to incoming requests.
+Давайте разберемся в том, что мы только что сделали.
 
-We can use most common HTTP verbs: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `TRACE` and `OPTIONS`.
+Мы создали **маршрут(route)**. Каждый маршрут начинается с [HTTP глагола](http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html). В нашем случае `get`.
+Затем необходимо указать относительный URI, в нашем случае `/hello`. После этого объект станет отвечать на соответствующие запросы к серверу.
+
+В маршрутах необходимо использовать стандартные HTTP глаголы: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `TRACE` и `OPTIONS`.
 
 ```ruby
-endpoint = ->(env) { [200, {}, ['Hello from Hanami!']] }
+endpoint = ->(env) { [200, {}, ['Привет от Ханами!']] }
 
 get     '/hello', to: endpoint
 post    '/hello', to: endpoint
@@ -36,29 +35,26 @@ trace   '/hello', to: endpoint
 options '/hello', to: endpoint
 ```
 
-## Actions
+## Экшены
 
-Full Rack integration is great, but the most common endpoint that we'll use in our web applications is an **action**.
-Actions are objects responsible for responding to incoming HTTP requests.
-They have a nested naming like `Web::Controllers::Home::Index`.
-This is a really long name to write, that's why Hanami has a **naming convention** for it: `"home#index"`.
+Выше мы увидели хорошую иллюстрацию интеграции с Rack, но в веб-приложениях в качестве точки назначения чаще используются **экшены(действия)**.
+Экшены — это объекты, ответственные за обработку HTTP запросов.
+Как правило они доступны под именем похожим на `Web::Controllers::Home::Index`. Этот способ именования избыточен, поэтому Ханами использует **соглашение по именованию**, которое позволяет превратить эту длинную запись в такую: `"home#index"`.
 
 ```ruby
 # apps/web/config/routes.rb
-root to: "home#index" # => will route to Web::Controllers::Home::Index
+root to: "home#index" # => аналог маршрута к Web::Controllers::Home::Index
 ```
+Первая часть этого выражения это имя контроллера, `"home"` воспринимается как `Home`.
+Аналогичные преобразования произойдут и со второй частью после `#`: `"index"` станет `Index`.
 
-The first token is the name of the controller `"home"` is translated to `Home`.
-The same transformation will be applied to the name after the `#`: `"index"` to `Index`.
-
-Hanami is able to figure out the namespace (`Web::Controllers`) and to compose the full class name.
+Ханами позволяет описать маршрут коротко при помощи пространства имен по умолчанию (`Web::Controllers`)  или использовать полное имя класса.
 
 ## Rack
 
-Hanami is compatible with [Rack SPEC](http://www.rubydoc.info/github/rack/rack/master/file/SPEC), and so the endpoints that we use MUST be compliant as well.
-In the example above we used a `Proc` that was fitting our requirements.
-
-A valid endpoint can be an object, a class, an action, or an **application** that responds to `#call`.
+Ханами полностью совместим с [Rack](http://www.rubydoc.info/github/rack/rack/master/file/SPEC). Это позволяет сделать работу с пунктами назначения более гибкой.
+В следующем примере мы использовали объекты `Proc`.
+В качестве пункта назначения может выступать любой объект, класс, действие или **приложение**, реализующее метод `#call`.
 
 ```ruby
 get '/proc',       to: ->(env) { [200, {}, ['Hello from Hanami!']] }
@@ -67,36 +63,34 @@ get '/middleware', to: Middleware
 get '/rack-app',   to: RackApp.new
 get '/rails',      to: ActionControllerSubclass.action(:new)
 ```
-
-When we use a string, it tries to instantiate a class from it:
+Когда мы передаем строку, произойдет попытка получить из нее экземпляр класса:
 
 ```ruby
-get '/rack-app', to: 'rack_app' # it will map to RackApp.new
+get '/rack-app', to: 'rack_app' # преобразуется в RackApp.new
 ```
 
-### Mounting Applications
+### Подключение приложения
 
-If we want to mount an application, we should use `mount`.
+Когда необходимо подключить приложение используется `mount`.
 
-#### Mounting To A Path
+#### Подключение при помощи пути
 
 ```ruby
 mount SinatraApp.new, at: '/sinatra'
 ```
+Теперь все HTTP запросы, которые начинаются с `/sinatra` будут направлены к `SinatraApp`.
 
-All the HTTP requests starting with `/sinatra` will be routed to `SinatraApp`.
-
-#### Mounting On A Subdomain
+#### Подключение к поддомену
 
 ```ruby
 mount Blog.new, host: 'blog'
 ```
 
-All the HTTP requests to `http://blog.example.com` will be routed to `Blog`.
+Таким образом все запросы к `http://blog.example.com` будут направлены к `Blog`.
 
 <p class="notice">
-  In development, you will NOT be able to access <code>http://blog.localhost:2300</code>,
-  so you should specify a host when running the server:
+  Во время разработки у вас не будет доступа к <code>http://blog.localhost:2300</code>,
+  поэтому необходимо уточнить host во время запуска сервера:
   <code>bundle exec hanami server --host=lvh.me</code>.
-  Then your application can be visited at <code>http://blog.lvh.me:2300</code>
+  Тогда во время разработки вы сможете получить доступ к <code>http://blog.lvh.me:2300</code>
 </p>

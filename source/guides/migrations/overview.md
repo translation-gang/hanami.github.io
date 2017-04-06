@@ -1,18 +1,18 @@
 ---
-title: Guides - Migrations
+title: Руководство - Миграции: Обзор
 ---
 
-# Migrations
+# Миграции
 
-Migrations are a feature that allows to manage database schema via Ruby.
-They come with some [command line facilities](/guides/command-line/database) that allow to perform database operations or to [generate](/guides/command-line/generators) migrations.
+Миграции позволяют изменять структуру базы данных посредством кода Руби.
+Они работают в связке с [инструментами командной строки](/guides/command-line/database), которые вносят описанные изменения в базу данных и [генерируют](/guides/command-line/generators) файлы миграций.
 
-Migrations are only available if our application uses the [SQL adapter](/guides/models/overview).
+Миграции доступны только для реляционных баз данных с нашим [SQL адаптером](/guides/models/overview).
 
-## Anatomy Of A Migration
+## Структура миграций
 
-Migrations are Ruby files stored by default under `db/migrations`.
-Their name is composed by a UTC timestamp and a snake case name (eg `db/migrations/20150621165604_create_books.rb`).
+Миграции являются обычными файлами Руби и по умолчанию хранятся в `db/migrations`.
+Имя миграции состоит из временной метки UTC и имени, состоящего из маленьких букв, с нижним подчеркиванием в качестве разделителя (например, `db/migrations/20150621165604_create_books.rb`).
 
 ```ruby
 Hanami::Model.migration do
@@ -31,30 +31,30 @@ Hanami::Model.migration do
 end
 ```
 
-We use a `create_table` block to define the schema of that table.
+В блоке `create_table` определена структура таблицы.
 
-The first line is `primary_key :id`, which is a shortcut to create an autoincrement integer column.
+Первая строка содержит `primary_key :id`, что является сокращением для целочисленного столбца с автоинкрементацией.
 
-There is a foreign key definition with cascade deletion.
-The first argument is the name of the local column (`books.author_id`), while the second is the referenced table.
+Далее идет объявление внешнего ключа с каскадным ограничением ссылочной целостности.
+Первым аргументом задается столбец из объявляемой таблицы (`books.author_id`), а вторым название внешней таблицы.
 
-Then we have three lines for columns.
-The first argument that we pass to `#column` is the name, then the type.
-The type can be a **Ruby type** such as `String` or `Integer` or a string that represents the **native database type** (eg. `"varchar(32)"` or `"text[]"`).
+Следующие три строки задают столбцы.
+В качестве первого аргумента в `#column` передается имя столбца, а в качестве второго его тип.
+Задать тип можно при помощи стандартного **типа Руби**, такого как `String` или `Integer`, или строкой с **встроенным типом базы данных**(например, `"varchar(32)"` или `"text[]"`).
 
-As a last optional argument there is a Hash that specifies some extra details for the column. For instance NULL or uniqueness constraints, the size (for strings) or the default value.
+Последним необязательным аргументом является хэш, который определяет дополнительные свойства столбца. Например: допустимость NULL значений, поддержка уникальности значений, размер или значения по умолчанию.
 
-The final line defines a database **check** to ensure that price will always be greater than zero.
+В последней строке указано органичение на столбец price. База данных всегда будет проверять, чтобы его значения были больше нуля.
 
-## Up/Down
+## Вверх/вниз
 
-When we "migrate" a database we are going into an _"up"_ direction because we're adding alterations to it.
-Migrations modifications can be rolled back (_"down"_ direction).
+Миграции могут проходить в двух направлениях. Когда мы используем команду "migrate", база данных будет двигаться _"вверх"_.
+Если же мы захотим откатить изменения, то база данных вернется к более ранней версии(направление _"вниз"_).
 
-When we use `change` in our migrations, we're implicitly describing _"up"_ modifications.
-Their counterpart can be inferred by `Hanami::Model` when we migrate _"down"_ our database.
+Выполняя в файле миграций блок `change` мы неявно делаем шаг _"вверх"_.
+Обратную же операцию _"вниз"_ `Hanami::Model` выполняет автоматически во время отмены миграции.
 
-Imagine we have the following code:
+Представим, что у нас есть подобный код:
 
 ```ruby
 Hanami::Model.migration do
@@ -66,9 +66,9 @@ Hanami::Model.migration do
 end
 ```
 
-When we use `create_table`, Hanami::Model will use `drop_table` in case we want to rollback this migration.
+Для операции `create_table`, Hanami::Model будет использовать `drop_table` чтобы отменить изменения.
 
-In case we want to have concrete code for our _"down"_ policy, we can use `up` and `down` blocks.
+Также можно сделать изменения сразу в обоих направлениях в одном файле миграции. Для этого необходимо использовать блоки `up` и `down`.
 
 ```ruby
 Hanami::Model.migration do
@@ -84,8 +84,8 @@ Hanami::Model.migration do
 end
 ```
 
-**To learn how to use migrations in command line, please have a look at [this article](/guides/command-line/database/#migrate).**
+**Инструменты командной строки подробно описаны в [этом разделе](/guides/command-line/database).**
 
-## References
+## Ссылки
 
-Hanami::Model uses [Sequel](http://sequel.jeremyevans.net/) under the hood as database migration engine. If there is any aspect that isn't covered by our documentation or tests, please refer to [Sequel documentation](http://sequel.jeremyevans.net/rdoc/files/doc/schema_modification_rdoc.html).
+Hanami::Model использует [Sequel](http://sequel.jeremyevans.net/) в качестве движка миграций баз данных. Для получения более подробной информации о миграциях обратитесь к [документации Sequel](http://sequel.jeremyevans.net/rdoc/files/doc/schema_modification_rdoc.html).

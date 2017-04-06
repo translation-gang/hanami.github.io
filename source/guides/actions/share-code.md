@@ -1,21 +1,21 @@
 ---
-title: Guides - Action Share Code
+title: Руководство - Экшены: Общий код
 ---
 
-# Share Code
+# Общий код
 
-Actions as objects have a lot of advantages but they make code sharing less intuitive.
-This section shares a few techniques to make this possible.
+Экшены как объекты имеют множество преимуществ, но они делают разделение кода менее интуитивным.
+Здесь мы рассмотрим несколько методов, которые решают эту проблему.
 
-## Prepare
+## Метод prepare
 
-In our settings (`apps/web/application.rb`), there is a code block that allows us to share the code for **all the actions** of our application.
-When an action includes the `Web::Action` module, that block code is yielded within the context of that class.
-This is heavily inspired by Ruby Module and its `included` hook.
+В настройках приложения(`apps/web/application.rb`) есть участок кода, разделяемый **всеми экшенами** в нашем приложении. Когда любой экшн подключит `Web::Action`, будет вызван этот участок кода в контексте данного экшена.
 
-Imagine we want to check if the current request comes from an authenticated user.
+Этот метод основан на механизме работы модулей Руби и называется обратным вызовом `included`.
 
-We craft a module in `apps/web/controllers/authentication.rb`.
+Представим, что нам необходимо проверить авторизацию пользователя, от которого пришел запрос.
+
+Мы создаем модуль `apps/web/controllers/authentication.rb`.
 
 ```ruby
 # apps/web/controllers/authentication.rb
@@ -45,12 +45,13 @@ module Web
 end
 ```
 
-Once included by an action, it will set a [before callback](/guides/actions/control-flow) that executes `:authenticate!` for each request.
-If not logged in, a `401` is returned, otherwise the flow can go ahead and hit `#call`.
-It also exposes `current_user` for all the views (see [Exposures](/guides/actions/exposures)).
+Он должен для каждого запроса выполнять [обратный вызов before](/guides/actions/control-flow), внутри которого вызывается `:authenticate!`.
+Если пользователь не будет авторизрован, то будет возвращен ответ `401`, а иначе вызов пойдет дальше и достигнет `#call`.
+Вдобавок `current_user` становится доступен во всех представлениях(см. [Представления](/guides/actions/exposures)).
 
-It will be really tedious to include this module for all the actions of our app.
-We can use `controller.prepare` for the scope.
+Это было бы действительно утомительно включать этот модуль в каждый экшн в приложении.
+
+Мы можем использовать `controller.prepare` чтобы включить его для всех экшенов сразу.
 
 ```ruby
 # apps/web/application.rb
@@ -68,15 +69,15 @@ end
 ```
 
 <p class="warning">
-Code included via <code>prepare</code> is available for ALL the actions of an application.
+Код включенный в <code>prepare</code> доступен во всех экшенах приложения.
 </p>
 
-### Skipping A Callback
+### Пропуск обратного вызова
 
-Let's say we have included `Authentication` globally, but want to skip the execution of its callback for certain resources.
-A typical use case is to redirect unauthenticated requests to our sign in form.
+Допустим мы уже подключили `Authentication` глобально, но хотим пропустить его вызов для некоторых ресурсов.
+Типичным примером подобной ситуации может служить переадресация неавторизованного пользователя к форме входа.
 
-The solution is really simple and elegant at the same time: override that method.
+Решение этой проблемы очень простое и элегантное: переопределить метод.
 
 ```ruby
 # apps/web/controllers/sessions/new.rb
@@ -90,22 +91,21 @@ module Web::Controllers::Sessions
 
     private
     def authenticate!
-      # no-op
+      # ничего не выполняется
     end
   end
 end
 ```
 
-The action will still try to invoke `:authenticate!`, because, technically speaking, **callbacks execution can't be skipped**.
-But if we override that method with an empty implementation, it does nothing and our non-signedin users can reach the wanted resource.
+Экшн все еще будет вызывать `:authenticate!`. Технически, **выполнение обратного вызова невозможно пропустить**.
+Но если мы переопределим этот метод на пустой, то во время его вызова ничего не произойдет и наш неавторизованный пользователь сможет получить запрошенный ресурс.
 
-## Module Inclusion
+## Включение модулей
 
-Imagine we have a RESTful resource named `books`.
-There are several actions (`show`, `edit`, `update` and `destroy`) which need to find a specific book to perform their job.
-
-What if we want to DRY the code of all these actions?
-Ruby comes to our rescue.
+Представим, что у нас есть ресурс в стиле REST с именем `books`.
+Есть так же несколько экшенов(`show`, `edit`, `update` и `destroy`), которым необходимо находить отдельные книги для выполнения своих функций.
+Что если мы захотим уменьшить количество повторений в таком коде?
+Руби поможет нам сделать это.
 
 ```ruby
 # apps/web/controllers/books/set_book.rb
@@ -127,7 +127,7 @@ module Web::Controllers::Books
 end
 ```
 
-We have defined a module for our behavior to share. Let's include it in all the actions that need it.
+Мы определили модуль с общим поведением. Осталось только включить его в необходимые экшены.
 
 ```ruby
 # apps/web/controllers/books/update.rb
@@ -144,4 +144,3 @@ module Web::Controllers::Books
   end
 end
 ```
-

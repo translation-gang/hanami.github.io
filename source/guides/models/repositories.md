@@ -1,48 +1,45 @@
 ---
-title: Guides - Repositories
+title: Руководство - Модели: Репозитории
 ---
 
-# Repositories
+# Репозитории
 
-An object that mediates between entities and the persistence layer.
-It offers a standardized API to query and execute commands on a database.
+Репозитории — это объекты посредники между сущностями и хранилищем данных.
+Они предлагают стандартизированный API для запросов и команд базе данных.
 
-A repository is **storage independent**, all the queries and commands are
-delegated to the current adapter.
+Репозитории **не зависят от конкретной базы данных**. Все действия делегируются соответствующим адаптерам.
 
-This architecture has several advantages:
+У такой архитектуры есть ряд достоинств:
 
-  * Applications depend on a standard API, instead of low level details
-    (Dependency Inversion principle)
+  * Приложения зависят от надежного API, а не от низкоуровневых деталей реализации(принцип инверсии зависимостей);
 
-  * Applications depend on a stable API, that doesn't change if the
-    storage changes
+  * Если меняется база данных, то нужно изменить только адаптер, а не само приложение;
 
-  * Developers can postpone storage decisions
+  * Во время разработки можно отложить выбор базы данных;
 
-  * Confines persistence logic at a low level
+  * Логика хранения данных отделена от логики взаимодействий с ними;
 
-  * Multiple data sources can easily coexist in an application
+  * Несколько хранилищ данных могут легко сосуществовать в рамках одного приложения;
 
 <p class="warning">
-  As of the current version, Hanami only supports SQL databases.
+  На текущий момент Ханами поддерживает только реляционные базы данных
 </p>
 
-## Interface
+## Интерфейс
 
-When a class inherits from `Hanami::Repository`, it will receive the following interface:
+Когда класс наследует от `Hanami::Repository`, он получает следующий интерфейс:
 
-  * `#create(data)` – Create a record for the given data and return an entity
-  * `#update(id, data)` – Update the record corresponding to the id and return the updated entity
-  * `#delete(id)` – Delete the record corresponding to the given entity
-  * `#all` - Fetch all the entities from the collection
-  * `#find(id)` - Fetch an entity from the collection by its ID
-  * `#first` - Fetch the first entity from the collection
-  * `#last`  - Fetch the last entity from the collection
-  * `#clear` - Delete all the records from the collection
+  * `#create(data)` – создание записи с переданными данными, возвращает сущность;
+  * `#update(id, data)` – изменение записи с данным id, возвращает сущность;
+  * `#delete(id)` – удаление записи с переданным id;
+  * `#all` – получение всех записей из коллекции;
+  * `#find(id)` – получение всех записей из коллекции с переданным id;
+  * `#first` – получение первой записи из коллекции;
+  * `#last`  – получение последней записи из коллекции;
+  * `#clear` – удаление всех записей из коллекции.
 
-**A collection is a homogenous set of records.**
-It corresponds to a table for a SQL database or to a MongoDB collection.
+**Коллекция – набор записей с общей структурой.**
+Это может быть таблица в случае реляционных баз данных или коллекция MongoDB.
 
 ```ruby
 repository = BookRepository.new
@@ -62,30 +59,30 @@ repository.find(book.id)
   # => nil
 ```
 
-## Private Queries
+## Запросы
 
-**All the queries are private**.
-This decision forces developers to define intention revealing API, instead of leaking storage API details outside of a repository.
+**Все запросы являются закрытыми**.
+Такое решение вынуждает разработчиков работать с API, а не с деталями реализации хранилища.
 
-Look at the following code:
+Рассмотрим следующий код:
 
 ```ruby
 BookRepository.new.where(author_id: 23).order(:published_at).limit(8)
 ```
 
-This is **bad** for a variety of reasons:
+Он **плох** сразу по ряду причин:
 
-  * The caller has an intimate knowledge of the internal mechanisms of the Repository.
+  * Вызывающий объект знает слишком много о внутренних механизмах хранилища;
 
-  * The caller works on several levels of abstraction.
+  * Вызывающий объект работает сразу с нескольими уровнями абстракции;
 
-  * It doesn't express a clear intent, it's just a chain of methods.
+  * Этот код не выразителен: он не отражает цель вызова, а содержит целую цепочку методов;
 
-  * The caller can't be easily tested in isolation.
+  * Вызывающий объект становится трудее изолировать для тестов;
 
-  * If we change the storage, we are forced to change the code of the caller(s).
+  * Если придется менять хранилище, то и этот код придется изменить.
 
-There is a better way:
+Есть более подходящий способ:
 
 ```ruby
 # lib/bookshelf/repositories/book_repository.rb
@@ -99,23 +96,23 @@ class BookRepository < Hanami::Repository
 end
 ```
 
-This is a **huge improvement**, because:
+Это **гораздо лучше**, потому что:
 
-  * The caller doesn't know how the repository fetches the entities.
+  * Вызывающий объект больше не будет знать, как репозиторий получает эти сущности;
 
-  * The caller works on a single level of abstraction. It doesn't even know about records, only works with entities.
+  * Вызывающий объект останется на своем уровне абстракции, на котором ничего неизвестно о записях и вся работа происходит только с использованием сущностей;
 
-  * It expresses a clear intent.
+  * Имя этого метода отражает его назначание;
 
-  * The caller can be easily tested in isolation. It's just a matter of stubbing this method.
+  * Вызываемый объект легко можно будет протестировать отдельно от контекста, сделав заглушку этого метода;
 
-  * If we change the storage, the callers aren't affected.
+  * Если придется менять хранилище, то код вызывающего объекта останется тем же.
 
-## Timestamps
+## Временные метки
 
-To have a track of when a record has been created or updated is important when running a project in production.
+Бывает чрезвычайно полезно отслеживать даты создания и изменения записей, особенно когда приложение уже введено в эксплуатацию.
 
-When creating a new table, if we add the following columns, a repository will take care of keep the values updated.
+Во время создания новой таблицы мы можем задать следующие столбцы. Тогда репозитории будут автоматически заполнять их значения.
 
 ```ruby
 Hanami::Model.migration do
@@ -144,20 +141,20 @@ book.updated_at # => 2016-11-14 08:22:40 UTC
 ```
 
 <p class="convention">
-  When a database table has <code>created_at</code> and <code>updated_at</code> timestamps, a repository will automatically update their values.
+  Если при создании таблицы базы данных указаны столбцы <code>created_at</code> и <code>updated_at</code>, то репозитории автоматически будут устанавливать в них временные метки.
 </p>
 
 <p class="notice">
-  Timestamps are on UTC timezone.
+  Временные метки устанавливаются с учетом UTC.
 </p>
 
-## Legacy Database
+## Унаследованные базы данных
 
-By default, a repository performs auto-mapping of corresponding database table and creates an [automatic schema](/guides/models/entities#automatic-schema) for the associated entity.
+По умолчанию репозиторий автоматически создает таблицы и [схему базы данных](/guides/models/entities#automatic-schema) в зависимости от данных сущностей.
 
-When working with legacy databases we can resolve the naming mismatch between the table name, the columns, with repositories defaults and entities attributes.
+Иногда приходится работать с уже созданной базой данных. Тогда необходимо произвести несколько других операций.
 
-Let's say we have a database table like this:
+Допустим, у нас есть база данных с таблицей:
 
 ```sql
 CREATE TABLE t_operator (
@@ -166,7 +163,7 @@ CREATE TABLE t_operator (
 );
 ```
 
-We can setup our repository with the following code:
+Тогда мы должны подготовить репозиторий следующим образом:
 
 ```ruby
 # lib/bookshelf/repositories/operator_repository.rb
@@ -180,7 +177,7 @@ class OperatorRepository < Hanami::Repository
 end
 ```
 
-While the entity can stay with the basic setup:
+При этом сущность не потребует никаких модификаций:
 
 ```ruby
 # lib/bookshelf/entities/operator.rb
@@ -190,25 +187,25 @@ end
 
 ---
 
-The entity now gets the mapping we defined in the repository:
+А сущность сможет использовать получившийся репозиторий:
 
 ```ruby
 operator = Operator.new(name: "Jane")
 operator.name # => "Jane"
 ```
 
-The repository can use the same mapped attributes:
+Атрибуты будут вести себя так же, как и в общем случае:
 
 ```ruby
 operator = OperatorRepository.new.create(name: "Jane")
   # => #<Operator:0x007f8e43cbcea0 @attributes={:id=>1, :name=>"Jane"}>
 ```
 
-## Count
+## Количество записей
 
-Count is a concept not generally available to all the databases. SQL databases have it, but others don't.
+Подсчет количества записей в таблице поддерживается большинством реляционных баз данных.
 
-You can define a method, if you're using a SQL database:
+Для этой функции можно определить подобный метод в репозитории:
 
 ```ruby
 class BookRepository < Hanami::Repository
@@ -218,7 +215,7 @@ class BookRepository < Hanami::Repository
 end
 ```
 
-Or you can expose specific conditions:
+Или реализовать его с дополнительными условиями:
 
 ```ruby
 class BookRepository < Hanami::Repository
@@ -230,7 +227,7 @@ class BookRepository < Hanami::Repository
 end
 ```
 
-If you want to use raw SQL you can do:
+Можно также воспользоваться самим SQL:
 
 ```ruby
 class BookRepository < Hanami::Repository

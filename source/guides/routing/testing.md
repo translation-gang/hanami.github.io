@@ -1,18 +1,19 @@
 ---
-title: Guides - Routing Testing
+title: Руководство - Маршруты: Тестирование
 ---
 
-# Testing
+# Тестирование
 
-Hanami has builtin facilities for routing unit tests.
+В Ханами встроены инструменты упрощающие написание модульных тестов для маршрутов.
 
-## Path Generation
+## Генерация маршрутов
 
-We can assert the generated routes, to do so, we're gonna create a spec file for the purpose.
-`Web.routes` is the class that holds all the routes for the application named `Web`.
+Мы можем протестировать сгенерированные маршруты. Создадим отдельный файл spec для этой цели.
 
-It exposes a method to generate a path, which takes the [name of a route](/guides/routing/basic-usage#named-routes) as a symbol.
-Here's how to test it.
+В объекте `Web.routes` содержатся все маршруты для приложения с названием `Web`.
+
+Он предоставляет методы для создания путей, которые принимают [имя маршрута](/guides/routing/basic-usage#named-routes) в виде символа.
+Вот как могут выглядеть необходимые нам тесты.
 
 ```ruby
 # spec/web/routes_spec.rb
@@ -29,9 +30,9 @@ RSpec.describe Web.routes do
 end
 ```
 
-## Route Recognition
+## Распознавание маршрутов
 
-We can also do the opposite: starting from a fake Rack env, we can assert that the recognized route is correct.
+Мы можем подойти к этому с другой стороны: создав заглушку Rack env мы сможем протестировать, правильно ли распознан маршрут.
 
 ```ruby
 # spec/web/routes_spec.rb
@@ -70,5 +71,5 @@ RSpec.describe Web.routes do
 end
 ```
 
-When we use `.recognize`, the router returns a recognized route, which is an object designed only for testing purposes.
-It carries on all the important information about the route that we have hit.
+Когда мы используем `.recognize`, маршрутизатор возвращает маршрут, который он распознал. Этот объект был создан исключительно для использования в тестах.
+Он берет на себя заботу обо всей важной информации о запрашиваемом маршруте.

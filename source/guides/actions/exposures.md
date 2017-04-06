@@ -1,14 +1,15 @@
 ---
-title: Guides - Action Exposures
+title: Руководство - Доступ к переменным экшенов
 ---
 
-# Exposures
+# Представления
 
-For complex use cases we may want to pass data to views in order to present it to our users.
-Hanami puts emphasis on explicitness: data isn't shared between the controller action and the view unless we tell it to do so.
+В ряде случаев мы хотим показать пользователю данные полученные на уровне модели.
+Hanami решает эту проблему просто: данные не попадут из контроллера в представление, пока мы прямо это не укажем.
 
-We use a simple and powerful mechanism to achieve our goal: _**exposures**_.
-Exposures create a _getter_ on the action for the given name(s) and only the whitelisted instance variables are made available to the corresponding view.
+Мы используем простой и мощный механизм для достижения этой цели: _**выставления(exposures)**_.
+
+Выставления получают имена переменных из контроллера и создают для них _методы доступа_ в представлениях.
 
 ```ruby
 # apps/web/controllers/dashboard/index.rb
@@ -24,9 +25,8 @@ module Web::Controllers::Dashboard
   end
 end
 ```
-
-In the example above we have exposed `:greeting`, but not `:foo`.
-Only `greeting` can be used from the view and template.
+В этот примере мы передали `:greeting`, но не `:foo`.
+Представление и шаблоны смогут использовать только `greeting`.
 
 ```ruby
 # apps/web/views/dashboard/index.rb
@@ -41,4 +41,4 @@ module Web::Views::Dashboard
 end
 ```
 
-If we try to use `foo`, Ruby will raise a `NoMethodError`.
+Если же мы попытаемся вызвать `foo`, то Ruby выдаст ошибку `NoMethodError`.

@@ -1,16 +1,17 @@
 ---
-title: Guides - Use Your Own Assets Management
+title: Руководство - Пользовательские системы управления ассетами
 ---
 
-# Use Your Own Assets Management
+# Пользовательские системы управления ассетами
 
-Hanami tries to cover basic use cases for assets management: [(pre)compilation](/guides/assets/overview/#compile-mode), [compression](/guides/assets/compressors), [fingerprinting](/guides/assets/overview/#fingerprint-mode), [Content Delivery Network (CDN)](/guides/assets/content-delivery-network) with [Subresource Integrity](/guides/assets/content-delivery-network/#subresource-integrity).
+Ханами предоставляет основные функции для работы с ассетами: [(пре)компиляцию](/guides/assets/overview/#compile-mode), [сжатие](/guides/assets/compressors), [контрольные суммы](/guides/assets/overview/#fingerprint-mode), [Content Delivery Network (CDN)](/guides/assets/content-delivery-network) с [проверкой целостности подресурсов](/guides/assets/content-delivery-network/#subresource-integrity).
 
-If it still doesn't fit your needs, you can use your own assets management tool such as Webpack.
+Если они не могут удовлетворить ваших потребностей, то вы можете использовать собственную систему управления ассетами, такую как Webpack.
 
-## Deployment
+## Развертывание
 
-To do so, please organize the assets according to your assets management tool and **don't** run `bundle exec hanami assets precompile` when deploying your project, but follow the instructions of your assets management software.
+Для этого вам потребуется сконфигурировать вашу систему управления ассетами, а потом **не запускать** `bundle exec hanami assets precompile` во время развертывания приложения. 
 
-Please remember that for compatibility with the [Ruby server hosting ecosystem](/guides/projects/rake/#ruby-server-hosting-ecosystem-compatibility), we make available a special Rake task `assets:precompile`, which is run automatically by SaaS vendors.
-If this is your situation, you may want override this task in the `Rakefile` of your project, with something more useful for you.
+Не стоит забывать и о совместимости с [экосистемой хостингов Руби серверов](/guides/projects/rake/#ruby-server-hosting-ecosystem-compatibility).
+Для ее обеспечения у нас есть специальный Rake таск `assets:precompile`, который автоматически запускается при развертывании на SaaS сервисах.
+Если вы будете использовать такой сервис, то вам может потребоваться переопределить этот таск в `Rakefile` вашего проекта на выполнение чего-то более полезного в вашей ситуации.

@@ -1,12 +1,12 @@
 ---
-title: "Guides - Command Line: Routes"
+title: "Руководство - Командная строка: Маршруты"
 ---
 
-# Command Line
+# Командная строка
 
-## Routes
+## Маршруты 
 
-In order to print the routes defined by all the applications, use:
+Чтобы вывести список всех маршрутов проекта можно воспользоваться командой:
 
 ```
 % bundle exec hanami routes

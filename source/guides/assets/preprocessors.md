@@ -1,27 +1,26 @@
 ---
-title: Guides - Assets Preprocessors
+title: Руководство - Препроцессоры для ассетов
 ---
 
-# Assets
+# Ассеты
 
-## Preprocessors
+## Препроцессоры
 
-Hanami is able to run assets preprocessors and **lazily compile** them under `public/assets`.
+Ханами позволяет использовать препроцессоры для ассетов и загружать их в `public/assets`.
 
-Imagine to have `application.css.scss` in `apps/web/assets/stylesheets` and `reset.css` under
+Допустим, у нас есть файл `application.css.scss` в папке `apps/web/assets/stylesheets` и `reset.css` в
 `apps/web/vendor/stylesheets`.
 
-**The extensions structure is important.**
-The first one is mandatory and it's used to understand which asset type we are
-handling: `.css` for stylesheets.
-The second one is optional and it's for a preprocessor: `.scss` for Sass.
+**Структура расширений имеет значение.**
+Первое определяет тип ассетов, оно обязательное. В данном случае это `.css`, то есть таблицы стилей.
+Следующее добавляется опционально и оно определит используемый препроцессор: `.scss`, то есть препроцессор Sass.
 
 <p class="convention">
-  For a given asset <code>application.css.scss</code>, the last extension (<code>.scss</code>) is used to determine the right preprocessor.
+  Если дан файл <code>application.css.scss</code>, то по его последнему расширению (<code>.scss</code>) будет определен препроцессор для обработки.
 </p>
 
 <p class="notice">
-  Preprocessors are optional, an application can work with plain javascripts or stylesheets. In this case we have to name our assets with only one extension (eg <code>application.css</code>).
+  Использование препроцессоров не обязательно. Приложение может работать с чистым JavaScript или таблицами стилей. В вышеописанном примере будет использован только один препроцессор. Их может быть как больше, а может не быть вовсе.
 </p>
 
 ```ruby
@@ -35,7 +34,7 @@ module Web
 
       assets do
         sources << [
-          # apps/web/assets is added by default
+          # apps/web/assets используется по умолчанию
           'vendor/assets' # app/web/vendor/assets
         ]
       end
@@ -44,13 +43,13 @@ module Web
 end
 ```
 
-From a template we do:
+В шаблоне мы напишем:
 
 ```erb
 <%= stylesheet 'reset', 'application' %>
 ```
 
-When we'll load the page the compiler will preprocess or copy the assets into `public/assets`.
+А когда будет запрошена страница, препроцессор обработает файл стилей и скопирует его в `public/assets`.
 
 ```shell
 % tree public
@@ -60,19 +59,19 @@ public/
     └── reset.css
 ```
 
-Preprocessors will compile/copy assets only if the [_Compile mode_](/guides/assets/overview) is on.
+Препроцессор будет обрабатывать и копировать файлы только если включен [_Режим Прекомпиляции_](/guides/assets/overview).
 
 <p class="convention">
-  Preprocessors are enabled by default in <em>development</em> and <em>test</em> environments.
+  Препроцессоры по умолчанию включены только в окружении <em>разработки</em> и <em>тестирования</em>.
 </p>
 
-For performance reasons, this feature is turned off in _production_ env, where we should [precompile](/guides/command-line/assets) our assets.
+В целях повышения производительности эта функция отключена в режиме _эксплуатации_, в котором следует заранее [прекомпилировать](/guides/command-line/assets) ассеты.
 
-### Preprocessors Engines
+### Движки препроцессоров
 
-Hanami uses [Tilt](https://github.com/rtomayko/tilt) to provide support for the most common preprocessors, such as [Sass](http://sass-lang.com/) (including `sassc-ruby`), [Less](http://lesscss.org/), ES6, [JSX](https://jsx.github.io/), [CoffeScript](http://coffeescript.org), [Opal](http://opalrb.org), [Handlebars](http://handlebarsjs.com), [JBuilder](https://github.com/rails/jbuilder).
+Ханами использует [Tilt](https://github.com/rtomayko/tilt) для обеспечения поддержки наиболее востребованных препроцессоров: [Sass](http://sass-lang.com/) (включая `sassc-ruby`), [Less](http://lesscss.org/), ES6, [JSX](https://jsx.github.io/), [CoffeScript](http://coffeescript.org), [Opal](http://opalrb.org), [Handlebars](http://handlebarsjs.com), [JBuilder](https://github.com/rails/jbuilder).
 
-In order to use one or more of them, be sure to include the corresponding gem into your `Gemfile` and require the library.
+Перед тем как использовать один или несколько из них, убедитесь, что соответсвующий гем включен в ваш проект через `Gemfile`.
 
 ```ruby
 # Gemfile
@@ -81,17 +80,17 @@ gem 'sass'
 ```
 
 <p class="notice">
-  Some preprocessors may require Node.js. Please check the documentation.
+  Некоторые препроцессоры требуют установки Node.js. Внимательно изучайте документацию препроцессоров.
 </p>
 
 #### EcmaScript 6
 
-We strongly suggest to use [EcmaScript 6](http://es6-features.org/) for your next project, because that is the next version of JavaScript.
-It isn't fully [supported](https://kangax.github.io/compat-table/es6/) yet by browser vendors, but this is changing quickly.
+Мы настоятельно рекомендуем использовать [EcmaScript 6](http://es6-features.org/) в ваших проектах, это самый новый стандарт JavaScript.
+Он еще не полностью [поддерживается](https://kangax.github.io/compat-table/es6/) в большинстве браузеров, но это скоро изменится.
 
-As of today, you need to transpile ES6 code into something understandable by current browsers, which is ES5.
-For this purpose we support [Babel](https://babeljs.io).
+А пока нам придется транспилировать код на ES6 в то, что будет работать в большинстве браузеров, то есть ES5.
+Для этого потребуется [Babel](https://babeljs.io).
 
 <p class="notice">
-  Babel requires Node.js.
+  Babel не работает без Node.js.
 </p>

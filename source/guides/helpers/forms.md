@@ -1,28 +1,27 @@
 ---
-title: Guides - Form Helpers
+title: Руководство - Хэлперы: Хэлперы форм
 ---
 
-## Form Helpers
+## Хэлперы форм
 
-It provides a powerful Ruby API to describe HTML5 forms, to be used both with views and templates. It ships with:
+В Ханами встроен мощный API для описания HTML5 форм при помощи Руби. Он используется в представлениях и шаблонах. В его состав входят:
 
-   * Support for complex markup without the need of concatenation
-   * Auto closing HTML5 tags
-   * Support for view local variables
-   * Method override support (`PUT`/`PATCH`/`DELETE` HTTP verbs aren't understood by browsers)
-   * Automatic generation of HTML attributes for inputs: `id`, `name`, `value`
-   * Allow to override automatic HTML attributes
-   * Read values from request params and/or given entities, to autofill `value` attributes
-   * Automatic selection of current value for radio button and select inputs
-   * CSRF Protection
-   * Infinite nested fields
-   * ORM Agnostic
+   * Поддержка полноценной разметки без необходимости конкатенации;
+   * Автоматическое закрытие тэгов HTML5;
+   * Локальные переменные представлений;
+   * Переназначение методов (`PUT`/`PATCH`/`DELETE` HTTP глаголы, не воспринимаемые браузерами);
+   * Автоматическая генерация HTML атрибутов для полей ввода: `id`, `name`, `value`;
+   * Распознавание значений параметров запроса и/или используемых сущностей для автоматической подстановки в атрибут `value`;
+   * Автоматический выбор состояния переключателей; 
+   * Защита от межсайтовой подделки запросов(CSRF);
+   * Неограниченная вложенность полей;
+   * Независимость от ORM.
 
-## Technical notes
+## Технические особенности
 
-This feature has a similar syntax to other Ruby gems with the same purpose, but it has a different usage if compared with Rails or Padrino.
+Многие гемы со схожим назначением имеют аналогичный синтаксис, но в Rails или Padrino они используются несколько иначе.
 
-Those frameworks allow a syntax like this:
+Синтаксис этих фреймворков может выглядеть подобным образом:
 
 ```erb
 <%= form_for :book do |f| %>
@@ -32,17 +31,17 @@ Those frameworks allow a syntax like this:
 <% end %>
 ```
 
-The code above **isn't a valid ERB template**.
-To make it work, these frameworks use custom ERB handlers and rely on third-party gems for other template engines.
+Но такой код **не является корректным с точки зрения синтаксиса ERB**.
+Чтобы заставить его работать, эти фреймворки используют собственные ERB обработчики или используют сторонние гемы в случае других шаблонизаторов.
 
-### Template engine independent
+### Независимость от шаблонизаторов
 
-Because we support a lot of template engines, we wanted to keep it simple: use what ERB already offers.
-That means we can use Slim, HAML, or ERB and keep the same Ruby syntax.
+Ханами стремится обеспечить поддержку любых шаблонизаторов. Она достигается упрощением интерфейса. Хэлперы используют только то, что уже встроено в шаблонизатор.
+Это означает, что мы можем без дополнительных усилий использовать Slim, HAML или ERB.
 
-### One output block
+### Единственный блок для вывода
 
-The technical compromise for the principles described above is to use the form builder in an unique output block.
+Соблюдение вышеописанного принципа достигается при помощи небольшого компромисса. Необходимо встраивать форму внутри единственного блока:
 
 ```erb
 <%=
@@ -54,7 +53,7 @@ The technical compromise for the principles described above is to use the form b
 %>
 ```
 
-This will produce
+Будет преобразовано в:
 
 ```html
 <form action="/books" id="book-form" method="POST">
@@ -64,9 +63,9 @@ This will produce
 </form>
 ```
 
-### Method in views
+### Методы представлений
 
-An **alternative usage** is to define a concrete method in a view and to use it in the template:
+В качестве альтернативы можно определить необходимые методы внутри представлений:
 
 ```ruby
 module Web::Views::Books
@@ -88,7 +87,7 @@ end
 <%= form %>
 ```
 
-### Supported methods
+### Поддерживаемые методы
 
 * [check_box](http://www.rubydoc.info/gems/hanami-helpers/Hanami/Helpers/FormHelper/FormBuilder#check_box-instance_method)
 * [color_field](http://www.rubydoc.info/gems/hanami-helpers/Hanami/Helpers/FormHelper/FormBuilder#color_field-instance_method)
@@ -110,11 +109,11 @@ end
 * [text_area](http://www.rubydoc.info/gems/hanami-helpers/Hanami/Helpers/FormHelper/FormBuilder#text_area-instance_method)
 * [text_field](http://www.rubydoc.info/gems/hanami-helpers/Hanami/Helpers/FormHelper/FormBuilder#text_field-instance_method)
 
-## Examples
+## Примеры
 
-### Basic usage
+### Общий случай использования
 
-The API is really clean and concise, **it doesn't require concatenation** between the returning value of the block (`submit`) and the previous lines (`div`).
+Наш API очень чист и выразителен. **Он не требует конкатенировать** возвращаемые значения блоков(`submit`) и предшествующих строк в шаблоне(`div`).
 
 ```erb
 <%=
@@ -141,9 +140,9 @@ The API is really clean and concise, **it doesn't require concatenation** betwee
 </form>
 ```
 
-### Method override
+### Переназначение методов 
 
-Browsers don't understand HTTP methods outside of `GET` and `POST`. On the other hand, Hanami embraces REST conventions, that goes beyond that two verbs. When we specify a method via `:method`, it adds a special hidden field `_method`, that's understood by the application.
+Браузеры не могут использовать HTTP методы помимо `GET` и `POST`. Ханами же придерживается соглашения REST, которое выходит за рамки этих двух методов. Поэтому когда указан метод при помощи`:method`, в форму будет встроено скрытое поле `_method`, которое будет воспринято приложением.
 
 ```erb
 <%=
@@ -165,18 +164,18 @@ Browsers don't understand HTTP methods outside of `GET` and `POST`. On the other
 </form>
 ```
 
-### CSRF Protection
+### Защита от межсайтовой подделки запросов(CSRF)
 
-Cross Site Request Forgery (CSRF) is one of the most common attacks on the web. Hanami offers a security mechanism based on a technique called: _Synchronizer Token Pattern_.
+Межсайтовая подделка запросов(CSRF) является одной из самых распространенных веб-атак. Ханами предлагает использовать механизм защиты основанный на _синхронизации по токену_.
 
-When we enable sessions, it uses them to store a random token for each user.
-Forms are rendered with a special hidden field (`_csrf_token`) which contains this token.
+Когда мы включаем сессии, у каждого пользователя появляется случайно сгенерированный токен.
+Формы же создаются со специальным скрытым полем(`_csrf_token`), которое передает его.
 
-On form submission, Hanami matches this input with the value from the session. If they match, the request can continue. If not, it resets the session and raises an exception.
+При отправке формы Ханами сравнит его значение со значением сессии. Если они совпадут, то запрос будет обработан, а иначе произойдет сброс сессии.
 
-Developers can customize attack handling.
+Разработчики могут модифицировать этот механизм.
 
-### Nested fields
+### Вложенные поля
 
 ```erb
 <%=
@@ -202,13 +201,13 @@ Developers can customize attack handling.
 </form>
 ```
 
-## Automatic values
+## Автозаполнение полей
 
-Form fields are **automatically filled with the right value**. Hanami looks up for explicit values passed in the form constructor and for the params of the current request. It compares the form hierarchy (including nested fields), with these two sources. For each match, it fills the associated value.
+Поля формы могут быть **автоматически заполнены**. Ханами заполнит те поля формы, для которых будут найдены значения в конструкторе формы или в параметрах запроса.
 
-#### Example
+#### Пример
 
-Imagine we want to update data for `delivery`. We have two objects: `delivery` and `customer`, which are plain objects (no ORM involved). They respond to the following methods:
+Представим, что нам необходимо обновить данные для доставки `delivery`. У нас есть два объекта: доставка(`delivery`) и заказчик(`customer`), которые являются простыми объектами(не связанными с ORM) и могут отвечать на вызовы следующих методов:
 
 ```ruby
 delivery.id   # => 1
@@ -220,7 +219,7 @@ customer.address.class # => Address
 customer.address.city  # => "Rome"
 ```
 
-Let's compose the form.
+Составим форму:
 
 ```erb
 <%=
@@ -254,17 +253,18 @@ Let's compose the form.
 </form>
 ```
 
-Please note the `:values` option that we pass to `#form_for`. It maps the `name` attributes that we have in the form with the objects that we want to use to fill the values. For instance `delivery[code]` corresponds to `delivery.code` (`123`), `delivery[customer][address][city]` to `customer.address.city` (`"Rome"`) and so on..
+Обратите внимание на параметр `:values`, который мы передали в метод `#form_for`. Он задаст поле формы `name`, которое мы хотим сделать заполненным. Экземпляр `delivery[code]` будет передан в `delivery.code` (`123`), а `delivery[customer][address][city]` в `customer.address.city` (`"Rome"`) и т.д..
 
-### Read Values From Params
+### Чтение из параметров
 
-**Params are automatically passed to form helpers**, to read values and try to autofill fields. If a value is present both in params and explicit values (`:values`), the first takes precendence. The reason is simple: params sometimes represent a failed form submission attempt.
+**Параметры автоматически передаются в хэлперы форм** чтобы попытаться заполнить поля. Если значение присутствует и в параметрах, и в (`:values`), то будет выбрано значение из параметров. Причина такого решения проста: параметры запроса часто содержат значения форм, заполненных с ошибками.
 
-#### Example
+#### Пример
 
-Imagine the form described above, and that our user enters `"foo"` as delivery code. This value isn't acceptable for our model domain rules, so we render again the form, presenting a validation error. Our params are now carrying on the values filled by our user. For instance: `params.get('delivery.code')` returns `"foo"`.
+Возьмем форму из предыдущего примера. Допустим, пользователь ввел `"foo"` в поле для кода заказа. Это значение не удовлетворяет логике нашего приложения. 
+Тогда мы предложим пользователю исправить значения в форме указав на ошибку. Теперь форма будет передана со значениями, уже заполненными пользователем. Например, `params.get('delivery.code')` будет содержать `"foo"`.
 
-Here how the form is rendered:
+Вот как будет выглядеть эта форма:
 
 ```html
 <form action="/deliveries/1" id="delivery-form" method="POST">

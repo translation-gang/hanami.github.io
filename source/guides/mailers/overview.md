@@ -1,17 +1,19 @@
 ---
-title: Guides - Mailers Overview
+title: Руководство - Мэйлеры: Обзор
 ---
 
-# Overview
+# Обзор
 
-A mailer is an object that's responsible to deliver a mail message, by rendering one or more templates.
+За обработку шаблонов для электронной почты и их доставку отвечают специальные объекты — мэйлеры(mailers).
 
-For simplicity, each mailer can handle **only one use case (feature)**.
-If in our application we need to send emails for several features like: _"confirm your email address"_ or _"forgot password"_, we will have `Mailers::ConfirmEmailAddress` and `Mailers::ForgotPassword` **instead** of a generic `UserMailer` that manages all these use cases.
+Каждый такой объект должен быть связан **только с одним прецедентом использования(feature)**. 
 
-## A Simple Mailer
+Предположим, в приложении необходимо отправлять электронные письма для реализации нескольких функций: _"подтверждение адреса"_ и _"восстановление пароля"_.
+Тогда потребуется создать два отдельных мэйлера `Mailers::ConfirmEmailAddress` и `Mailers::ForgotPassword`, **а не один общий** `UserMailer`.
 
-Hanami ships a generator that creates a mailer, two templates and the test code.
+## Простой мэйлер
+
+В Ханами есть специальный генератор, который создаст мэйлер, два шаблона и файл тестов.
 
 ```shell
 % hanami generate mailer welcome
@@ -21,7 +23,7 @@ Hanami ships a generator that creates a mailer, two templates and the test code.
     create  lib/bookshelf/mailers/templates/welcome.txt.erb
 ```
 
-Let's see how a mailer is structured:
+Вот как будет выглядеть код мэйлера:
 
 ```ruby
 # lib/bookshelf/mailers/welcome.rb
@@ -31,6 +33,6 @@ end
 ```
 
 <p class="convention">
-  All the mailers are available under the <code>Mailers</code> namespace.
+  Все мэйлеры находятся в пространстве имен <code>Mailers</code>.
 </p>
 

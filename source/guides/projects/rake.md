@@ -1,25 +1,25 @@
 ---
-title: Guides - Rake Tasks
+title: Руководство - Проекты: Rake-таски
 ---
 
-# Rake Tasks
+# Rake-таски
 
-Hanami ships with default Rake tasks that can be used as _prerequisites_ by developers to build their own tasks.
+Ханами поставляется с набором стандартных Rake-тасков. Разработчики могут использовать их в качестве _предпосылок(prerequisites)_ для написания собственных задач.
 
 ```shell
 % bundle exec rake -T
-rake environment # Load the full project
-rake test        # Run tests (for Minitest)
-rake spec        # Run tests (for RSpec)
+rake environment # Загрузка всего проекта
+rake test        # Загрузка тестов (гем Minitest)
+rake spec        # Загрузка тестов (гем RSpec)
 ```
 
-## Environment
+## Окружение
 
-Use this as a Rake task prerequisite when we need to access project code (eg. entities, actions, views, etc..)
+Используйте эти Rake-таски когда потребуется получить доступ к коду проекта(сущностям, действиям, представлениям и др.).
 
-### Example
+### Пример
 
-Imagine we want to build a Rake task that is able to access project code (eg. a repository)
+Необходимо создать Rake-таски для доступа к коду репозиториев проекта.
 
 ```ruby
 # Rakefile
@@ -33,11 +33,11 @@ end
 bundle exec rake clear_users
 ```
 
-## Test / Spec
+## Тесты и спецификации
 
-This is the default Rake task, which runs the test suite
+Это стандартные Rake-таски, которые запускают набор тестов.
 
-The following commands are equivalent:
+Запуск следующих команд приводит к одинаковому результату.
 
 ```shell
 % bundle exec rake
@@ -48,17 +48,16 @@ The following commands are equivalent:
 ```
 
 <p class="convention">
-  The <code>:test</code> (or <code>:spec</code>) Rake task is the default.
+  Rake-таски <code>:test</code> (и <code>:spec</code>) эквивалентны.
 </p>
 
-## Ruby Server Hosting Ecosystem Compatibility
+## Совместимость с хостингами
 
-Many Software as a Service (SaaS) of the Ruby server hosting ecosystem are modeled after Ruby on Rails.
-For instance, Heroku expects to find the following Rake tasks in a Ruby application:
+Многие сервисы хостинга для Руби серверов, организованные в соответствии с моделью SaaS были спроектированы так, чтобы удовлетворять потребности приложений Ruby On Rails. В частности, Heroku ожидает в любом Руби приложении найти следующие стандартные для Ruby On Rails таски Rake:
 
   * `db:migrate`
   * `assets:precompile`
 
-For Heroku, there isn't a way to customize the deploy, so we're supporting these "standard" Rake tasks from Ruby on Rails.
+Heroku не позволяет развернуть приложение с другой конфигурацией. Поэтому мы поддерживаем такие "стандартные" Rake-таски из Ruby On Rails.
 
-**If you are in control of your deployment, don't rely on these Rake tasks, but please use `hanami` [command line](/guides/command-line/database), instead.**
+**Если обстоятельства позволяют, не полагайтесь на них, а используйте [командную строку](/guides/command-line/database) `hanami` вместо них.**

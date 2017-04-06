@@ -1,18 +1,18 @@
 ---
-title: Guides - Data Types
+title: Руководство - Модели: Типы данных
 ---
 
-# Data Types
+# Типы данных
 
-Data types are available for custom [entities schema](/guides/models/entities#custom-schema), which is isn't mandatory to use.
+Типы данных позволяют определить [структуру сущностей](/guides/models/entities#custom-schema), которую не всегда необходимо задавать вручную.
 
-We have 5 data types:
+Для сущностей есть 5 типов данных:
 
-  * **Definition** - base type definition
-  * **Strict** - strict type with primitive type check
-  * **Coercible** - type with constructor that applies a coercion to given input
-  * **Form** - type with constructor that applies a non-strict coercion, specific to HTTP params
-  * **JSON** - type with constructor that applies a non-strict coercion, specific to JSON
+  * **Definition** — базовые типы данных Руби;
+  * **Strict** — базовые типы с простой проверкой входных данных;
+  * **Coercible** — типы, конструктор которых способен преобразовать входные данные к заданному типу;
+  * **Form** — типы, конструктор которых способен преобразовать данные формата характерного передаваемым через HTTP формам;
+  * **JSON** — типы, конструктор которых способен преобразовать данные формата JSON.
 
 ## Definition
 
@@ -86,4 +86,4 @@ We have 5 data types:
 
 ---
 
-Hanami model data types are based on `dry-types` gem. Learn more at: [http://dry-rb.org/gems/dry-types](http://dry-rb.org/gems/dry-types)
+Типы данных в моделях Ханами основаны на геме`dry-types`. Подробнее о них: [http://dry-rb.org/gems/dry-types](http://dry-rb.org/gems/dry-types)

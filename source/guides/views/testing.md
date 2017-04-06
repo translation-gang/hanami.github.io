@@ -1,13 +1,13 @@
 ---
-title: Guides - View Testing
+title: Руководство - Представления: Тестирование
 ---
 
-# View Testing
+# Тестирование
 
-One of the advantages of views as objects is that we can unit test them.
-We can both understand if a specific presentational logic behaves correctly and/or assert the contents of the rendered markup.
+Одним из преимуществ представлений как объектов является простота их модульного тестирования.
+Мы легко можем проверить, представлено ли ожидаемое содержимое в результате рендера страницы.
 
-For the following example we're gonna use RSpec for the concise syntax for test doubles.
+В следующем примере мы используем Rspec. У него есть удобный синтаксис для задания входных значений.
 
 ```ruby
 # spec/web/views/books/show_spec.rb
@@ -43,17 +43,17 @@ RSpec.describe Web::Views::Books::Show do
 end
 ```
 
-The first part of the test code above is about book's formatting price.
-This presentational logic is verified by asserting the returning value of `view.formatted_price`.
+Первая часть кода в тесте выше относится к форматированию цены на книги.
+Отображение представления же проверяется в `view.formatted_price`.
 
-The remaining code is about permissions related logic: the edit link must be rendered only if the current user is an admin.
-This is tested by looking at the output of the template.
+Дальнейший код проверяет управление доступом: ссылка на редактирование должна быть доступна только если пользователь является администратором.
+Эту часть легко протестировать. Нужно только посмотреть на вывод шаблонизатора.
 
 <p class="notice">
-  Asserting presentational logic directly via view's methods, or indirectly via rendered markup are two EQUIVALENT ways.
+  Есть два равноценных способа тестирования представлений: через методы непосредственно представлений и через анализ вывода шаблонизатора.
 </p>
 
-Let's have a look at the corresponding production code.
+Проверяемый код:
 
 ```ruby
 # apps/web/views/books/show.rb

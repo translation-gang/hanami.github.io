@@ -1,13 +1,13 @@
 ---
-title: Guides - Action Exception Handling
+title: Руководство - Обработка исключений в экшенах
 ---
 
-# Exception Handling
+# Обработка исключений
 
-Actions have an elegant API for exception handling.
-The behavior changes according to the current Hanami environment and the custom settings in our configuration.
+Экшены поддерживают элегантный API для обработки исключений.
+Его поведение изменяется в зависимости от текущего окружения Hanami и особенностей конфигурации.
 
-## Default Behavior
+## Поведение по умолчанию
 
 ```ruby
 # apps/web/controllers/dashboard/index.rb
@@ -22,14 +22,14 @@ module Web::Controllers::Dashboard
 end
 ```
 
-Exceptions are automatically caught when in production mode, but not in development.
-In production, for our example, the application returns a `500` (Internal Server Error); in development, we'll see the stack trace and all the information to debug the code.
+Исключения автоматически отлавливаются в режиме эксплуатации(production), но не в режиме разработки(development).
+В режиме эксплуатации при возниковнении исключения приложение вернет ответ `500` (Внутренняя ошибка сервера). Во время разработки будет выведен стек вызовов и информация для отладки.
 
-This behavior can be changed with the `handle_exceptions` setting in `apps/web/application.rb`.
+Такое поведение может быть изменено при помощи настройки `handle_exceptions` в файле `apps/web/application.rb`.
 
-## Custom HTTP Status
+## Нестандартный HTTP статус
 
-If we want to map an exception to a specific HTTP status code, we can use `handle_exception` DSL.
+Когда нужно настроить для исключения нестандартный статус HTTP мы можем использовать специальный предметно-ориентированный язык(DSL).
 
 ```ruby
 # apps/web/controllers/dashboard/index.rb
@@ -45,19 +45,19 @@ module Web::Controllers::Dashboard
 end
 ```
 
-`handle_exception` accepts a Hash where the key is the exception to handle, and the value is the corresponding HTTP status code.
-In our example, when `ArgumentError` is raised, it will be handled as a `400` (Bad Request).
+`handle_exception` принимает хэш, в котором ключем становится исключение, которое необходимо обработать, а значением &mdash; код статуса HTTP ответа.
+В нашем примере получив исключение `ArgumentError` будет возвращен ответ `400` (Ошибка запроса).
 
-## Custom Handlers
+## Нестандартные обработчики
 
-If the mapping with a custom HTTP status doesn't fit our needs, we can specify a custom handler and manage the exception by ourselves.
+Если назначения статуса ответа недостаточно, то мы можем указать еще и обработчик исключения, чтобы получить полный контроль над ним.
 
 ```ruby
 # apps/web/controllers/dashboard/index.rb
 module Web::Controllers::Dashboard
   class PermissionDenied < StandardError
     def initialize(role)
-      super "You must be admin, but you are: #{ role }"
+      super "Это действие доступно только администратору, ваш статус: #{ role }"
     end
   end
 
@@ -81,12 +81,12 @@ module Web::Controllers::Dashboard
 end
 ```
 
-If we specify the name of a method (as a symbol) as the value for `handle_exception`, this method will be used to respond to the exception.
-In the example above we want to protect the action from unwanted access: only admins are allowed.
+Если указать имя метода(в виде символа) как значение `handle_exception`, то этот метод будет использоваться для обработки исключения.
+В примере выше мы хотели защитить действие от нежелательного доступа и разрешить его только администраторам.
 
-When a `PermissionDenied` exception is raised it will be handled by `:handle_permission_error`.
-It MUST accept an `exception` argument&mdash;the exception instance raised inside `#call`.
+Когда будет получено исключение `PermissionDenied` его обработку начнет метод `:handle_permission_error`.
+Он **обязан** принимать аргумент `exception`&mdash;который станет экземпляром исключения внутри `#call`.
 
 <p class="warning">
-When specifying a custom exception handler, it MUST accept an <code>exception</code> argument.
+Определяя нестандартный обработчик исключения необходимо, чтобы он принимал аргумент <code>exception</code>.
 </p>

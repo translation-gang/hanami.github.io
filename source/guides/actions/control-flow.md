@@ -1,18 +1,18 @@
 ---
-title: Guides - Action Control Flow
+title: Руководство - Порядок выполнения
 ---
 
-# Control Flow
+# Порядок выполнения
 
-## Callbacks
+## Обратные вызовы
 
-If we want to execute some logic before and/or after `#call` is executed, we can use a callback.
-Callbacks are useful to declutter code for common tasks like checking if a user is signed in, set a record, handle 404 responses or tidy up the response.
+Если мы хотим реализовать некую логику до или после вызова `#call`, то можем использовать обратные вызовы.
+Обратные вызовы полезны когда нужно разгрузить код от рутинных задач, таких как проверка прав пользователя.
 
-The corresponding DSL methods are `before` and `after`.
-These methods each accept a symbol that is the name of the method that we want to call, or an anonymous proc.
+За них отвечают DSL методы `before` и `after`.
+Эти методы принимают символ с именем необходимого метода или анонимный объект proc.
 
-### Methods
+### Методы в обратных вызовах
 
 ```ruby
 # apps/web/controllers/dashboard/index.rb
@@ -34,10 +34,10 @@ module Web::Controllers::Dashboard
 end
 ```
 
-With the code above, we are tracking the remote IP address for analytics purposes.
-Because it isn't strictly related to our business logic, we move it to a callback.
+В коде выше мы отслеживаем IP адрес для стороннего сервиса аналитики.
+Эта функция никак не связана с бизнес-логикой проекта, а значит ее легко можно поместить в обратный вызов.
 
-A callback method can optionally accept an argument: `params`.
+Методы обратных вызовов могут принимать `params` в качестве аргумента.
 
 ```ruby
 # apps/web/controllers/dashboard/index.rb
@@ -58,10 +58,10 @@ module Web::Controllers::Dashboard
 end
 ```
 
-### Proc
+### Объекты proc в обратных вызовах
 
-The examples above can be rewritten with anonymous procs.
-They are bound to the instance context of the action.
+Пример выше может быть переписан с использованием анонимного объекта proc.
+Он будет привязан непосредственно к контексту экшена.
 
 ```ruby
 # apps/web/controllers/dashboard/index.rb
@@ -71,14 +71,14 @@ module Web::Controllers::Dashboard
     before { @remote_ip = request.ip }
 
     def call(params)
-      # @remote_ip is available here
+      # здесь можно использовать @remote_ip
       # ...
     end
   end
 end
 ```
 
-A callback proc can bound an optional argument: `params`.
+Объект proc может принимать необязательный аргумент `params`.
 
 ```ruby
 # apps/web/controllers/dashboard/index.rb
@@ -95,16 +95,16 @@ end
 ```
 
 <p class="warning">
-Don't use callbacks for model domain logic operations like sending emails.
-This is an antipattern that causes a lot of problems for code maintenance, testability and accidental side effects.
+Не стоит использовать обратные вызовы для функций, которые относятся к предметной области. Например, для отправки электронной почты.
+Это считается антипаттерном и может привести к проблемам с дальнейшей поддержкой и тестированием кода, а так же другим непредсказуемым последствиям.
 </p>
 
-## Halt
+## Остановка
 
-Using exceptions for control flow is expensive for the Ruby VM.
-There is a lightweight alternative that our language supports: **signals** (see `throw` and `catch`).
+Использование механизма исключений является неоптимальным с точки зрения интерпретатора Ruby.
+Для него есть более подходящая альтернатива, поддерживаемая языком: **сигналы** (см. `throw` и `catch`).
 
-Hanami takes advantage of this mechanism to provide **faster control flow** in our actions via `#halt`.
+Hanami использует их для обеспечения более оптимального **управления порядком действий** в экшенах при помощи `#halt`.
 
 ```ruby
 # apps/web/controllers/dashboard/index.rb
@@ -125,14 +125,14 @@ module Web::Controllers::Dashboard
 end
 ```
 
-When used, this API **interrupts the flow**, and returns the control to the framework.
-Subsequent instructions will be entirely skipped.
+После использования этой инструкции, **поток действий прерывается** и управление передается фреймворку.
+Код после нее будет пропущен.
 
 <p class="warning">
-When <code>halt</code> is used, the flow is interrupted and the control is passed back to the framework.
+Когда использована команда <code>halt</code>, поток действий прерывается и управление передается фреймворку.
 </p>
 
-That means that `halt` can be used to skip `#call` invocation entirely if we use it in a `before` callback.
+Это значит, что `halt` можно использовать чтобы вообще пропустить `#call`, если эта команда будет выполнена в обратном вызове `before`.
 
 ```ruby
 # apps/web/controllers/dashboard/index.rb
@@ -153,10 +153,10 @@ module Web::Controllers::Dashboard
 end
 ```
 
-`#halt` accepts an HTTP status code as the first argument.
-When used like this, the body of the response will be set with the corresponding message (eg. "Unauthorized" for `401`).
+`#halt` принимает код HTTP статуса в качестве аргумента.
+При этом в теле ответа будет выведено соответствующее сообщение. В данном случае для 404: "Не авторизован".
 
-An optional second argument can be passed to set a custom body.
+В качестве необязательного второго аргумента можно передать значение тела ответа.
 
 ```ruby
 # apps/web/controllers/dashboard/index.rb
@@ -171,17 +171,17 @@ module Web::Controllers::Dashboard
 end
 ```
 
-When `#halt` is used, **Hanami** renders a default status page with the HTTP status and the message.
+После использования `#halt` **Hanami** по умолчанию выведет страницу с соответствующим HTTP состоянием и его сообщением.
 
 <p><img src="/images/default-template.png" alt="Hanami default template" class="img-responsive"></p>
 
-To customize the UI for the HTTP 404 error, you can use a [custom error page](/guides/views/custom-error-pages).
+Чтобы настроить отображение страницы для ошибки 404 вы можете использовать собственную [страницу ошибки](/guides/views/custom-error-pages).
 
-## HTTP Status
+## HTTP статус
 
-In case you want let the view to handle the error, instead of using `#halt`, you should use `#status=`.
+В случае когда обработку исключения необходимо передать на уровень представления достаточно вместо `#halt` использовать `#status=`.
 
-The typical case is a **failed form submission**: we want to return a non-successful HTTP status (`422`) and let the view to render the form again and show the validation errors.
+Типичным применением такой возможности является **обработка ошибки при заполнении формы**: мы хотим вернуть HTTP статус ошибки (`422`) и при этом позволить представлению отобразить форму еще раз с учетом допущенных ошибок.
 
 ```ruby
 # apps/web/controllers/books/create.rb
@@ -195,7 +195,7 @@ module Web::Controllers::Books
 
     def call(params)
       if params.valid?
-        # persist
+        # передача в хранилище
       else
         self.status = 422
       end
@@ -224,18 +224,18 @@ end
   </ul>
 <% end %>
 
-<!-- form goes here -->
+<!-- здесь начинается форма -->
 ```
 
-## Redirect
+## Переадресация
 
-A special case of control flow management is relative to HTTP redirect.
-If we want to reroute a request to another resource we can use `redirect_to`.
+Переадресация является особым способом обработки запроса.
+Если мы хотим перенаправить запрос к другому ресурсу, то можем воспользоваться `redirect_to`.
 
-When `redirect_to` is invoked, control flow is stopped and **subsequent code in the action is not executed**.
+После вызова `redirect_to` обработка запроса прекращается и **код после нее не исполняется**.
 
-It accepts a string that represents an URI, and an optional `:status` argument.
-By default the status is set to `302`.
+Этот метод принимает строку, представляющую URI, и необязательный аргумент `:status`.
+По умолчанию статус становится `302`.
 
 ```ruby
 # apps/web/controllers/dashboard/index.rb
@@ -245,16 +245,15 @@ module Web::Controllers::Dashboard
 
     def call(params)
       redirect_to routes.root_path
-      foo('bar') # This line will never be executed
+      foo('bar') # Эта строка никогда не исполнится
     end
   end
 end
 ```
 
-### Back
+### На предыдущую страницу
 
-Sometimes you'll want to `redirect_to` back in your browser's history so the easy way to do it
-is the following way:
+Иногда необходимо вернуть пользователя на последнюю страницу из истории его браузера. Это можно сделать так:
 
 ```ruby
 redirect_to request.headers["Referer"] || fallback_url

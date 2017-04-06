@@ -1,19 +1,20 @@
 ---
-title: Guides - Mailes Share Code
+title: Руководство - Мэйлеры: Разделение кода
 ---
 
-# Share Code
+# Разделение кода
 
-## Prepare
+## Метод prepare
 
-In our settings (`lib/bookshelf.rb`), there is code block that allows to share the code for **all the mailers** of our application.
-When a mailer includes the `Hanami::Mailer` module, that block code is yielded within the context of that class.
-This is heavily inspired by Ruby Module and its `included` hook.
+В настройках приложения(`apps/web/application.rb`) есть участок кода, разделяемый **всеми мэйлерами** в нашем приложении. 
+Когда любой мэйлер подключит `Web::Mailer`, будет вызван этот участок кода в контексте данного мэйлера.
 
-Imagine we want to set a default sender for all the mailers.
-Instead of specifying it for each mailer, we can use a DRY approach.
+Этот метод основан на механизме работы модулей Руби и называется обратным вызовом `included`.
 
-We create a module:
+Представим, что мы хотим установить для всех мэйлеров отправителя по умолчанию.
+Вместо явного указания внутри каждого из мэйлеров мы можем последовать принципу DRY.
+
+Создадим модуль:
 
 ```ruby
 # lib/mailers/default_sender.rb
@@ -26,7 +27,7 @@ module Mailers::DefaultSender
 end
 ```
 
-Then we include in all the mailers of our application, via `prepare`.
+А затем включим его во все мэйлеры посредством `prepare`:
 
 ```ruby
 # lib/bookshelf.rb
@@ -40,6 +41,6 @@ end.load!
 ```
 
 <p class="warning">
-Code included via <code>prepare</code> is available for ALL the mailers of an application.
+Код включенный посредством <code>prepare</code> будет доступен во всех мэйлерах приложения.
 </p>
 

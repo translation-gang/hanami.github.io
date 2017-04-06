@@ -1,15 +1,15 @@
 ---
-title: Guides - Action Cookies
+title: Руководство - Куки
 ---
 
-# Cookies
+# Куки
 
-## Enable Cookies
+## Включение куки
 
-Hanami applies _"batteries included, but not installed"_ philosophy.
-Cookies are a feature that is present but needs to be activated.
+Hanami следует философии _"аккумулятор идет в комплекте, но не установлен"_ .
+Куки это одна из тех вещей, которые нужно включить.
 
-In our application settings there is a line to uncomment.
+Для этого необходимо просто раскомментировать строку.
 
 ```ruby
 # apps/web/application.rb
@@ -23,21 +23,21 @@ module Web
 end
 ```
 
-From now on, cookies are automatically sent for each response.
+Теперь куки автоматически будут включены в ответ.
 
-### Settings
+### Настройки
 
-With that configuration we can specify options that will be set for all cookies we send from our application.
+Используя эти настройки мы можем определить какие именно куки будет отправлять наше приложение.
 
-  * `:domain` - `String` (`nil` by default), the domain
-  * `:path` - `String` (`nil` by default), a relative URL
-  * `:max_age` - `Integer` (`nil` by default), cookie duration expressed in seconds
-  * `:secure` - `Boolean` (`true` by default if using SSL), restrict cookies to secure connections
-  * `:httponly` - `Boolean` (`true` by default), restrict JavaScript access to cookies
+  * `:domain` - `String` (по умолчанию `nil`), домен
+  * `:path` - `String` (по умолчанию `nil`), относительный URL
+  * `:max_age` - `Integer` (по умолчанию `nil`), срок годности куки в секундах
+  * `:secure` - `Boolean` (по умолчанию `true` при использовании SSL), держит куки в пределах безопасного соединения
+  * `:httponly` - `Boolean` (по умолчанию `true`), запрещает доступ JavaScript к куки
 
-## Usage
+## Использование
 
-Cookies behave like a Hash: we can read, assign and remove values.
+Куки ведут себя как хэш: мы можем читать, устанавливать и удалять значения.
 
 ```ruby
 # apps/web/controllers/dashboard/index.rb
@@ -46,18 +46,18 @@ module Web::Controllers::Dashboard
     include Web::Action
 
     def call(params)
-      cookies[:b]         # read
-      cookies[:a] = 'foo' # assign
-      cookies[:c] = nil   # remove
+      cookies[:b]         # прочитать
+      cookies[:a] = 'foo' # установить
+      cookies[:c] = nil   # удалить
     end
   end
 end
 ```
 
-When setting a value, a cookie can accept a `String` or a `Hash` to specify inline options.
-General settings are applied automatically but these options can be used to override values case by case.
+Для установки значения можно использовать строки или хэш.
+Основные настройки определяются автоматически, а указанные внутри экшена будут записаны поверх стандартных.
 
-### Example
+### Пример
 
 ```ruby
 # apps/web/application.rb
@@ -65,13 +65,13 @@ module Web
   class Application < Hanami::Application
     configure do
       # ...
-      cookies max_age: 300 # 5 minutes
+      cookies max_age: 300 # 5 минут
     end
   end
 end
 ```
 
-We're going to set two cookies from the action: the first will inherit application configuration, while the second overrides the default value.
+Мы собираемся установить две куки: первая использует конфигурацию приложения по умолчанию, а вторая использует переназначенные параметры.
 
 ```ruby
 # apps/web/controllers/dashboard/index.rb
