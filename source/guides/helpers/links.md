@@ -4,35 +4,35 @@ title: Guides - Link Helpers
 
 ## Link Helpers
 
-It provides a concise API to generate links.
-It's a **public method** called `#link_to`, that can be used both in **views** and **templates**.
+Ханами предостовляет лаконичный API для создания ссылок.
+Основной публичный метод - `#link_to`, который может быть использован как во вью объектах, так и в темплейтах.
 
-## Usage
+## Использование
 
-It accepts two mandatory and one optional arguments.
-The first is the content of the tag, the second is the path, an the third is a Hash that represents a set of HTML attributes that we may want to specify.
+Этот метод принимает два обязательных и один опциональный аргумент.
+Первый - это непосредственно текст ссылки (контент `<a>` тега), а второй - путь или нужная ссылка. Последний аргумент является хешом опций и он может принимать набор HTML аттрибутов которые мы хотим определить.
 
 ```erb
-<%= link_to 'Home', '/' %>
-<%= link_to 'Profile', routes.profile_path, class: 'btn', title: 'Your profile' %>
+<%= link_to 'Главная', '/' %>
+<%= link_to 'Профиль', routes.profile_path, class: 'btn', title: 'Ваш профиль' %>
 <%=
-  link_to(routes.profile_path, class: 'avatar', title: 'Your profile') do
+  link_to(routes.profile_path, class: 'avatar', title: 'Ваш профиль') do
     img(src: user.avatar.url)
   end
 %>
 ```
 
-Output:
+Код выше сгенерирует следующий HTML:
 
 ```html
-<a href="/">Home</a>
-<a href="/profile" class="btn" title="Your profile">Profile</a>
-<a href="/profile" class="avatar" title="Your profile">
+<a href="/">Главная</a>
+<a href="/profile" class="btn" title="Ваш профиль">Профиль</a>
+<a href="/profile" class="avatar" title="Ваш профиль">
   <img src="/images/avatars/23.png">
 </a>
 ```
 
-Alternatively, the content can be expressed as a given block.
+В другом случае, содержимое тега может быть выражено в качестве блока.
 
 ```ruby
 module Web::Views::Books
@@ -50,13 +50,13 @@ module Web::Views::Books
 end
 ```
 
-Template:
+Темплейт файл:
 
 ```erb
 <%= look_inside_link %>
 ```
 
-Output:
+Сгенерированный HTML:
 
 ```html
 <a href="/books/1/look_inside" class="book-cover">
@@ -64,7 +64,8 @@ Output:
 </a>
 ```
 
-## Security
+## Безопасность
 
-There are two aspects to consider when we use links in our markup: **whitelisted URLs** and **escaped attributes**.
-Please visit the [Markup Escape](/guides/helpers/escape) section for a detailed explanation.
+Есть два аспекта, которые стоит учитывать, когда вы используете генерацию ссылок в разметке.
+Это **белый список ссылок** и **экранированние аттирбутов**.
+Пожалуйста, посмотрите раздел про [экранированную разметку](/guides/helpers/escape) для подробного объяснения.
