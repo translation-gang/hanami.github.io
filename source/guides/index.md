@@ -1,47 +1,43 @@
 ---
-title: Guides
+title: Руководства
 ---
 
-# Introduction
+# Введение
 
-## What is Hanami?
+## Что такое Hanami?
 
-Hanami is a Ruby MVC web framework comprised of many micro-libraries.
-It has a simple, stable API, a minimal DSL, and prioritises the use of plain objects over magical, over-complicated classes with too much responsibility.
+Hanami это Ruby MVC фреймворк, состоящий из множества микро-библиотек. 
+У него простой, стабильный API, минимальный DSL, и предпочтение к использованию простых объектов магическим, переусложненным классам с многими ответственностями.
 
-The natural repercussion of using simple objects with clear responsibilities is more boilerplate code.
-Hanami provides ways to mitigate this extra legwork while maintaining the underlying implementation.
+Цена использования простых объектов с чистыми обязанностями - больше шаблонного кода. Hanami предоставляет способы уменьшить эту лишнюю работу, обслуживая код низкоуровневых реализаций.
 
-## Why Choose Hanami?
+## Почему Hanami?
 
-Here are three compelling reasons to choose Hanami:
+Есть три причины, по которым стоит выбрать Hanami:
 
-### Hanami is Lightweight
+### Hanami легковесен
 
-Hanami's code is relatively short.
-It only concerns itself with the things that all web applications&mdash;regardless of implementation&mdash;need.
+Код Hanami относительно короткий.
+Он отвечает только за те вещи, которые нужны, чтобы не писать самому то, что нужно каждому веб-приложению.
 
-Hanami ships with several optional modules and other libraries can also be included easily.
+Hanami поставляется с несколькими опциональными модулями, и другие библиотеки также могут быть легко подключены. 
 
-### Hanami is Architecturally Sound
+### Смысл Hanami в архитектуре
 
-If you've ever felt you're stretching against the "Rails way", you'll appreciate Hanami.
+Если тебе надоедает "Rails way", то стоит обратить внимание на Hanami.
 
-Hanami keeps controller actions class-based, making them easier to test in isolation.
+Hanami основывает экшны контроллеров на классах, что упрощает их тестирование в изоляции.
 
-Hanami also encourages you to write your application logic in use cases objects (aka _interactors_).
+Hanami также поощряет тебя писать бизнес логику в _интеракторах_ (сценариях использования).
 
-Views are separated from templates so the logic inside can be well-contained and tested in isolation.
+Вьюхи отделены от шаблонов, так что их логика тоже может быть протестирована в изоляции.
 
-### Hanami is Threadsafe
+### Hanami потокобезопасен
 
-Making use of threads is a great way to boost the performance of your
-application. It shouldn't be hard to write thread-safe code, and Hanami (whether
-the entire framework, or parts of it) is runtime threadsafe.
+Использование многопоточности это отличный способ повысить производительность приложений. Не должно быть сложно написать потокобезопасный код, и Hanami (целое приложение или его части) являются потокобезопасными.
 
-## Guides
+## Руководства
 
-The guides explain high level Hanami components and how to configure, use and test them in a full stack application.
-The imaginary product that we'll mention is called _"Bookshelf"_: a online community to share readings and buy books.
+Руководства объясняют высокоуровневые компоненты и как их готовить (настраивать, использовать и тестировать) в полноценном приложении. Воображаемый проект, о котором пойдет речь, называется "Книжная полка": онлайновое сообщество, в котором делятся чтивом и покупают книги.
 
-We have a [getting started guide](/guides/getting-started), to build our first application with Hanami.
+У нас есть [getting started guide](/guides/getting-started), чтобы самостоятельно создать первое приложение с Hanami.
